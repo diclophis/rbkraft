@@ -62,10 +62,10 @@ while $running
           blank += 1
           retry unless blank > 10
         end
-      rescue EOFError, Errno::ECONNRESET => reset
+      rescue EOFError, Errno::ECONNRESET, Errno::EPIPE => closed
         $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
         $clients.delete(io)
-        puts [:client_eof].inspect
+        puts [:client_eof, closed].inspect
       end
     end
   end
