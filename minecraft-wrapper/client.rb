@@ -5,8 +5,8 @@ require 'socket'
 
 class MinecraftClient
   def initialize
-    @select_timeout = 0.01
-    @max_response_count = 100
+    @select_timeout = 1.0 
+    @max_response_count = 2
     connect
   end
 
@@ -22,16 +22,19 @@ class MinecraftClient
       command_result = ""
       blank = 0
       begin
-        while command_output = @server_io.read_nonblock(1024)
-          puts command_result.inspect
-          command_result += command_output
+        while command_output = @server_io.read_nonblock(1)
           blank = 0
+          command_result += command_output
+          break if command_output == "\n"
         end
       rescue IO::WaitReadable => wait
-        #puts [:wait, wait].inspect
         IO.select([@server_io], nil, nil, @select_timeout)
         blank += 1
         retry unless blank > @max_response_count
+      end
+
+      if command_line.include?("sand")
+        sleep 0.6666
       end
 
       return command_result

@@ -11,8 +11,8 @@ $socket = "/tmp/minecraft-wrapper.sock"
 $server_io = UNIXServer.new($socket)
 $minecraft_stdin, $minecraft_stdout, $minecraft_stderr, $minecraft_thread = Open3.popen3(ARGV[0], *ARGV[1..-1])
 $clients = Hash.new
-$select_timeout = 0.01
-$max_response_count = 100
+$select_timeout = 1.0 
+$max_response_count = 2
 
 Signal.trap("INT") do
   $stdout.puts("exiting...")
@@ -53,16 +53,15 @@ while $running
         $minecraft_stdin.puts(command_line)
         $minecraft_stdin.flush
         $minecraft_stdout.flush
-        command_result = ""
         blank = 0
 
         begin
           while command_output = $minecraft_stdout.read_nonblock(1)
-            #puts [:raw, command_output].inspect
-            command_result += command_output
             blank = 0
-            #out_io = (io == $stdin) ? $stdout : io
-            #out_io.puts(command_output)
+            out_io = (io == $stdin) ? $stdout : io
+            out_io.write(command_output)
+            out_io.flush
+            break if command_output == "\n"
           end
         rescue IO::WaitReadable => wait
           # wait for stall in output, note clients may receive interlaced signon/off,et al messages
@@ -70,10 +69,6 @@ while $running
           blank += 1
           retry unless blank > $max_response_count
         end
-
-        out_io = (io == $stdin) ? $stdout : io
-        out_io.puts(command_output)
-        out_io.flush
       rescue EOFError, Errno::ECONNRESET, Errno::EPIPE => closed
         $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
         $clients.delete(io)
