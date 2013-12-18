@@ -7,4 +7,9 @@ Minecraft Wrapper
 * respond with values for command
 
 
+Client
+======
+
+    echo "/tp diclophis 10000 65 0" | ruby client.rb
+
 

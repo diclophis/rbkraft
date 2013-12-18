@@ -11,6 +11,8 @@ $socket = "/tmp/minecraft-wrapper.sock"
 $server_io = UNIXServer.new($socket)
 $minecraft_stdin, $minecraft_stdout, $minecraft_stderr, $minecraft_thread = Open3.popen3(ARGV[0], *ARGV[1..-1])
 $clients = Hash.new
+$select_timeout = 0.01
+$max_response_count = 100
 
 Signal.trap("INT") do
   $stdout.puts("exiting...")
@@ -18,9 +20,9 @@ Signal.trap("INT") do
 end
 
 def select_sockets_that_require_action
-  select_timeout = 1.01
+  #select_timeout = 1.01
   selectable_sockets = [$stdin, $minecraft_stdout, $server_io] + $clients.keys
-  IO.select(selectable_sockets, nil, selectable_sockets, select_timeout)
+  IO.select(selectable_sockets, nil, selectable_sockets, $select_timeout)
 end
 
 def accept_new_connection
@@ -49,19 +51,29 @@ while $running
       begin
         command_line = io.readline
         $minecraft_stdin.puts(command_line)
+        $minecraft_stdin.flush
+        $minecraft_stdout.flush
+        command_result = ""
         blank = 0
+
         begin
-          while command_output = $minecraft_stdout.read_nonblock(1024)
-            puts [:raw, command_output].inspect
-            out_io = (io == $stdin) ? $stdout : io
-            out_io.puts(command_output)
+          while command_output = $minecraft_stdout.read_nonblock(1)
+            #puts [:raw, command_output].inspect
+            command_result += command_output
+            blank = 0
+            #out_io = (io == $stdin) ? $stdout : io
+            #out_io.puts(command_output)
           end
         rescue IO::WaitReadable => wait
           # wait for stall in output, note clients may receive interlaced signon/off,et al messages
-          IO.select([$minecraft_stdout], nil, nil, 0.01)
+          IO.select([$minecraft_stdout], nil, nil, $select_timeout)
           blank += 1
-          retry unless blank > 10
+          retry unless blank > $max_response_count
         end
+
+        out_io = (io == $stdin) ? $stdout : io
+        out_io.puts(command_output)
+        out_io.flush
       rescue EOFError, Errno::ECONNRESET, Errno::EPIPE => closed
         $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
         $clients.delete(io)
