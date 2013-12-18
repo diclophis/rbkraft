@@ -30,6 +30,7 @@ def accept_new_connection
   $stdout.puts(["accept", $uid].inspect)
 end
 
+#TODO: don't listen on command socket until server is fully booted
 $stdout.puts "started minecraft, server listening"
 
 while $running
@@ -40,44 +41,36 @@ while $running
       when $minecraft_stdout # minecraft bootup output
         $running = !$minecraft_stdout.eof?
         if $running
-          $stdout.puts [:non_request, $minecraft_stdout.readline]
+          $stdout.puts [:non_request, $minecraft_stdout.readline].inspect
         end
       when $server_io # client is connecting over unix socket
         accept_new_connection
     else # client has request ready for reading
       begin
-        if io.closed?
-          $stdout.puts ["quit on closed", $clients[io]].inspect
-          $clients.delete(io)
-        else
-          unless io.closed? || io.eof?
-            command_line = io.readline
-            $minecraft_stdin.puts(command_line)
-            blank = 0
-            begin
-              while command_output = $minecraft_stdout.read_nonblock(1024)
-                puts [:raw, command_output].inspect
-                out_io = (io == $stdin) ? $stdout : io
-                out_io.puts(command_output)
-              end
-            rescue IO::WaitReadable => wait
-              puts "waiting for output"
-              IO.select([$minecraft_stdout], nil, nil, 0.01)
-              blank += 1
-              retry unless blank > 10
-            #rescue EOFError => eof
-            #  puts "got eof"
-            end
+        command_line = io.readline
+        $minecraft_stdin.puts(command_line)
+        blank = 0
+        begin
+          while command_output = $minecraft_stdout.read_nonblock(1024)
+            puts [:raw, command_output].inspect
+            out_io = (io == $stdin) ? $stdout : io
+            out_io.puts(command_output)
           end
+        rescue IO::WaitReadable => wait
+          # wait for stall in output, note clients may receive interlaced signon/off,et al messages
+          IO.select([$minecraft_stdout], nil, nil, 0.01)
+          blank += 1
+          retry unless blank > 10
         end
-      rescue Errno::ECONNRESET => reset
-        $stdout.puts ["quit on econnreset...???", $clients[io]].inspect
+      rescue EOFError, Errno::ECONNRESET => reset
+        $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
         $clients.delete(io)
         puts [:client_eof].inspect
       end
     end
   end
 
+  #NOTE: this might not be needed?
   errored && errored.each do |io|
     $stdout.puts ["quit on errored", $clients[io]].inspect
     $clients.delete(io)
@@ -85,6 +78,7 @@ while $running
 end
 
 unless $minecraft_stdout.eof?
+  #NOTE: this might be overkill given that INT signal is sent to child process
   $minecraft_stdin.puts("/stop")
   $stdout.puts($minecraft_stdout.readlines)
 end
