@@ -15,32 +15,27 @@ class MinecraftClient
   end
 
   def execute_command(command_line)
-    #readable, writable, errored = IO.select(nil, [@server_io], nil, @select_timeout)
-    #if writable && writable.include?(@server_io)
-      @server_io.puts(command_line)
-      @server_io.flush
-      command_result = ""
-      blank = 0
-      begin
-        while command_output = @server_io.read_nonblock(1)
-          blank = 0
-          command_result += command_output
-          break if command_output == "\n"
-        end
-      rescue IO::WaitReadable => wait
-        IO.select([@server_io], nil, nil, @select_timeout)
-        blank += 1
-        retry unless blank > @max_response_count
+    @server_io.puts(command_line)
+    @server_io.flush
+    command_result = ""
+    blank = 0
+    begin
+      while command_output = @server_io.read_nonblock(1)
+        blank = 0
+        command_result += command_output
+        break if command_output == "\n"
       end
+    rescue IO::WaitReadable => wait
+      IO.select([@server_io], nil, nil, @select_timeout)
+      blank += 1
+      retry unless blank > @max_response_count
+    end
 
-      if command_line.include?("sand")
-        sleep 0.6666
-      end
+    if command_line.include?("sand")
+      sleep 0.6666
+    end
 
-      return command_result
-    #else
-    #  raise "doh"
-    #end
+    return command_result
   end
 
   def disconnect
