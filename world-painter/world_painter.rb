@@ -28,6 +28,10 @@ class Vector
     Vector.new(x/c, y/c, z/c)
   end
 
+  def *(c)
+    Vector.new(x*c, y*c, z*c)
+  end
+
   def length
     Math.sqrt(x*x + y*y + z*z)
   end
@@ -51,21 +55,42 @@ class Vector
 end
 
 class WorldPainter
-  def initialize(centerX, centerY, centerZ)
+  def initialize(centerX, centerY, centerZ, options = {})
     @center = [centerX, centerY, centerZ]
+    @dry_run = options[:dry_run]
+    @debug = options[:debug]
     @client = MinecraftClient.new
+  end
+
+  def dry_run?
+    @dry_run
+  end
+
+  def debug?
+    @debug
   end
 
   def place(x, y, z, thing = 'dirt', data = 0, mode = 'replace', data_tag = nil)
     thing = thing.is_a?(String) ? "minecraft:#{thing}" : thing
     set_block_command = "/setblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{thing} #{data} #{mode} #{data_tag}\n"
-    @client.execute_command(set_block_command).tap {|output| puts output if @debug }
+    execute set_block_command
   end
 
   def summon(x, y, z, thing = 'air', data_tag = '')
     # summon_command = "/summon #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} minecraft:#{thing} #{data_tag}\n"
     summon_command = "/summon #{thing} #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{data_tag}\n"
-    @client.execute_command(summon_command)
+    execute summon_command
+  end
+
+  def execute(cmd)
+    if dry_run?
+      puts cmd
+    else
+      puts cmd if debug?
+      output = @client.execute_command(cmd)
+      puts output if debug?
+      output
+    end
   end
 
   def platform(center_x = 0, center_y = 0, center_z = 0, width = 10, id = 20, data = 0, options = {})
@@ -91,7 +116,7 @@ class WorldPainter
         (options[:zwidth] || 1).times do |zw|
           (options[:ywidth] || 1).times do |yw|
             id = evaluate(options[:id])
-            data = evaluate(options[:data])
+            data = evaluate(options[:data], 0)
             options[:before_each].call(p.x+xw, p.y+yw, p.z+zw) if options[:before_each]
             place p.x+xw, p.y+yw, p.z+zw, id, data
             options[:after_each].call(p.x+xw, p.y+yw, p.z+zw) if options[:after_each]
@@ -101,11 +126,11 @@ class WorldPainter
     end
   end
 
-  def evaluate(something)
+  def evaluate(something, default = 'air')
     if something.is_a?(Proc)
-      something.call || 0
+      something.call || default
     else
-      something || 0
+      something || default
     end
   end
 end
