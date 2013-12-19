@@ -31,6 +31,7 @@ class Vector
   def length
     Math.sqrt(x*x + y*y + z*z)
   end
+  alias_method :magnitude, :length
 
   def normalized
     self / length
