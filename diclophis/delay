@@ -1,0 +1,7 @@
+#!/bin/sh
+
+while read line;
+do
+  sleep 0.033
+  echo "$line"
+done;
