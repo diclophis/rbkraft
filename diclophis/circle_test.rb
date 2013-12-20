@@ -3,7 +3,8 @@
 require './diclophis/diclophis_world_painter'
 
 ox = 10030
-oy = 63
+oy = 70 
+#63 is water
 oz = 50
 
 painter = DiclophisWorldPainter.new(ox, oy, oz)
@@ -24,34 +25,41 @@ type = "air"
 debug_type = "air"
 alt_type = "air"
 stair_type = "air"
+corner_type = "air"
 
 if true
   type = "stone"
   debug_type = "glowstone"
   alt_type = "stonebrick"
-  stair_type = "stone_stairs"
+  #stair_type = "stone_stairs"
+  stair_type = "air"
+  corner_type = "log"
 end
 
 x = 0
 oz = 0
-arc_r = 20.5
+arc_r = 11.5
 
-depth = 3
-length = 5
+depth = 5
+length = 2
 
-sx = 3
+sx = depth
 sy = arc_r.ceil
 sz = (length * arc_r.ceil * 2)
+
+max_arc = 180
 
 p [sx, sy, sz].inspect
 
 m = Array.new(sx) { Array.new(sy) { Array.new(sz) { nil } } }
 
+tower_corners = Array.new
+
 depth.times { |ox| # depth
 
   length.times { |i| # length
 
-    180.times { |d|
+    max_arc.times { |d|
 
       a = d.to_f * (Math::PI / 180.to_f)
 
@@ -59,11 +67,28 @@ depth.times { |ox| # depth
 
       blocks << [(ox + x).to_i, y.to_i, (oz + z).to_i, type]
 
+      if (z).floor == arc_r.floor
+        if d == (0)
+          puts [:far, d]
+          tower_corners << [(ox + x).to_i, y.to_i, (oz + z).to_i, corner_type]
+        end
+
+        blocks << [(ox + x).to_i, y.to_i, (oz + z + 1).to_i, type]
+      elsif (z).floor == -(arc_r.floor + 1)
+        if d == (max_arc - 1)
+          puts [:near, d]
+          tower_corners << [(ox + x).to_i, y.to_i, (oz + z).to_i, corner_type]
+        end
+
+        blocks << [(ox + x).to_i, y.to_i, (oz + z - 1).to_i, type]
+      end
     }
 
-    oz += (arc_r * 2) + 1
+    oz += (arc_r * 2) + 2
 
   }
+
+  #puts "arc done"
 
   oz = 0
 
@@ -76,7 +101,7 @@ max = [nil, nil, nil]
 
 blocks.each { |b|
 
-p [b[0], b[1], b[2] + arc_r.ceil].inspect
+#p [b[0], b[1], b[2] + arc_r.ceil].inspect
 
   m[b[0]][b[1]][b[2] + arc_r.ceil] = b
 
@@ -112,7 +137,7 @@ max[1] += 1
 (min[0]..max[0]).each { |x|
   (min[2]..max[2]).each { |z|
     #puts painter.place(x, min[1], z, debug_type)
-    blocks << [x, min[1], z, debug_type]
+    #blocks << [x, min[1], z, debug_type] # debug arc floor
 
     sy.times { |u|
       # if there is one block above, and only one in either z direction
@@ -151,4 +176,28 @@ blocks.each { |b|
   puts painter.place(*b)
 }
 
+tower_blocks = Array.new
 
+9.times { |h|
+
+  tower_corners.each { |b|
+
+    360.times { |d|
+
+      a = d.to_f * (Math::PI / 180.to_f)
+
+      x, z = painter.xy_from_angle_radius(a, 1.5 + (0.25 * h.to_f))
+
+      tower_blocks << [x.to_i + b[0], b[1] - h, z.to_i + b[2], b[3]]
+
+    }
+
+  }
+
+}
+
+tower_blocks.uniq!
+
+tower_blocks.each { |b|
+  puts painter.place(*b)
+}

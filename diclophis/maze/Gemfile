@@ -1,0 +1,7 @@
+# Gems for maze
+
+source "http://rubygems.org"
+source "http://gems.github.com"
+
+gem "chunky_png"
+gem "theseus", "1.0.2", :git => "git://github.com/jamis/theseus.git"
