@@ -32,6 +32,10 @@ class Vector
     Vector.new(x*c, y*c, z*c)
   end
 
+  def ==(c)
+    x == c.x && y == c.y && z == c.z
+  end
+
   def length
     Math.sqrt(x*x + y*y + z*z)
   end
@@ -82,6 +86,30 @@ class WorldPainter
     execute summon_command
   end
 
+  def test(x, y, z)
+    execute("/testforblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} 122")[/\d+ is (.*?) \(/, 1]
+  end
+
+  def air?(x, y, z)
+    without_debug do
+      !!(test(x, y, z) =~ /\bair\b/)
+    end
+  end
+
+  def not_land?(x, y, z, options = {})
+    without_debug do
+      !!(test(x, y, z) =~ /(#{([options[:ignore]].flatten.compact + %w[air wood leaves flower]).join('|')})/i)
+    end
+  end
+
+  def without_debug
+    old_debug = @debug
+    @debug = false
+    yield
+  ensure
+    @debug = old_debug
+  end
+
   def execute(cmd)
     if dry_run?
       puts cmd
@@ -101,6 +129,33 @@ class WorldPainter
         options[:after_each].call(center_x - width/2 + x, center_y, center_z - width/2 + z) if options[:after_each]
       end
     end
+  end
+
+  def ground(x, z, options = {})
+    max = 126
+    min = 0
+
+    while max >= min
+      mid = min + (max - min) / 2
+
+      air = not_land?(x, mid - @center[1], z, options)
+      airDown = not_land?(x, mid - 1 - @center[1], z, options)
+
+      if air && !airDown
+        return mid - @center[1]
+      end
+
+      # [126, 50, 88]
+      # 38
+
+      if air
+        max = mid
+      else
+        min = mid
+      end
+    end
+
+    return nil
   end
 
   # Bresenham’s line drawing algorithm
