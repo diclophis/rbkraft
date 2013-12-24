@@ -11,7 +11,7 @@ $socket = "/tmp/minecraft-wrapper.sock"
 $server_io = UNIXServer.new($socket)
 $minecraft_stdin, $minecraft_stdout, $minecraft_stderr, $minecraft_thread = Open3.popen3(ARGV[0], *ARGV[1..-1])
 $clients = Hash.new
-$select_timeout = 1.0 
+$select_timeout = 0.5 
 $max_response_count = 2
 
 Signal.trap("INT") do

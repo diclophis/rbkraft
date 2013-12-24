@@ -5,7 +5,7 @@ require 'socket'
 
 class MinecraftClient
   def initialize
-    @select_timeout = 1.0 
+    @select_timeout = 0.5 
     @max_response_count = 2
     connect
   end
