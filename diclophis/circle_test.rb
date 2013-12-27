@@ -27,7 +27,7 @@ alt_type = "air"
 stair_type = "air"
 corner_type = "air"
 
-if false
+if true
   type = "stone"
   debug_type = "glowstone"
   alt_type = "stonebrick"

@@ -22,9 +22,13 @@ painter = DiclophisWorldPainter.new(ox, oy, oz)
 
 blocks = Array.new
 
-seed = 1387921741 #Time.now.to_i
-puts seed
-Random.srand(seed)
+if false
+  seed = 1387921741 #Time.now.to_i
+  puts seed
+  Random.srand(seed)
+else
+  Random.srand
+end
 
 maze = Theseus::OrthogonalMaze.generate({
   :width => 10,
@@ -35,7 +39,7 @@ maze = Theseus::OrthogonalMaze.generate({
 
 maze.generate!
 
-50.times { maze.sparsify! }
+#50.times { maze.sparsify! }
 
 if true
   puts maze.to_s({:mode => :lines})
