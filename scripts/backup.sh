@@ -20,4 +20,4 @@ screen -r minecraft -x -p 0 -X stuff "/say $BACKUP\n"
 sleep 1
 screen -r minecraft -x -p 0 -X stuff "/save-on\n"
 
-sh ~/mavencraft/scripts/overviewer.sh
+#sh ~/mavencraft/scripts/overviewer.sh

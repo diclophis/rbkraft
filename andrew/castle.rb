@@ -66,14 +66,12 @@ class Castle
      index += 1
     end
   end
-
-  def go(options = {})
-  end
 end
 
 if __FILE__ == $0
-  # painter = Castle.new(9882, 62, 1, :debug => true)
+  remove = false
   painter = Castle.new(9845, 81, 192, :debug => true)
-  painter.wall(Vector.new(0, 0, 0), Vector.new(70, 0, 0), :remove => false)
-  painter.wall(Vector.new(0, 0, 0), Vector.new(0, 0, -50), :remove => false)
+  painter.wall(Vector.new(0, 0, 0), Vector.new(70, 0, 0), :remove => remove)
+  painter.wall(Vector.new(0, 0, 0), Vector.new(0, 0, -50), :remove => remove)
+  painter.wall(Vector.new(2, 0, 0), Vector.new(2, 0, 50), :remove => remove)
 end

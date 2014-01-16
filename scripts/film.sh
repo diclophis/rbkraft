@@ -15,12 +15,12 @@ SCREENSHOT_BASE=/mnt/minecraft-disk-2/maps/screenshots
 
 mkdir -p $SCREENSHOT_BASE
 
-phantomjs ~/mavencraft/scripts/screenshot.js $SCREENSHOT_BASE/latest.png
+phantomjs ~/mavencraft/scripts/screenshot.js $SCREENSHOT_BASE/latest.png http://mavencraft.net/current/#/$1/64/$2/-1/0/0
 
 FRAMES="-i $SCREENSHOT_BASE/latest.png"
 
 BITRATE_OPTION="-vb 4096k"
-SIZE=1024x1024
+SIZE=256x256
 
 avconv -y $FRAMES $BITRATE_OPTION $SCREENSHOT_BASE/current.avi
 
@@ -29,4 +29,5 @@ cp $SCREENSHOT_BASE/latest.avi $SCREENSHOT_BASE/previous.avi
 
 avconv -y -i concat:$SCREENSHOT_BASE/previous.avi\|$SCREENSHOT_BASE/current.avi $BITRATE_OPTION -c copy $SCREENSHOT_BASE/latest.avi
 
-avconv -y -i $SCREENSHOT_BASE/latest.avi $BITRATE_OPTION -s $SIZE -vf 'setpts=15.0*PTS' $SCREENSHOT_BASE/latest.webm
+#avconv -y -i $SCREENSHOT_BASE/latest.avi $BITRATE_OPTION -s $SIZE -vf 'setpts=15.0*PTS' $SCREENSHOT_BASE/latest.webm
+avconv -y -i $SCREENSHOT_BASE/latest.avi $BITRATE_OPTION -s $SIZE -vf 'setpts=1.0*PTS' $SCREENSHOT_BASE/latest.webm

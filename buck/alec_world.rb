@@ -105,27 +105,39 @@ basic_building = lambda do |destroy = false|
   end
 end
 
-# todo:
-#2.times do
-#  build <<-plan
-#    xxxxx  xxxxx
-#    x          x
-#    x          x
-#    x          x
-#    x          x
-#    x          x
-#    xxxxxxxxxxxx
-#  plan
-#end
-#
-#8.times do
-#  build <<-plan
-#    xxxxxxxxxxxx
-#    x          x
-#    x          x
-#    x          x
-#    x          x
-#    x          x
-#    xxxxxxxxxxxx
-#  plan
-#end
+basic_building.()
+
+# todo: implement these drawers
+
+class Builder
+  def initialize(options = {})
+    x, y, z = options[:point][:x], options[:point][:y], options[:point][:z] if options[:point]
+    @cursor = Cursor.new(options
+    @cursor = Cursor.new(x,y,z) 
+  end
+end
+
+2.times do
+  build <<-plan
+    xxxxx  xxxxx
+    x          x
+    x          x
+    x          x
+    x          x
+    x          x
+    xxxxxxxxxxxx
+  plan
+end
+
+8.times do
+  build <<-plan
+    xxxxxxxxxxxx
+    x          x
+    x          x
+    x          x
+    x          x
+    x          x
+    xxxxxxxxxxxx
+  plan
+end
+
