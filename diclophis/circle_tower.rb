@@ -76,7 +76,7 @@ y = 0
 
 t = 0
 
-floors = 11
+floors = 10
 per_floor = 5
 
 floors.times { |f|
@@ -115,12 +115,9 @@ floors.times { |f|
     ny = 0
     per_floor.times { |h|
       should_be_glass = (((((d + t).to_f + (8.0)).to_f / (18).to_f)).to_i % 2)
-      #puts [d, (d / 36), (d / 36) % 36, should_be_glass].inspect
-      wall_type = (should_be_glass == 0) ? glass_type : type
-      #blocks << [(x).to_i, y.to_i + 2, z.to_i, wall_type]
+      wall_type = (should_be_glass == 0) ? air_type : type
       blocks << [(x).to_i, y.to_i + (h + 1), z.to_i, wall_type]
       ny = y.to_i + (h + 1)
-      #y = (h + 1)
     }
   }
 
@@ -129,13 +126,11 @@ floors.times { |f|
   arc_r -= 2.0
 }
 
-#blocks.uniq!
-
 x = 0
 oz = 0
 arc_r = 5.0
 
-max_arc = (360 * 5) + 1
+max_arc = (360 * 5) + 4
 
 max_arc.times { |d|
   a = d.to_f * (Math::PI / 180.to_f)
@@ -145,17 +140,11 @@ max_arc.times { |d|
 
     s = 8.0
     y = (((d % 360).to_f / 360.to_f) * s).to_i + ((d / 360) * s)
-    ny = ((((d + 15) % 360).to_f / 360.to_f) * s).to_i + ((d / 360) * s)
+    ny = ((((d + 17) % 360).to_f / 360.to_f) * s).to_i + ((d / 360) * s)
 
     step_type = (y == ny) ? slab : type
 
     blocks << [x.to_i, y.to_i, z.to_i, step_type]
-
-    #10.times { |ee|
-    #  blocks << [x.to_i, (y + ee + 1).to_i, z.to_i, air_type]
-    #  blocks << [x.to_i, (y + ee + 2).to_i, z.to_i, air_type]
-    #  blocks << [x.to_i, (y + ee + 3).to_i, z.to_i, air_type]
-    #}
   }
 }
 
