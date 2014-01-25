@@ -15,7 +15,7 @@ SCREENSHOT_BASE=/mnt/minecraft-disk-2/maps/screenshots
 
 mkdir -p $SCREENSHOT_BASE
 
-phantomjs ~/mavencraft/scripts/screenshot.js $SCREENSHOT_BASE/latest-$3.png http://mavencraft.net/current/#/$1/64/$2/-1/0/0
+phantomjs ~/mavencraft/scripts/screenshot.js $SCREENSHOT_BASE/latest-$3.png http://mavencraft.net/current/#/$1/64/$2/-3/0/0
 
 FRAMES="-i $SCREENSHOT_BASE/latest-$3.png"
 
