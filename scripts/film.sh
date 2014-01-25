@@ -15,19 +15,19 @@ SCREENSHOT_BASE=/mnt/minecraft-disk-2/maps/screenshots
 
 mkdir -p $SCREENSHOT_BASE
 
-phantomjs ~/mavencraft/scripts/screenshot.js $SCREENSHOT_BASE/latest.png http://mavencraft.net/current/#/$1/64/$2/-1/0/0
+phantomjs ~/mavencraft/scripts/screenshot.js $SCREENSHOT_BASE/latest-$3.png http://mavencraft.net/current/#/$1/64/$2/-1/0/0
 
-FRAMES="-i $SCREENSHOT_BASE/latest.png"
+FRAMES="-i $SCREENSHOT_BASE/latest-$3.png"
 
 BITRATE_OPTION="-vb 4096k"
 SIZE=256x256
 
-avconv -y $FRAMES $BITRATE_OPTION $SCREENSHOT_BASE/current.avi
+avconv -y $FRAMES $BITRATE_OPTION $SCREENSHOT_BASE/current-$3.avi
 
-test -f $SCREENSHOT_BASE/latest.avi || cp $SCREENSHOT_BASE/current.avi $SCREENSHOT_BASE/latest.avi
-cp $SCREENSHOT_BASE/latest.avi $SCREENSHOT_BASE/previous.avi
+test -f $SCREENSHOT_BASE/latest-$3.avi || cp $SCREENSHOT_BASE/current-$3.avi $SCREENSHOT_BASE/latest-$3.avi
+cp $SCREENSHOT_BASE/latest-$3.avi $SCREENSHOT_BASE/previous-$3.avi
 
-avconv -y -i concat:$SCREENSHOT_BASE/previous.avi\|$SCREENSHOT_BASE/current.avi $BITRATE_OPTION -c copy $SCREENSHOT_BASE/latest.avi
+avconv -y -i concat:$SCREENSHOT_BASE/previous-$3.avi\|$SCREENSHOT_BASE/current-$3.avi $BITRATE_OPTION -c copy $SCREENSHOT_BASE/latest-$3.avi
 
 #avconv -y -i $SCREENSHOT_BASE/latest.avi $BITRATE_OPTION -s $SIZE -vf 'setpts=15.0*PTS' $SCREENSHOT_BASE/latest.webm
-avconv -y -i $SCREENSHOT_BASE/latest.avi $BITRATE_OPTION -s $SIZE -vf 'setpts=1.0*PTS' $SCREENSHOT_BASE/latest.webm
+avconv -y -i $SCREENSHOT_BASE/latest-$3.avi $BITRATE_OPTION -s $SIZE -vf 'setpts=1.0*PTS' $SCREENSHOT_BASE/latest-$3.webm

@@ -10,25 +10,25 @@ renders["normal"] = {
   "rendermode": "smooth_lighting"
 }
 
-renders["normal cave"] = {
-  "title": "Normal Cave",
-  "dimension": "overworld",
-  "rendermode": "cave"
-}
+#renders["normal cave"] = {
+#  "title": "Normal Cave",
+#  "dimension": "overworld",
+#  "rendermode": "cave"
+#}
 
-renders["nether"] = {
-  "title": "Nether",
-  "dimension": "nether",
-  "rendermode": "nether_smooth_lighting"
-}
+#renders["nether"] = {
+#  "title": "Nether",
+#  "dimension": "nether",
+#  "rendermode": "nether_smooth_lighting"
+#}
 
-renders["nether plain"] = {
-  "title": "Nether Plain",
-  "dimension": "nether",
-  "rendermode": "nether"
-}
+#renders["nether plain"] = {
+#  "title": "Nether Plain",
+#  "dimension": "nether",
+#  "rendermode": "nether"
+#}
 
 showlocationmarker = False
-defaultzoom = 10 
+defaultzoom = 7 
 processes = 1
 outputdir = os.environ['FULL_MAP']
