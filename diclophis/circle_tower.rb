@@ -21,6 +21,7 @@ slab = air_type
 glass_type = air_type
 glow_type = air_type
 sand_type = air_type
+water_type = air_type
 
 if ARGV[0] == "draw"
 puts "draw"
@@ -29,34 +30,11 @@ puts "draw"
   slab = "stone_slab"
   debug_type = "glowstone"
   alt_type = "stonebrick"
-  #stair_type = "air"
   corner_type = "log"
   glass_type = "glass"
   sand_type = "sand"
+  water_type = "water"
 end
-
-=begin
-b = [0, -2, 0, type]
-puts painter.place(*b)
-
-b = [0, -1, 0, type]
-puts painter.place(*b)
-
-sleep 10
-
-5.times { |i|
-  #b = [0, i, 0, "air"]
-  #puts painter.place(*b)
-
-  b = [0, i, 0, "sand"]
-  puts painter.place(*b)
-
-  sleep 1
-
-  #b = [0, i - 1, 0, "air"]
-  #puts painter.place(*b)
-}
-=end
 
 x = 0
 y = 1
@@ -73,11 +51,37 @@ y = nil
 z = nil
 
 y = 0
-
 t = 0
+top_floor = 7
+arc_r = 37.0
 
-floors = 10
-per_floor = 5
+if false
+  ((top_floor)).times { |f|
+    y = top_floor - f
+    max_arc.times { |d|
+      a = (360 - d).to_f * (Math::PI / 180.to_f)
+      arc_r.to_i.times { |r|
+        x, z = painter.xy_from_angle_radius(a, r.to_f)
+     
+        floor_type = air_type
+        blocks << [x.to_i, y.to_i, z.to_i, floor_type]
+      }
+    }
+  }
+
+  blocks.uniq!
+
+  blocks.sort_by { |b| b[1] }.reverse.each_with_index { |b, i|
+    painter.place(*b)
+    if (i % 4000) == 0
+      puts "wtf"
+      sleep 1
+    end
+  }
+end
+
+arc_r = 30.0
+y = 0
 
 floors.times { |f|
 
@@ -98,6 +102,9 @@ floors.times { |f|
       window_mod += 1
     }
 
+    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 0.1)
+    blocks << [(x).to_i, y.to_i, z.to_i, type]
+
     x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 0.33)
     blocks << [(x).to_i, y.to_i, z.to_i, type]
 
@@ -115,7 +122,7 @@ floors.times { |f|
     ny = 0
     per_floor.times { |h|
       should_be_glass = (((((d + t).to_f + (8.0)).to_f / (18).to_f)).to_i % 2)
-      wall_type = (should_be_glass == 0) ? air_type : type
+      wall_type = (should_be_glass == 0) ? water_type : type
       blocks << [(x).to_i, y.to_i + (h + 1), z.to_i, wall_type]
       ny = y.to_i + (h + 1)
     }
@@ -148,12 +155,12 @@ max_arc.times { |d|
   }
 }
 
-blocks.sort_by { |b| b[1] }.uniq!
+blocks.uniq!
 
-blocks.sort_by { |b| b[0] }.each_with_index { |b, i|
+blocks.sort_by { |b| b[1] }.reverse.each_with_index { |b, i|
   painter.place(*b)
-  if (i % 1000) == 0
-    sleep 0.5
+  if (i % 4000) == 0
     puts "wtf"
+    sleep 1
   end
 }
