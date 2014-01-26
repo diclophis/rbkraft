@@ -53,7 +53,9 @@ z = nil
 y = 0
 t = 0
 
-floors = 1
+floors = 2
+winds = floors - 1
+upper_step = 22
 per_floor = 5
 
 top_floor = floors * per_floor
@@ -66,7 +68,6 @@ if false
       a = (360 - d).to_f * (Math::PI / 180.to_f)
       arc_r.to_i.times { |r|
         x, z = painter.xy_from_angle_radius(a, r.to_f)
-     
         floor_type = air_type
         blocks << [x.to_i, y.to_i, z.to_i, floor_type]
       }
@@ -86,94 +87,75 @@ if false
   exit
 end
 
-arc_r = 30
+arc_r = 20
 y = 0
 
 floors.times { |f|
 
   max_arc.times { |d|
-    a = d.to_f * (Math::PI / 180.to_f)
+    a = (d.to_f + 3.0) * (Math::PI / 180.to_f)
+    a_off = 0.334 * (Math::PI / 180.to_f)
+    a_inc = -a_off * 0.0
 
     window_mod = 0
 
-    (arc_r).to_i.times { |r|
-      off_r = 0.0
-      1.times { |o|
-        x, z = painter.xy_from_angle_radius(a + off_r, r.to_f)
-        if r > 9
-          floor_type = ((((r + 2) * 1) % 5) == 0) ? glow_type : type
+    #last_r = 0
+
+    (arc_r).times { |r|
+      if r >= 9
+        x, z = painter.xy_from_angle_radius(a + a_inc, r.to_f)
+        #last_r = r.to_f
+
+        1.times {
+          floor_type = ((((r + 2) * 1) % 3) == 0) ? glow_type : type
           blocks << [x.round, y.round, z.round, floor_type]
-        end
-        off_r += 0.33
-      }
+          a_inc += a_off
+        }
+      end
     }
 
-=begin
-    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 0.11)
-    blocks << [(x).to_i, y.to_i, z.to_i, glow_type]
+    #x, z = painter.xy_from_angle_radius(a, arc_r.to_f)
 
-    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 0.33)
-    blocks << [(x).to_i, y.to_i, z.to_i, type]
+    t = 6
 
-    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 0.66)
-    blocks << [(x).to_i, y.to_i, z.to_i, type]
-
-    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 0.99)
-    blocks << [(x).to_i, y.to_i, z.to_i, type]
-
-    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 1.0)
-    blocks << [(x).to_i, y.to_i, z.to_i, type]
-
-    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 1.33)
-    blocks << [(x).to_i, y.to_i, z.to_i, type]
-
-    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 1.66)
-    blocks << [(x).to_i, y.to_i, z.to_i, type]
-
-    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 2.0)
-    blocks << [(x).to_i, y.to_i, z.to_i, type]
-
-    x, z = painter.xy_from_angle_radius(a, arc_r.to_f + 2.25)
-    blocks << [(x).to_i, y.to_i, z.to_i, type]
-=end
-
-    x, z = painter.xy_from_angle_radius(a, arc_r)
+    should_be_glass = 1 #((a * 10.0).to_i % 2) #(((((d + t)) / (36))) % 2)
 
     ny = 0
     per_floor.times { |h|
-      should_be_glass = (((((d + t).to_f + (-0.1)).to_f / (18).to_f)).round % 2)
       wall_type = (should_be_glass == 0) ? air_type : type
-      blocks << [(x).to_i, y.to_i + (h + 1), z.to_i, wall_type]
-      ny = y.to_i + (h + 1)
+      blocks << [(x).round, y.round + (h + 1), z.round, wall_type]
+      ny = y.round + (h + 1)
     }
   }
 
   y += per_floor
 
-  arc_r -= 2.0
+  arc_r -= 1
 }
 
 x = 0
 oz = 0
 arc_r = 5.0
 
-max_arc = (360 * 5) + 23
+max_arc = (360 * winds) + upper_step
 
-max_arc.times { |d|
-  a = d.to_f * (Math::PI / 180.to_f)
+if true
+  max_arc.times { |d|
+    a = d.to_f * (Math::PI / 180.to_f)
 
-  5.times { |e|
-    x, z = painter.xy_from_angle_radius(a, arc_r + e.to_f)
+    5.times { |e|
+      x, z = painter.xy_from_angle_radius(a, arc_r + e.to_f)
 
-    s = 8.0
-    y = (((d % 360).to_f / 360.to_f) * s).to_i + ((d / 360) * s)
-    ny = ((((d + 25) % 360).to_f / 360.to_f) * s).to_i + ((d / 360) * s)
+      s = 5.0
+      y = (((d % 360).to_f / 360.to_f) * s).to_i + ((d / 360) * s)
+      ny = ((((d + 33) % 360).to_f / 360.to_f) * s).to_i + ((d / 360) * s)
 
-    step_type = (y == ny) ? slab : type
+      step_type = (y == ny) ? slab : type
 
-    blocks << [x.to_i, y.to_i, z.to_i, step_type]
+      blocks << [x.to_i, y.to_i, z.to_i, step_type]
+    }
   }
-}
+end
 
 blocks.uniq!
 
