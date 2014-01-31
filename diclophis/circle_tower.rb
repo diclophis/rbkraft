@@ -53,23 +53,23 @@ z = nil
 y = 0
 t = 0
 
-floors = 5
+floors = 15
 winds = floors - 1
 upper_step = 22
 per_floor = 5
 
-max_arc_r = 12
+max_arc_r = 20
 
 top_floor = floors * per_floor
 arc_r = max_arc_r + 10.0
 
-if true
+if false
   ((top_floor + 1)).times { |f|
     y = top_floor - f
     max_arc.times { |d|
       a = (360 - d).to_f * (Math::PI / 180.to_f)
       arc_r.to_i.times { |r|
-        x, z = painter.xy_from_angle_radius(a, r.to_f)
+        x, z = painter.xy_from_angle_radius(a.round, r.to_f)
         floor_type = air_type
         blocks << [x.to_i, y.to_i, z.to_i, floor_type]
       }
@@ -107,16 +107,17 @@ floors.times { |f|
 
     window_mod = 0
 
-    (arc_r + ((1.0 + Math.sin(d.to_f * 0.055)) * 4.0).to_i).times { |r|
+    #((1.0 + Math.sin(d.to_f * 0.055)) * 4.0).to_i
+    (arc_r).times { |r|
       if r >= 9
-        x, z = painter.xy_from_angle_radius(a + a_inc, r.to_f + r_off)
+        x, z = painter.xy_from_angle_radius((a + a_inc).to_f, (r.to_f + r_off).to_f)
 
         1.times {
           floor_type = ((((r + 2)) % 3) == 0) ? glow_type : type
 
-lx = x.floor
-ly = y.floor
-lz = z.floor
+lx = x.round
+ly = y.round
+lz = z.round
 
           blocks << [lx, ly, lz, floor_type]
           a_inc += a_off
@@ -126,12 +127,14 @@ lz = z.floor
 
     #x, z = painter.xy_from_angle_radius(a, arc_r.to_f)
 
-    if false
-      t = -17
-      should_be_glass = 0 #(((((d + t)) / (45))) % 2)
-      per_floor.times { |h|
+    if true
+      #t = -19 
+      #should_be_glass = (((((d + t)) / (45))) % 2)
+      #(per_floor - 1).times { |h|
+      should_be_glass = 1
+      1.times { |h|
         wall_type = (should_be_glass == 0) ? air_type : type
-        blocks << [lx, ly + (h), lz, wall_type]
+        blocks << [lx, ly + (h + 1), lz, wall_type]
       }
     end
   }
@@ -152,7 +155,7 @@ if true
     a = d.to_f * (Math::PI / 180.to_f)
 
     5.times { |e|
-      x, z = painter.xy_from_angle_radius(a, arc_r + e.to_f - 0.8)
+      x, z = painter.xy_from_angle_radius(a.to_f, arc_r + e.to_f - 0.8)
 
       s = 5.0
       y = (((d % 360).to_f / 360.to_f) * s).to_i + ((d / 360) * s)
@@ -160,7 +163,7 @@ if true
 
       step_type = (y == ny) ? slab : type
 
-      blocks << [x.to_i, y.to_i, z.to_i, step_type]
+      blocks << [x.round, y.round, z.round, step_type]
     }
   }
 end
