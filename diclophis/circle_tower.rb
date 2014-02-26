@@ -53,7 +53,7 @@ z = nil
 y = 0
 t = 0
 
-floors = 15
+floors = 10
 winds = floors - 1
 upper_step = 22
 per_floor = 5
@@ -97,9 +97,8 @@ ly = y
 lz = z
 
 floors.times { |f|
-
   max_arc.times { |d|
-    a = (d.to_f + 0.0) * (Math::PI / 180.to_f)
+    a = (d.to_f + 0.65) * (Math::PI / 180.to_f)
     a_off = 0.0 * (Math::PI / 180.to_f)
     a_inc = 0.0
 
@@ -107,7 +106,6 @@ floors.times { |f|
 
     window_mod = 0
 
-    #((1.0 + Math.sin(d.to_f * 0.055)) * 4.0).to_i
     (arc_r).times { |r|
       if r >= 9
         x, z = painter.xy_from_angle_radius((a + a_inc).to_f, (r.to_f + r_off).to_f)
@@ -115,17 +113,15 @@ floors.times { |f|
         1.times {
           floor_type = ((((r + 2)) % 3) == 0) ? glow_type : type
 
-lx = x.round
-ly = y.round
-lz = z.round
+          lx = x.round
+          ly = y.round
+          lz = z.round
 
           blocks << [lx, ly, lz, floor_type]
           a_inc += a_off
         }
       end
     }
-
-    #x, z = painter.xy_from_angle_radius(a, arc_r.to_f)
 
     if true
       #t = -19 
@@ -174,6 +170,6 @@ blocks.sort_by { |b| b[2] }.each_with_index { |b, i|
   painter.place(*b)
   if (i % 425) == 0
     puts "wtf"
-    sleep 0.75
+    sleep 0.55
   end
 }
