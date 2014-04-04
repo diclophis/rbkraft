@@ -106,6 +106,8 @@ floors.times { |f|
 
     window_mod = 0
 
+    arc_r = max_arc_r + (Math.sin(f) * 5.0).to_i
+
     (arc_r).times { |r|
       if r >= 9
         x, z = painter.xy_from_angle_radius((a + a_inc).to_f, (r.to_f + r_off).to_f)

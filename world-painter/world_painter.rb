@@ -74,6 +74,11 @@ class WorldPainter
     @debug
   end
 
+  def teleport(player, x, y, z)
+    puts cmd = "/tp #{player} #{x.to_i} #{y.to_i} #{z.to_i}"
+    execute(cmd)
+  end
+
   def place(x, y, z, thing = 'dirt', data = 0, mode = 'replace', data_tag = nil)
     thing = thing.is_a?(String) ? "minecraft:#{thing}" : thing
     set_block_command = "/setblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{thing} #{data} #{mode} #{data_tag}\n"
@@ -131,11 +136,21 @@ class WorldPainter
     end
   end
 
+#"/testforblock 9950 124 0 122"
+#"/testforblock 9950 125 0 122"
+#"/testforblock 9950 125 0 122"
+#"/testforblock 9950 124 0 122"
+#"/testforblock 9950 125 0 122"
+#"/testforblock 9950 124 0 122"
+#"/testforblock 9950 125 0 122"
+
   def ground(x, z, options = {})
     max = 126
     min = 0
+    mid = nil
 
-    while max >= min
+    tries = 0
+    while max >= min && (tries += 1) < 256
       mid = min + (max - min) / 2
 
       air = not_land?(x, mid - @center[1], z, options)
@@ -155,7 +170,7 @@ class WorldPainter
       end
     end
 
-    return nil
+    return mid
   end
 
   # Bresenham’s line drawing algorithm

@@ -15,6 +15,8 @@ class MinecraftClient
   end
 
   def execute_command(command_line)
+  puts command_line.inspect
+
     @server_io.puts(command_line)
     @server_io.flush
     command_result = ""
