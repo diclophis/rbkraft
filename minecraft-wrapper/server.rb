@@ -18,7 +18,7 @@ Signal.trap("INT") do
 end
 
 def select_sockets_that_require_action
-  select_timeout = 0.01
+  select_timeout = 10.0 #0.0001
   selectable_sockets = [$stdin, $minecraft_stdout, $server_io] + $clients.keys
   IO.select(selectable_sockets, nil, selectable_sockets, select_timeout)
 end

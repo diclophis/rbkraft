@@ -5,38 +5,20 @@ require 'socket'
 
 class MinecraftClient
   def initialize
-    #@select_timeout = 0.5 
-    #@max_response_count = 2
     connect
   end
 
   def connect
     @server_io = UNIXSocket.new("/tmp/minecraft-wrapper.sock")
+    @server_io.sync = true
   end
 
   def execute_command(command_line)
-  puts command_line.inspect
-
     @server_io.puts(command_line)
-    @server_io.flush
     command_result = ""
     blank = 0
 
     command_result = @server_io.gets
-
-=begin
-    begin
-      while command_output = @server_io.read_nonblock(1)
-        blank = 0
-        command_result += command_output
-        break if command_output == "\n"
-      end
-    rescue IO::WaitReadable => wait
-      IO.select([@server_io], nil, nil, @select_timeout)
-      blank += 1
-      retry unless blank > @max_response_count
-    end
-=end
 
     if command_line.include?("sand")
       sleep 0.6666
