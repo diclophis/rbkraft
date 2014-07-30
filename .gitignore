@@ -1,1 +1,10 @@
 *.deb
+
+minecraft-wrapper/banned-ips.json
+minecraft-wrapper/banned-players.json
+minecraft-wrapper/eula.txt
+minecraft-wrapper/logs/
+minecraft-wrapper/ops.json
+minecraft-wrapper/usercache.json
+minecraft-wrapper/whitelist.json
+minecraft-wrapper/world/
