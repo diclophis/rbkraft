@@ -37,3 +37,22 @@
 
 - name: clone mavencraft
   git: repo=git@github.com:mavenlink/mavencraft.git dest=~/mavencraft version=master
+
+- name: install minecraft world-dir
+  file: dest=/opt/minecraft state=directory
+
+- name: install minecraft config
+  copy: src={{ item }} dest=/opt/minecraft
+  with_items:
+    - banned-ips.json
+    - banned-players.json
+    - bukkit.yml
+    - commands.yml
+    - help.yml
+    - ops.json
+    - permissions.yml
+    - server.properties
+    - whitelist.json
+
+- name: install minecraft.sh
+  copy: src=minecraft.sh dest=/usr/bin/minecraft.sh mode=777
