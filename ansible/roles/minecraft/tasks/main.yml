@@ -1,0 +1,39 @@
+---
+- name: update and upgrade apt-get
+  sudo: true
+  apt: update_cache=true cache_valid_time=600
+
+- name: bootstrap python-apt package #NOTE: BBG OpenVZ base image does not include these
+  sudo: true
+  command: apt-get -y --force-yes install -o APT::Immediate-Configure=false python-minimal python-apt lzma
+
+# apt-get install -o APT::Immediate-Configure=false -f apt python-minimal
+- name: bootstrap apt package 2 #NOTE: BBG requires this
+  sudo: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+  command: apt-get -y --force-yes upgrade
+
+- name: ensure https support for apt is installed
+  sudo: true
+  apt: pkg=apt-transport-https state=present
+
+- name: install main system packages
+  apt: pkg={{ item }} state=latest
+  sudo: true
+  with_items:
+    - apt-transport-https
+    - vim
+    - git
+    - screen
+    - ruby1.9.3
+    - openjdk-7-jre
+
+- name: fetch bukkit
+  get_url: url="http://cbukk.it/craftbukkit-beta.jar" dest=/root/minecraft.jar mode=0440 sha256sum=44355482cf7ae9238ad91bddf9b0b7076d6b1c77
+
+- name: install github ssh host key
+  lineinfile: backup=true create=true dest=~/.ssh/known_hosts line="github.com,192.30.252.131 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" state=present
+
+- name: clone mavencraft
+  git: repo=git@github.com:mavenlink/mavencraft.git dest=~/mavencraft version=master
