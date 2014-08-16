@@ -27,9 +27,9 @@ def select_sockets_that_require_action
   IO.select(selectable_sockets, nil, selectable_sockets, select_timeout)
 end
 
-def accept_new_connection
-  client_io = $server_io.accept_nonblock
-  client_io.autoclose = true
+def accept_new_connection(client_io)
+  #client_io = $server_io.accept_nonblock
+  #client_io.autoclose = true
   $uid += 1
   $clients[client_io] = Client.new($uid)
   $stdout.puts(["accept", client_io, $clients[client_io]].inspect)
@@ -37,6 +37,8 @@ end
 
 #TODO: don't listen on command socket until server is fully booted
 $stdout.puts "started minecraft, server listening"
+
+accept_new_connection($stdin)
 
 while $running
   ready_for_reading, ready_for_writing, errored = select_sockets_that_require_action
@@ -49,7 +51,7 @@ while $running
           $stdout.puts [:non_request, $minecraft_stdout.readline].inspect
         end
       when $server_io # client is connecting over unix socket
-        accept_new_connection
+        accept_new_connection($server_io.accept_nonblock)
     else # client has request ready for reading
       command_line = io.gets
       if command_line
