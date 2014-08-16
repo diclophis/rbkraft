@@ -7,8 +7,9 @@ $stdout.puts ARGV.inspect
 
 $running = true
 $uid = 0
-$socket = "/tmp/minecraft-wrapper.sock"
-$server_io = UNIXServer.new($socket)
+#$socket = "/tmp/minecraft-wrapper.sock"
+#$server_io = UNIXServer.new($socket)
+$server_io = TCPServer.new(ENV["MAVENCRAFT_WRAPPER_PORT"])
 $minecraft_stdin, $minecraft_stdout, $minecraft_stderr, $minecraft_thread = Open3.popen3(ARGV[0], *ARGV[1..-1])
 $clients = Hash.new
 
