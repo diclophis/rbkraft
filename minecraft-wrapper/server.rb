@@ -32,7 +32,7 @@ def accept_new_connection
   client_io.autoclose = true
   $uid += 1
   $clients[client_io] = Client.new($uid)
-  $stdout.puts(["accept", $uid].inspect)
+  $stdout.puts(["accept", client_io, $clients[client_io]].inspect)
 end
 
 #TODO: don't listen on command socket until server is fully booted
@@ -54,24 +54,27 @@ while $running
       command_line = io.gets
       if command_line
         client = $clients[io]
-
-        if client.authentic
-          $minecraft_stdin.write(command_line)
-          command_output = $minecraft_stdout.gets
-          out_io = (io == $stdin) ? $stdout : io
-          begin
-            wrote = out_io.write(command_output)
-          rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-            $stdout.puts ["quit on epipe", $clients[io], closed].inspect
-            $clients.delete(io)
+        if client
+          if client.authentic
+            $minecraft_stdin.write(command_line)
+            command_output = $minecraft_stdout.gets
+            out_io = (io == $stdin) ? $stdout : io
+            begin
+              wrote = out_io.write(command_output)
+            rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
+              $stdout.puts ["quit on epipe", $clients[io], closed].inspect
+              $clients.delete(io)
+            end
+          else
+            client.authentic = command_line.strip == "/authentic"
+            unless client.authentic
+              $stdout.puts ["quit on un-authentic...!", $clients[io], command_line].inspect
+              io.close
+              $clients.delete(io)
+            end
           end
         else
-          client.authentic = command_line.strip == "/authentic"
-          unless client.authentic
-            $stdout.puts ["quit on un-authentic...!", $clients[io], command_line].inspect
-            io.close
-            $clients.delete(io)
-          end
+          puts ["not found", $clients, io].inspect
         end
       else
         $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
