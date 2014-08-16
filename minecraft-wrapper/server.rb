@@ -69,6 +69,7 @@ while $running
           client.authentic = command_line.strip == "/authentic"
           unless client.authentic
             $stdout.puts ["quit on un-authentic...!", $clients[io], command_line].inspect
+            io.close
             $clients.delete(io)
           end
         end
@@ -93,6 +94,6 @@ unless $minecraft_stdout.eof?
 end
 
 $minecraft_thread.join
-File.unlink($socket)
+#File.unlink($socket)
 
 $stdout.puts "exited"
