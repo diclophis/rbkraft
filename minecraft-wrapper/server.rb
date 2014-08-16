@@ -18,6 +18,9 @@ Signal.trap("INT") do
   $running = false
 end
 
+class Client < Struct.new(:uid, :authentic) 
+end
+
 def select_sockets_that_require_action
   select_timeout = 10.0 #0.0001
   selectable_sockets = [$stdin, $minecraft_stdout, $server_io] + $clients.keys
@@ -28,7 +31,7 @@ def accept_new_connection
   client_io = $server_io.accept_nonblock
   client_io.autoclose = true
   $uid += 1
-  $clients[client_io] = $uid
+  $clients[client_io] = Client.new($uid)
   $stdout.puts(["accept", $uid].inspect)
 end
 
@@ -50,14 +53,24 @@ while $running
     else # client has request ready for reading
       command_line = io.gets
       if command_line
-        $minecraft_stdin.write(command_line)
-        command_output = $minecraft_stdout.gets
-        out_io = (io == $stdin) ? $stdout : io
-        begin
-          wrote = out_io.write(command_output)
-        rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-          $stdout.puts ["quit on epipe", $clients[io], closed].inspect
-          $clients.delete(io)
+        client = $clients[io]
+
+        if client.authentic
+          $minecraft_stdin.write(command_line)
+          command_output = $minecraft_stdout.gets
+          out_io = (io == $stdin) ? $stdout : io
+          begin
+            wrote = out_io.write(command_output)
+          rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
+            $stdout.puts ["quit on epipe", $clients[io], closed].inspect
+            $clients.delete(io)
+          end
+        else
+          client.authentic = command_line.strip == "/authentic"
+          unless client.authentic
+            $stdout.puts ["quit on un-authentic...!", $clients[io], command_line].inspect
+            $clients.delete(io)
+          end
         end
       else
         $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
