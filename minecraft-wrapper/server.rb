@@ -13,7 +13,6 @@ Signal.trap("INT") do
   $minecraft_stdin.write("stop\n")
   $stdout.puts("exiting...")
 end
-Process.setpgrp
 
 $minecraft_stdin, $minecraft_stdout, $minecraft_stderr, $minecraft_thread = Open3.popen3(ARGV[0], *ARGV[1..-1])
 
@@ -23,13 +22,13 @@ class Client < Struct.new(:uid, :authentic)
 end
 
 def select_sockets_that_require_action
-  select_timeout = 1.0
+  select_timeout = 10.0
   selectable_sockets = [$stdin, $minecraft_stdout, $server_io] + $clients.keys
   IO.select(selectable_sockets, nil, selectable_sockets, select_timeout)
 end
 
 def accept_new_connection(client_io, authentic = nil)
-  client_io.autoclose = true
+  #client_io.autoclose = true
   $clients[client_io] = Client.new($uid, authentic)
   $uid += 1
   $stdout.puts(["accept", client_io, $clients[client_io]].inspect)
@@ -57,7 +56,7 @@ while $running
       command_line = nil
       begin
         command_line = io.read_nonblock(1024) #io.gets
-      rescue Errno::EAGAIN => e
+      rescue Errno::EAGAIN, Errno::EIO => e
         would_block = true
       end
 
@@ -78,11 +77,11 @@ while $running
 
             begin
               wrote = out_io.write(command_output)
-              out_io.flush
-              $stdout.flush
-              $stdin.flush
-              $minecraft_stdout.flush
-              $minecraft_stdin.flush
+              #out_io.flush
+              #$stdout.flush
+              #$stdin.flush
+              #$minecraft_stdout.flush
+              #$minecraft_stdin.flush
             rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
               $stdout.puts ["quit on epipe", $clients[io], closed].inspect
               $clients.delete(io)
