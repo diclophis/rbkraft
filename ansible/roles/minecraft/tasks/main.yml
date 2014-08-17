@@ -28,6 +28,20 @@
     - screen
     - ruby1.9.3
     - openjdk-7-jre
+    - python-imaging
+    - python-numpy
+    - python-pil
+    - liblapack3
+    - libgfortran3
+    - libwebp5
+    - libwebpmux1
+    - nginx
+
+- name: fetch overviewer
+  get_url: url="http://overviewer.org/builds/952/overviewer-0.11.164-deb64.deb" dest=/root/ mode=0440 sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
+
+- name: install overviewer
+  shell: dpkg -i /root/overviewer-0.11.164-deb64.deb
 
 - name: fetch bukkit
   get_url: url="http://cbukk.it/craftbukkit-beta.jar" dest=/root/minecraft.jar mode=0440 sha256sum=44355482cf7ae9238ad91bddf9b0b7076d6b1c77
@@ -58,6 +72,9 @@
 
 - name: install minecraft.sh
   copy: src=minecraft.sh dest=/usr/bin/minecraft.sh mode=777
+
+- name: install minecraft backup
+  file: dest=/opt/backup state=directory
 
 #- name: fetch DragonTravel
 #  get_url: url="http://dev.bukkit.org/media/files/809/608/DragonTravel.jar" dest=/tmp mode=0440
