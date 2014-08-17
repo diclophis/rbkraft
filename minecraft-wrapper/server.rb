@@ -56,7 +56,7 @@ while $running
       command_line = nil
       begin
         command_line = io.read_nonblock(1024) #io.gets
-      rescue Errno::EAGAIN, Errno::EIO => e
+      rescue Errno::EAGAIN, Errno::EIO, EOFError => e
         would_block = true
       end
 
