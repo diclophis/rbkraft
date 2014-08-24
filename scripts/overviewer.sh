@@ -4,6 +4,8 @@
 
 set -e
 
+screen -r minecraft -x -p 0 -X stuff "say GEN MAP\n"
+
 BACKUP_BASE=/opt/backup
 LAST_BACKUP=`ls -1tr $BACKUP_BASE | tail -n 1`
 
@@ -25,3 +27,5 @@ overviewer.py -v --config ~/mavencraft/scripts/overviewerConfig.py
 #--rendermodes=smooth-lighting,smooth-night $FULL_BACKUP $FULL_MAP
 
 #sh ~/mavencraft/scripts/film.sh
+
+screen -r minecraft -x -p 0 -X stuff "say MAP DONE\n"

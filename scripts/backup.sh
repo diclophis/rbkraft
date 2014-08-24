@@ -20,3 +20,5 @@ sleep 1
 screen -r minecraft -x -p 0 -X stuff "save-on\n"
 
 sh ~/mavencraft/scripts/overviewer.sh
+
+find /opt/backup -maxdepth 1 -type d -ctime +2 | xargs rm -rf
