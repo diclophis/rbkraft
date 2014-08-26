@@ -47,62 +47,74 @@ while $running
       when $minecraft_stdout # minecraft bootup output
         $running = !$minecraft_stdout.eof?
         if $running
-          $stdout.puts [:non_request, $minecraft_stdout.readline].inspect
+          broadcast_line = $minecraft_stdout.readline
+          $stdout.puts [:non_request, broadcast_line].inspect
+          $clients.each_key { |a_io|
+            begin
+              wrote = a_io.write(broadcast_line) unless a_io == $stdin
+            rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
+              $stdout.puts ["quit on epipe in broadcast", $clients[a_io], closed].inspect
+              $clients.delete(a_io)
+              a_io.close unless (a_io.closed? || a_io == $stdin)
+            end
+          }
         end
       when $server_io # client is connecting over unix socket
         accept_new_connection($server_io.accept_nonblock)
     else # client has request ready for reading
       would_block = false
+      would_close = false
       command_line = nil
       begin
-        command_line = io.read_nonblock(1024) #io.gets
-      rescue Errno::EAGAIN, Errno::EIO, EOFError => e
+        command_lines = io.read_nonblock(1024) #io.gets
+      rescue Errno::EAGAIN, Errno::EIO
         would_block = true
+      rescue EOFError => e
+        would_close = true
       end
 
-      if command_line
-        client = $clients[io]
-        if client
-          if client.authentic
-            command_output = nil
-            out_io = (io == $stdin) ? $stdout : io
+      if command_lines
+        command_lines.split("\n").each { |command_line|
+          client = $clients[io]
+          if client
+            if client.authentic
+              command_output = nil
+              out_io = (io == $stdin) ? $stdout : io
 
-            begin
-              $minecraft_stdin.write(command_line)
-              command_output = $minecraft_stdout.gets
-            rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-              $stdout.puts ["server quit on epipe", closed].inspect
-              break
-            end
+              begin
+                $minecraft_stdin.puts(command_line)
+                command_output = $minecraft_stdout.gets
+              rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
+                $stdout.puts ["server quit on epipe", closed].inspect
+                break
+              end
 
-            begin
-              wrote = out_io.write(command_output)
-              #out_io.flush
-              #$stdout.flush
-              #$stdin.flush
-              #$minecraft_stdout.flush
-              #$minecraft_stdin.flush
-            rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-              $stdout.puts ["quit on epipe", $clients[io], closed].inspect
-              $clients.delete(io)
-              io.close unless (io.closed? || io == $stdin)
+              begin
+                wrote = out_io.write(command_output)
+              rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
+                $stdout.puts ["quit on epipe", $clients[io], closed].inspect
+                $clients.delete(io)
+                io.close unless (io.closed? || io == $stdin)
+              end
+            else
+              client.authentic = command_line.strip == "authentic"
+              unless client.authentic
+                $stdout.puts ["quit on un-authentic...!", $clients[io], command_line].inspect
+                $clients.delete(io)
+                io.close unless (io.closed? || io == $stdin)
+              end
             end
           else
-            client.authentic = command_line.strip == "authentic"
-            unless client.authentic
-              $stdout.puts ["quit on un-authentic...!", $clients[io], command_line].inspect
-              $clients.delete(io)
-              io.close unless (io.closed? || io == $stdin)
-            end
+            $stdout.puts ["not found", $clients, io].inspect
           end
-        else
-          $stdout.puts ["not found", $clients, io].inspect
-        end
+        }
       else
         unless would_block
-          $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
-          $clients.delete(io)
-          io.close unless (io.closed? || io == $stdin)
+          if would_close
+            $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
+            $clients.delete(io)
+            io.close unless (io.closed? || io == $stdin)
+          end
         end
       end
     end
