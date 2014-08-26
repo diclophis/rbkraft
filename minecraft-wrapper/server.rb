@@ -69,7 +69,7 @@ while $running
         command_lines = io.read_nonblock(1024) #io.gets
       rescue Errno::EAGAIN, Errno::EIO
         would_block = true
-      rescue EOFError => e
+      rescue Errno::ECONNRESET, EOFError => e
         would_close = true
       end
 

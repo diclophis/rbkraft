@@ -31,6 +31,10 @@ class MinecraftClient
     return command_result
   end
 
+  def gets
+    @server_io.gets
+  end
+
   def disconnect
     @server_io.close if @server_io && !@server_io.closed?
   end

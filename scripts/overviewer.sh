@@ -6,7 +6,7 @@ set -e
 
 while true;
 do
-  screen -r minecraft -x -p 0 -X stuff "say GEN MAP\n"
+  #screen -r minecraft -x -p 0 -X stuff "say GEN MAP\n"
 
   #BACKUP_BASE=/opt/backup
   #LAST_BACKUP=`ls -1tr $BACKUP_BASE | tail -n 1`
@@ -26,5 +26,5 @@ do
 
   #sh ~/mavencraft/scripts/film.sh
 
-  screen -r minecraft -x -p 0 -X stuff "say MAP DONE\n"
+  #screen -r minecraft -x -p 0 -X stuff "say MAP DONE\n"
 done
