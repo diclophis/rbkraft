@@ -81,18 +81,18 @@ class WorldPainter
 
   def place(x, y, z, thing = 'dirt', data = 0, mode = 'replace', data_tag = nil)
     thing = thing.is_a?(String) ? "minecraft:#{thing}" : thing
-    set_block_command = "/setblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{thing} #{data} #{mode} #{data_tag}\n"
+    set_block_command = "setblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{thing} #{data} #{mode} #{data_tag}\n"
     execute set_block_command
   end
 
   def summon(x, y, z, thing = 'air', data_tag = '')
     # summon_command = "/summon #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} minecraft:#{thing} #{data_tag}\n"
-    summon_command = "/summon #{thing} #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{data_tag}\n"
+    summon_command = "summon #{thing} #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{data_tag}\n"
     execute summon_command
   end
 
   def test(x, y, z)
-    execute("/testforblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} 122")[/\d+ is (.*?) \(/, 1]
+    execute("testforblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} 122")[/\d+ is (.*?) \(/, 1]
   end
 
   def air?(x, y, z)

@@ -22,7 +22,7 @@ class Client < Struct.new(:uid, :authentic)
 end
 
 def select_sockets_that_require_action
-  select_timeout = 10.0
+  select_timeout = 0.01
   selectable_sockets = [$stdin, $minecraft_stdout, $server_io] + $clients.keys
   IO.select(selectable_sockets, nil, selectable_sockets, select_timeout)
 end
@@ -56,7 +56,7 @@ while $running
       command_line = nil
       begin
         command_line = io.read_nonblock(1024) #io.gets
-      rescue Errno::EAGAIN, Errno::EIO => e
+      rescue Errno::EAGAIN, Errno::EIO, EOFError => e
         would_block = true
       end
 
