@@ -201,7 +201,7 @@ class WorldPainter
             id = evaluate(options[:id])
             data = evaluate(options[:data], 0)
             options[:before_each].call(p.x+xw, p.y+yw, p.z+zw) if options[:before_each]
-            place p.x+xw, p.y+yw, p.z+zw, id, data
+            puts place p.x+xw, p.y+yw, p.z+zw, id, data
             options[:after_each].call(p.x+xw, p.y+yw, p.z+zw) if options[:after_each]
           end
         end

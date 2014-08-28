@@ -2,17 +2,15 @@
 
 require_relative '../world-painter/world_painter.rb'
 
-print "x, y, z: "
+print "player: "
 STDOUT.flush
-x, y, z = gets.strip.split(/[^\d]+/).map(&:to_i)
-if Vector.new(x,y,z).magnitude < 10_000
-  puts "Too close to spawn!"
-  exit 1
-end
+player = gets.strip
+exit unless player.length > 0
 
 speed = 1
-p = WorldPainter.new(x, y, z)
+p = WorldPainter.new(19_747, 72, 20_000)
+p.center = p.player_position(player)
 
 300.times do |i|
-  p.summon 0, 10, 0, 'PrimedTnt', "{Fuse:#{(rand * 50 + 10).to_i},Motion:[#{rand * speed - speed/2.0},#{(rand * speed) - speed/2.0},#{(rand * speed) - speed/2.0}]}"
+  puts p.summon 0, 10, 0, 'PrimedTnt', "{Fuse:#{(rand * 50 + 10).to_i},Motion:[#{rand * speed - speed/2.0},#{(rand * speed) - speed/2.0},#{(rand * speed) - speed/2.0}]}"
 end

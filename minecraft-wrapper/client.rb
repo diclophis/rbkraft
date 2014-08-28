@@ -17,16 +17,12 @@ class MinecraftClient
   end
 
   def execute_command(command_line)
-  puts [command_line].inspect
+    puts [command_line].inspect
     @server_io.puts(command_line)
     command_result = ""
     blank = 0
 
     command_result = @server_io.gets
-
-    #if command_line.include?("sand")
-    #  sleep 0.6666
-    #end
 
     return command_result
   end
