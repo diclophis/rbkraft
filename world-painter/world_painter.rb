@@ -76,7 +76,7 @@ class WorldPainter
 
     @dry_run = options[:dry_run]
     @debug = options[:debug]
-    @client = MinecraftClient.new
+    @client = MinecraftClient.new(options[:async_client])
   end
 
   def dry_run?

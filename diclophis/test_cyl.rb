@@ -10,7 +10,7 @@ oy = 63
 #63 is water
 oz = 19900
 
-painter = DiclophisWorldPainter.new(ox, oy, oz, { :async_client => true})
+painter = DiclophisWorldPainter.new(ox, oy, oz)
 
 blocks = Array.new
 
@@ -40,27 +40,17 @@ if ARGV[0] == "draw"
   water_type = "water"
 end
 
-#while true do
-
   x, y, z = painter.player_position("diclophis")
-  painter.center[0] = x - 1
-  painter.center[1] = y + 5
-  painter.center[2] = z - 1
+  painter.center[0] = x
+  painter.center[1] = y
+  painter.center[2] = z
 
   puts [x, y, z].inspect
 
-  ph = 10
-  pw = 10
-  pd = 10
-  bd = 0
-  ph.times { |i|
-    (pw).times { |x|
-      (pd).times { |z|
-        painter.place(-x, -bd - i, -z, sand_type)
-      }
-    }
-  }
+  cl = 2
+  cr = 10
 
-  sleep 2
+  365.times { |d|
+    xy = painter.xy_from_angle_radius(d/
 
-#end
+  
