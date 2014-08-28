@@ -66,7 +66,7 @@ while $running
       would_close = false
       command_line = nil
       begin
-        command_lines = io.read_nonblock(1024) #io.gets
+        command_lines = io.read_nonblock(4096) #io.gets
       rescue Errno::EAGAIN, Errno::EIO
         would_block = true
       rescue Errno::ECONNRESET, EOFError => e
@@ -82,7 +82,7 @@ while $running
               out_io = (io == $stdin) ? $stdout : io
 
               begin
-                $minecraft_stdin.puts(command_line)
+                $minecraft_stdin.puts(command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, ''))
                 command_output = $minecraft_stdout.gets
               rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
                 $stdout.puts ["server quit on epipe", closed].inspect
