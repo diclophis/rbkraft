@@ -70,7 +70,7 @@ while $running
         command_lines = io.read_nonblock(4096 * 4) #io.gets
       rescue Errno::EAGAIN, Errno::EIO
         would_block = true
-      rescue Errno::ECONNRESET, EOFError => e
+      rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
         would_close = true
       end
       
@@ -128,8 +128,10 @@ while $running
         unless would_block
           if would_close
             $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
-            $clients.delete(io)
-            io.close unless (io.closed? || io == $stdin)
+            unless io == $stdin
+              $clients.delete(io)
+              io.close unless (io.closed?)
+            end
           end
         end
       end
