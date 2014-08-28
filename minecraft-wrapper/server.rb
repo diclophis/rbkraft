@@ -62,27 +62,29 @@ while $running
       when $server_io # client is connecting over unix socket
         accept_new_connection($server_io.accept_nonblock)
     else # client has request ready for reading
+
       would_block = false
       would_close = false
       command_line = nil
       begin
-        command_lines = io.read_nonblock(1024) #io.gets
+        command_lines = io.read_nonblock(4096 * 4) #io.gets
       rescue Errno::EAGAIN, Errno::EIO
         would_block = true
-      rescue Errno::ECONNRESET, EOFError => e
+      rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
         would_close = true
       end
+      
+      client = $clients[io]
 
       if command_lines
         command_lines.split("\n").each { |command_line|
-          client = $clients[io]
           if client
             if client.authentic
               command_output = nil
               out_io = (io == $stdin) ? $stdout : io
 
               begin
-                $minecraft_stdin.puts(command_line)
+                $minecraft_stdin.puts(command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, ''))
                 command_output = $minecraft_stdout.gets
               rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
                 $stdout.puts ["server quit on epipe", closed].inspect
@@ -91,29 +93,45 @@ while $running
 
               begin
                 wrote = out_io.write(command_output)
-              rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-                $stdout.puts ["quit on epipe", $clients[io], closed].inspect
-                $clients.delete(io)
-                io.close unless (io.closed? || io == $stdin)
+              rescue IOError, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
+                $stdout.puts ["quit on epipe", io, $clients[io], closed].inspect
+                unless io == $stdin
+                  $clients.delete(io)
+                  io.close unless io.closed?
+                end
               end
             else
               client.authentic = command_line.strip == "authentic"
               unless client.authentic
                 $stdout.puts ["quit on un-authentic...!", $clients[io], command_line].inspect
-                $clients.delete(io)
-                io.close unless (io.closed? || io == $stdin)
+                unless io == $stdin
+                  $clients.delete(io)
+                  io.close unless io.closed?
+                end
               end
             end
           else
-            $stdout.puts ["not found", $clients, io].inspect
+            #["not found", {#<IO:<STDIN>>=>#<struct Client uid=0, authentic=true>}, #<TCPSocket:(closed)>]
+            if io == $stdin
+              $stdout.puts ["WTF", $clients].inspect
+            else
+              if io.closed?
+                $clients.delete(io)
+                $stdout.puts ["INTERUP CLOSED", $clients, io].inspect
+              else
+                $stdout.puts ["not found", $clients, io].inspect
+              end
+            end
           end
         }
       else
         unless would_block
           if would_close
             $stdout.puts ["quit on eof/econnreset...???", $clients[io]].inspect
-            $clients.delete(io)
-            io.close unless (io.closed? || io == $stdin)
+            unless io == $stdin
+              $clients.delete(io)
+              io.close unless (io.closed?)
+            end
           end
         end
       end

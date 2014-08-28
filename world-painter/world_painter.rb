@@ -105,7 +105,12 @@ class WorldPainter
   end
 
   def test(x, y, z)
-    execute("testforblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} 122")[/\d+ is (.*?) \(/, 1]
+    result = execute("testforblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} 0", /The block at|Successfully found the block/)
+    if result =~ /Successfully found the block/
+      'air'
+    else
+      result[/\d+ is (.*?) \(/, 1].downcase
+    end
   end
 
   def air?(x, y, z)
@@ -128,12 +133,12 @@ class WorldPainter
     @debug = old_debug
   end
 
-  def execute(cmd)
+  def execute(cmd, pattern = nil)
     if dry_run?
       puts cmd
     else
       puts cmd if debug?
-      output = @client.execute_command(cmd)
+      output = @client.execute_command(cmd, pattern)
       puts output if debug?
       output
     end
@@ -148,14 +153,6 @@ class WorldPainter
       end
     end
   end
-
-#"/testforblock 9950 124 0 122"
-#"/testforblock 9950 125 0 122"
-#"/testforblock 9950 125 0 122"
-#"/testforblock 9950 124 0 122"
-#"/testforblock 9950 125 0 122"
-#"/testforblock 9950 124 0 122"
-#"/testforblock 9950 125 0 122"
 
   def ground(x, z, options = {})
     max = 126
@@ -201,7 +198,7 @@ class WorldPainter
             id = evaluate(options[:id])
             data = evaluate(options[:data], 0)
             options[:before_each].call(p.x+xw, p.y+yw, p.z+zw) if options[:before_each]
-            place p.x+xw, p.y+yw, p.z+zw, id, data
+            puts place p.x+xw, p.y+yw, p.z+zw, id, data
             options[:after_each].call(p.x+xw, p.y+yw, p.z+zw) if options[:after_each]
           end
         end
