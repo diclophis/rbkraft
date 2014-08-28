@@ -10,7 +10,7 @@ oy = 63
 #63 is water
 oz = 19900
 
-painter = DiclophisWorldPainter.new(ox, oy, oz)
+painter = DiclophisWorldPainter.new(ox, oy, oz, { :async_client => true})
 
 blocks = Array.new
 
@@ -43,9 +43,9 @@ end
 #while true do
 
   x, y, z = painter.player_position("diclophis")
-  painter.center[0] = x
-  painter.center[1] = y
-  painter.center[2] = z
+  painter.center[0] = x - 1
+  painter.center[1] = y + 5
+  painter.center[2] = z - 1
 
   puts [x, y, z].inspect
 
