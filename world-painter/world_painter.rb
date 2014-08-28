@@ -9,10 +9,15 @@ require_relative '../minecraft-wrapper/client.rb'
 class Vector
   attr_accessor :x, :y, :z
 
-  def initialize(x, y, z, debug = false)
+  def initialize(x, y = nil, z = nil, debug = false)
     @x = x
     @y = y
     @z = z
+
+    if @x.is_a?(Array)
+      @x, @y, @z = @x
+    end
+
     @debug = debug
   end
 
@@ -59,8 +64,16 @@ class Vector
 end
 
 class WorldPainter
+  attr_accessor :center
+
   def initialize(centerX, centerY, centerZ, options = {})
     @center = [centerX, centerY, centerZ]
+
+    if Vector.new(@center).magnitude < 10_000
+      puts "Too close to spawn!"
+      exit 1
+    end
+
     @dry_run = options[:dry_run]
     @debug = options[:debug]
     @client = MinecraftClient.new
@@ -75,7 +88,7 @@ class WorldPainter
   end
 
   def teleport(player, x, y, z)
-    puts cmd = "/tp #{player} #{x.to_i} #{y.to_i} #{z.to_i}"
+    cmd = "/tp #{player} #{x.to_i} #{y.to_i} #{z.to_i}"
     execute(cmd)
   end
 
@@ -202,5 +215,22 @@ class WorldPainter
     else
       something || default
     end
+  end
+
+  def xy_from_angle_radius(angle, radius)
+    [Math.cos(angle) * radius, Math.sin(angle) * radius]
+  end
+
+  def player_position(player_name)
+    position = []
+    execute("getpos #{player_name}")
+    while line = @client.gets
+      [:x, :y, :z].each do |c|
+        position << (line.split(" ")[3].gsub(",", "")).to_f if line.include?(c.to_s.upcase + ": ")
+      end
+      break if line.include?("Pitch")
+    end
+
+    position
   end
 end

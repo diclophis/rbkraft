@@ -9,7 +9,7 @@ class MinecraftClient
   end
 
   def connect
-    @server_io = TCPSocket.new("localhost", 25566) #UNIXSocket.new("/tmp/minecraft-wrapper.sock")
+    @server_io = TCPSocket.new("mavencraft.net", 25566) #UNIXSocket.new("/tmp/minecraft-wrapper.sock")
     @server_io.sync = true
     @server_io.puts("authentic")
     @server_io.flush
@@ -17,16 +17,11 @@ class MinecraftClient
   end
 
   def execute_command(command_line)
-  puts [command_line].inspect
     @server_io.puts(command_line)
     command_result = ""
     blank = 0
 
     command_result = @server_io.gets
-
-    #if command_line.include?("sand")
-    #  sleep 0.6666
-    #end
 
     return command_result
   end
@@ -44,7 +39,7 @@ if __FILE__ == $0
   begin
     client = MinecraftClient.new
     while command_line = $stdin.readline
-      puts client.execute_command(command_line)
+      client.execute_command(command_line)
     end
   rescue EOFError => closed
     client.disconnect

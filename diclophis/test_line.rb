@@ -43,7 +43,7 @@ pd = ph * 2
 bd = 10
 
 ph.times { |i|
-  (pw - (i * 2)).times { |x|
+  (pw - (i * 3)).times { |x|
     (pd - (i * 2)).times { |z|
       puts painter.place(-x - i, i - bd, -z - i, sandstone_type)
     }

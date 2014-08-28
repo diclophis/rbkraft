@@ -84,7 +84,7 @@ def tree(p, x, y, z, options = {})
       if leafWidth > 0 
         leafWidth.times do |i|
           leafWidth.times do |j|
-            p.place x - leafWidth/2 + i, y + k, z - leafWidth/2 + j, *(options[:remove] ? ['air', 0] : ['leaves', 0])
+            puts p.place x - leafWidth/2 + i, y + k, z - leafWidth/2 + j, *(options[:remove] ? ['air', 0] : ['leaves', 0])
           end
         end
       end
@@ -93,18 +93,16 @@ def tree(p, x, y, z, options = {})
     if k < height - 3
       trunkWidth.times do |i|
         trunkWidth.times do |j|
-          p.place x - trunkWidth/2 + i, y + k, z - trunkWidth/2 + j, *(options[:remove] ? ['air', 0] : ['wood', 0])
+          puts p.place x - trunkWidth/2 + i, y + k, z - trunkWidth/2 + j, *(options[:remove] ? ['air', 0] : ['log', 0])
         end
       end
-    end
-
-    if k == height - 1 && options[:fire]
-      p.place x, y + k, z, 'fire'
     end
   end
 end
 
-p = WorldPainter.new(10_000, 62, 0)
+p = WorldPainter.new(20_050, 65, 19_960)
+
+tree(p, 10, 0, 10)
 
 # Repair area:
 if false
