@@ -9,10 +9,15 @@ require_relative '../minecraft-wrapper/client.rb'
 class Vector
   attr_accessor :x, :y, :z
 
-  def initialize(x, y, z, debug = false)
+  def initialize(x, y = nil, z = nil, debug = false)
     @x = x
     @y = y
     @z = z
+
+    if @x.is_a?(Array)
+      @x, @y, @z = @x
+    end
+
     @debug = debug
   end
 
@@ -63,6 +68,12 @@ class WorldPainter
 
   def initialize(centerX, centerY, centerZ, options = {})
     @center = [centerX, centerY, centerZ]
+
+    if Vector.new(@center).magnitude < 10_000
+      puts "Too close to spawn!"
+      exit 1
+    end
+
     @dry_run = options[:dry_run]
     @debug = options[:debug]
     @client = MinecraftClient.new
