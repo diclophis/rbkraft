@@ -9,7 +9,7 @@ class MinecraftClient
   end
 
   def connect
-    @server_io = TCPSocket.new("localhost", 25566) #UNIXSocket.new("/tmp/minecraft-wrapper.sock")
+    @server_io = TCPSocket.new("mavencraft.net", 25566) #UNIXSocket.new("/tmp/minecraft-wrapper.sock")
     @server_io.sync = true
     @server_io.puts("authentic")
     @server_io.flush
