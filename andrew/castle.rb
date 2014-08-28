@@ -5,8 +5,8 @@ require_relative '../world-painter/world_painter.rb'
 class Castle
   attr_accessor :painter
 
-  def initialize(x,y,z, options = {})
-    @painter = WorldPainter.new(x, y, z, options)
+  def initialize(painter, options = {})
+    @painter = painter
   end
 
   def torches(mod = 2, options = {})
@@ -40,14 +40,14 @@ class Castle
    while x != end_pos.x || z != end_pos.z
      baseline = 0
 
-     width.times do |w|
+     width.to_i.times do |w|
        px = x + perp.x * w
        pz = z + perp.z * w
        y = painter.ground(px, pz, :ignore => ignore)
        baseline = y if w == 0
        baselined_height = [baseline - y, 0].max + height
 
-       baselined_height.times do |h|
+       baselined_height.to_i.times do |h|
          painter.place px, y + h, pz, options[:remove] ? 'air' : 'stonebrick'
        end
 
@@ -70,7 +70,9 @@ end
 
 if __FILE__ == $0
   remove = false
-  painter = Castle.new(9845, 81, 192, :debug => true)
+
+  painter = WorldPainter.new(19_747, 72, 20_031)
+  painter = Castle.new(painter, :debug => true)
   painter.wall(Vector.new(0, 0, 0), Vector.new(70, 0, 0), :remove => remove)
   painter.wall(Vector.new(0, 0, 0), Vector.new(0, 0, -50), :remove => remove)
   painter.wall(Vector.new(2, 0, 0), Vector.new(2, 0, 50), :remove => remove)
