@@ -2,4 +2,4 @@ Stuff for Minecraft
 ===================
 
 
-![image](EXAMPLE.png)
+![image](images/EXAMPLE.png)
