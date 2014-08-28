@@ -19,7 +19,8 @@ class MinecraftClient
 
   def execute_command(command_line)
     @server_io.puts(command_line)
-    puts read || 'Timeout::Error Unable to read from socket.'
+    output = read
+    puts output.empty? ? 'Timeout::Error Unable to read from socket.' : output
   end
 
   def gets
