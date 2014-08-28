@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
 
-require './diclophis/diclophis_world_painter'
+$: << "."
+$: << "../"
+
+require 'diclophis_world_painter'
 
 ox = 19900
 oy = 63
@@ -39,30 +42,25 @@ end
 
 #while true do
 
-  x, y, z = painter.player_position
+  x, y, z = painter.player_position("diclophis")
   painter.center[0] = x
   painter.center[1] = y
   painter.center[2] = z
 
   puts [x, y, z].inspect
 
-  #puts painter.place(0, , 0, type)
-
-=begin
-  painter = DiclophisWorldPainter.new(x, y - 2, z)
-
-  ph = rand(10) + 10
-  pw = rand(7) + 10
-  pd = rand(5) + 10
-  bd = 10
+  ph = 10
+  pw = 10
+  pd = 10
+  bd = 0
   ph.times { |i|
     (pw).times { |x|
       (pd).times { |z|
-        puts painter.place(-x, -i, -z, type)
+        painter.place(-x, -bd - i, -z, sand_type)
       }
     }
   }
 
   sleep 2
-=end
+
 #end

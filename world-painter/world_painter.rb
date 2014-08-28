@@ -77,7 +77,7 @@ class WorldPainter
   end
 
   def teleport(player, x, y, z)
-    puts cmd = "/tp #{player} #{x.to_i} #{y.to_i} #{z.to_i}"
+    cmd = "/tp #{player} #{x.to_i} #{y.to_i} #{z.to_i}"
     execute(cmd)
   end
 

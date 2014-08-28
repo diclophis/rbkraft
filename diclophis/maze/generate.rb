@@ -2,28 +2,58 @@
 
 # generate a orthogonal maze and paints it in the world
 
-require 'theseus'
-require './diclophis/diclophis_world_painter'
+$: << "../"
+$: << "../../"
 
-off = 33
-ox = 10000 - off
-oy = 62 # 62 is water
-oz = 26
+require 'theseus'
+require 'diclophis_world_painter'
+
+ox = 20000
+oy = 64
+oz = 20000
 
 max_cell = 1
 
-sand_type = "sand"
 air_type = "air"
-water_type = "water"
-path_type = "grass"
-torch_type = "torch"
+type = air_type
+debug_type = air_type
+alt_type = air_type
+corner_type = air_type 
+slab = air_type 
+glass_type = air_type
+glow_type = air_type
+sand_type = air_type
+sandstone_type = air_type
+water_type = air_type
+path_type = air_type
+torch_type = air_type
+
+if ARGV[0] == "draw"
+  puts "draw"
+  type = "stone"
+  glow_type = "glowstone"
+  slab = "stone_slab"
+  debug_type = "glowstone"
+  alt_type = "stonebrick"
+  corner_type = "log"
+  glass_type = "glass"
+  sand_type = "sand"
+  sandstone_type = "sandstone"
+  water_type = "water"
+  path_type = "grass"
+  torch_type = "torch"
+end
 
 painter = DiclophisWorldPainter.new(ox, oy, oz)
+x, y, z = painter.player_position("diclophis")
+painter.center[0] = x
+painter.center[1] = y
+painter.center[2] = z
 
 blocks = Array.new
 
 if false
-  seed = 1387921741 #Time.now.to_i
+  seed = 1387921741
   puts seed
   Random.srand(seed)
 else
