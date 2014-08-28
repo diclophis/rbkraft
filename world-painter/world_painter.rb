@@ -88,7 +88,7 @@ class WorldPainter
   end
 
   def teleport(player, x, y, z)
-    puts cmd = "/tp #{player} #{x.to_i} #{y.to_i} #{z.to_i}"
+    cmd = "/tp #{player} #{x.to_i} #{y.to_i} #{z.to_i}"
     execute(cmd)
   end
 
@@ -105,7 +105,12 @@ class WorldPainter
   end
 
   def test(x, y, z)
-    execute("testforblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} 122")[/\d+ is (.*?) \(/, 1]
+    result = execute("testforblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} 0", /The block at|Successfully found the block/)
+    if result =~ /Successfully found the block/
+      'air'
+    else
+      result[/\d+ is (.*?) \(/, 1].downcase
+    end
   end
 
   def air?(x, y, z)
@@ -128,12 +133,12 @@ class WorldPainter
     @debug = old_debug
   end
 
-  def execute(cmd)
+  def execute(cmd, pattern = nil)
     if dry_run?
       puts cmd
     else
       puts cmd if debug?
-      output = @client.execute_command(cmd)
+      output = @client.execute_command(cmd, pattern)
       puts output if debug?
       output
     end
@@ -148,14 +153,6 @@ class WorldPainter
       end
     end
   end
-
-#"/testforblock 9950 124 0 122"
-#"/testforblock 9950 125 0 122"
-#"/testforblock 9950 125 0 122"
-#"/testforblock 9950 124 0 122"
-#"/testforblock 9950 125 0 122"
-#"/testforblock 9950 124 0 122"
-#"/testforblock 9950 125 0 122"
 
   def ground(x, z, options = {})
     max = 126

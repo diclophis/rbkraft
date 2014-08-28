@@ -16,15 +16,25 @@ class MinecraftClient
     sleep 1
   end
 
-  def execute_command(command_line)
-    puts [command_line].inspect
+  def execute_command(command_line, pattern = nil)
+    start_time = Time.now
+
     @server_io.puts(command_line)
     command_result = ""
     blank = 0
 
-    command_result = @server_io.gets
+    if pattern
+      while line = @server_io.gets
+        command_result << line
+        if line =~ pattern || Time.now > start_time + 5
+          break
+        end
+      end
+    else
+      command_result = @server_io.gets
+    end
 
-    return command_result
+    command_result
   end
 
   def gets
@@ -40,7 +50,7 @@ if __FILE__ == $0
   begin
     client = MinecraftClient.new
     while command_line = $stdin.readline
-      puts client.execute_command(command_line)
+      client.execute_command(command_line)
     end
   rescue EOFError => closed
     client.disconnect
