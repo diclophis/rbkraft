@@ -2,6 +2,7 @@
 
 require 'open3'
 require 'socket'
+require 'timeout'
 
 class MinecraftClient
   def initialize
@@ -18,16 +19,28 @@ class MinecraftClient
 
   def execute_command(command_line)
     @server_io.puts(command_line)
-    command_result = ""
-    blank = 0
-
-    command_result = @server_io.gets
-
-    return command_result
+    puts read || 'Timeout::Error Unable to read from socket.'
   end
 
   def gets
     @server_io.gets
+  end
+
+  def read
+    output = ''
+    timed_out = false
+
+    while not timed_out do
+      begin
+        Timeout::timeout(0.5) {
+          output += gets
+        }
+      rescue Timeout::Error
+        timed_out = true
+      end
+    end
+
+    output
   end
 
   def disconnect
