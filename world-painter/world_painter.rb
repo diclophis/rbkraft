@@ -59,6 +59,8 @@ class Vector
 end
 
 class WorldPainter
+  attr_accessor :center
+
   def initialize(centerX, centerY, centerZ, options = {})
     @center = [centerX, centerY, centerZ]
     @dry_run = options[:dry_run]
@@ -202,5 +204,22 @@ class WorldPainter
     else
       something || default
     end
+  end
+
+  def xy_from_angle_radius(angle, radius)
+    [Math.cos(angle) * radius, Math.sin(angle) * radius]
+  end
+
+  def player_position(player_name)
+    position = []
+    execute("getpos #{player_name}")
+    while line = @client.gets
+      [:x, :y, :z].each do |c|
+        position << (line.split(" ")[3].gsub(",", "")).to_f if line.include?(c.to_s.upcase + ": ")
+      end
+      break if line.include?("Pitch")
+    end
+
+    position
   end
 end

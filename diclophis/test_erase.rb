@@ -7,7 +7,7 @@ oy = 63
 #63 is water
 oz = 19900
 
-painter_a = DiclophisWorldPainter.new(ox, oy, oz)
+painter = DiclophisWorldPainter.new(ox, oy, oz)
 
 blocks = Array.new
 
@@ -37,9 +37,18 @@ if ARGV[0] == "draw"
   water_type = "water"
 end
 
-while true do
-  x, y, z = painter_a.player_position
+#while true do
 
+  x, y, z = painter.player_position
+  painter.center[0] = x
+  painter.center[1] = y
+  painter.center[2] = z
+
+  puts [x, y, z].inspect
+
+  #puts painter.place(0, , 0, type)
+
+=begin
   painter = DiclophisWorldPainter.new(x, y - 2, z)
 
   ph = rand(10) + 10
@@ -55,4 +64,5 @@ while true do
   }
 
   sleep 2
-end
+=end
+#end
