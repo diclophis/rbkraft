@@ -93,7 +93,7 @@ while $running
 
               begin
                 wrote = out_io.write(command_output)
-              rescue IOError, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
+              rescue Errno::ECONNRESET, IOError, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
                 $stdout.puts ["quit on epipe", io, $clients[io], closed].inspect
                 unless io == $stdin
                   $clients.delete(io)
