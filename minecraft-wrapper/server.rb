@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+READ_CHUNKS=4096
+
 require 'open3'
 require 'socket'
 
@@ -47,17 +49,31 @@ while $running
       when $minecraft_stdout # minecraft bootup output
         $running = !$minecraft_stdout.eof?
         if $running
-          broadcast_line = $minecraft_stdout.readline
-          $stdout.puts [:non_request, broadcast_line].inspect
-          $clients.each_key { |a_io|
-            begin
-              wrote = a_io.write(broadcast_line) unless a_io == $stdin
-            rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-              $stdout.puts ["quit on epipe in broadcast", $clients[a_io], closed].inspect
-              $clients.delete(a_io)
-              a_io.close unless (a_io.closed? || a_io == $stdin)
-            end
-          }
+          broadcast_lines = nil
+          begin
+            broadcast_lines = $minecraft_stdout.read_nonblock(READ_CHUNKS)
+          rescue Errno::EAGAIN, Errno::EIO
+            puts "ok"
+          rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
+            puts "WTF!!!!"
+          end
+          if broadcast_lines
+            broadcast_lines.gsub!("\b", "")
+            broadcast_lines.gsub(" ", "")
+            #$stdout.puts [:non_request, broadcast_lines.length < 256 ? broadcast_lines : broadcast_lines.length, :sent_to, $clients.keys.length].inspect
+            $clients.each_key { |a_io|
+              begin
+                wrote = a_io.write(broadcast_lines) unless a_io == $stdin
+              rescue Errno::ECONNRESET, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
+                $stdout.puts ["quit on epipe in broadcast", $clients[a_io], closed].inspect
+                unless a_io == $stdin
+                  $clients.delete(a_io)
+                  a_io.close unless (a_io.closed?)
+                end
+                  #|| a_io == $stdin)
+              end
+            }
+          end
         end
       when $server_io # client is connecting over unix socket
         accept_new_connection($server_io.accept_nonblock)
@@ -68,35 +84,58 @@ while $running
       command_line = nil
       command_line_framing_even = false
       begin
-        command_lines = io.read_nonblock(4096 * 32) #io.gets
+        command_lines = io.read_nonblock(READ_CHUNKS) #io.gets
         if command_lines && command_lines.length > 0 && command_lines[command_lines.length - 1] == "\n"
           command_line_framing_even = true
         end
       rescue Errno::EAGAIN, Errno::EIO
         would_block = true
-      rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
+      rescue IOError, Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
         would_close = true
       end
       
       client = $clients[io]
 
       if command_lines
-        all_lines = command_lines.split("\n")
+      #double = false
+
+
+        all_lines = command_lines.include?("\n") ? (command_lines.split("\n")) : []
         if client
-          if client.left_over_command
-            puts "got some left over " + client.left_over_command.length.to_s
-            all_lines[0] = client.left_over_command + all_lines[0]
-            client.left_over_command = nil
+          #puts [:line, command_lines, client.left_over_command].inspect
+          if client.left_over_command #&& all_lines[0]
+            #puts "got some left over %d %d" % [command_lines.length, client.left_over_command.length]
+            if command_lines[0] == "\n"
+              #puts "DOUBLE!"
+              #double = true
+              #all_lines[0] = client.left_over_command + "\n" + all_lines[0]
+              all_lines.unshift(client.left_over_command)
+              client.left_over_command = nil
+            else
+              if all_lines[0]
+                all_lines[0] = client.left_over_command + all_lines[0]
+                client.left_over_command = nil
+              else
+                #puts "how?"
+              end
+            end
           end
 
           unless command_line_framing_even
-            client.left_over_command = all_lines.pop
+            if command_lines.include?("\n")
+            #puts "pop stash", all_lines.length
+                client.left_over_command ||= ""
+                client.left_over_command += all_lines.pop
+            else
+              client.left_over_command ||= ""
+              client.left_over_command += command_lines
+            end
           end
         end
+        #puts [:loop, all_lines.length].inspect
         all_lines.each { |command_line|
           if client
             if command_line.strip == "async"
-              puts "got async!!!!"
               client.async = true
               next
             end
@@ -105,9 +144,16 @@ while $running
               out_io = (io == $stdin) ? $stdout : io
 
               begin
-                $minecraft_stdin.puts(command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, ''))
-                command_output = $minecraft_stdout.gets.strip
-                command_output = nil if client.async
+                actual_sent_line = command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
+                if (actual_sent_line && actual_sent_line.length > 0)
+                  #puts [:exec, actual_sent_line].inspect
+                  $minecraft_stdin.puts(actual_sent_line)
+                  if client.async
+                    $minecraft_stdout.gets
+                  else
+                    command_output = $minecraft_stdout.gets.strip
+                  end
+                end
               rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
                 $stdout.puts ["server quit on epipe", closed].inspect
                 break
