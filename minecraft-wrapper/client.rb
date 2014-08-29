@@ -18,6 +18,23 @@ class MinecraftClient
     @server_io.flush
   end
 
+  def flush_async
+    if async
+      signal = Time.now.to_f.to_s
+      @server_io.puts("say the signal is #{signal}")
+      while true
+        sleep 0.1
+        begin
+          read = @server_io.read_nonblock(1024)
+          puts read
+          break if read.include?(signal)
+        rescue Errno::EAGAIN, Errno::EIO
+          false
+        end
+      end
+    end
+  end
+
   def execute_command(command_line, pattern = nil)
     start_time = Time.now
 
@@ -25,7 +42,7 @@ class MinecraftClient
 
     if async
       begin
-        @server_io.read_nonblock(1024)
+        puts @server_io.read_nonblock(1024)
       rescue Errno::EAGAIN, Errno::EIO
         false # would_block = true
       end
