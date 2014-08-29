@@ -18,7 +18,7 @@ $minecraft_stdin, $minecraft_stdout, $minecraft_stderr, $minecraft_thread = Open
 
 $clients = Hash.new
 
-class Client < Struct.new(:uid, :authentic) 
+class Client < Struct.new(:uid, :authentic, :async, :left_over_command)
 end
 
 def select_sockets_that_require_action
@@ -66,8 +66,12 @@ while $running
       would_block = false
       would_close = false
       command_line = nil
+      command_line_framing_even = false
       begin
-        command_lines = io.read_nonblock(4096 * 4) #io.gets
+        command_lines = io.read_nonblock(4096 * 32) #io.gets
+        if command_lines && command_lines.length > 0 && command_lines[command_lines.length - 1] == "\n"
+          command_line_framing_even = true
+        end
       rescue Errno::EAGAIN, Errno::EIO
         would_block = true
       rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
@@ -77,22 +81,42 @@ while $running
       client = $clients[io]
 
       if command_lines
-        command_lines.split("\n").each { |command_line|
+        all_lines = command_lines.split("\n")
+        if client
+          if client.left_over_command
+            puts "got some left over " + client.left_over_command.length.to_s
+            all_lines[0] = client.left_over_command + all_lines[0]
+            client.left_over_command = nil
+          end
+
+          unless command_line_framing_even
+            client.left_over_command = all_lines.pop
+          end
+        end
+        all_lines.each { |command_line|
           if client
+            if command_line.strip == "async"
+              puts "got async!!!!"
+              client.async = true
+              next
+            end
             if client.authentic
               command_output = nil
               out_io = (io == $stdin) ? $stdout : io
 
               begin
                 $minecraft_stdin.puts(command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, ''))
-                command_output = $minecraft_stdout.gets
+                command_output = $minecraft_stdout.gets.strip
+                command_output = nil if client.async
               rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
                 $stdout.puts ["server quit on epipe", closed].inspect
                 break
               end
 
               begin
-                wrote = out_io.write(command_output)
+                if command_output && command_output.length 
+                  wrote = out_io.puts(command_output)
+                end
               rescue Errno::ECONNRESET, IOError, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
                 $stdout.puts ["quit on epipe", io, $clients[io], closed].inspect
                 unless io == $stdin
