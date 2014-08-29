@@ -14,8 +14,27 @@ class MinecraftClient
   def connect
     @server_io = TCPSocket.new("mavencraft.net", 25566)
     @server_io.sync = true
-    @server_io.puts("authentic")
+    if async
+      @server_io.puts("authentic\nasync")
+    else
+      @server_io.puts("authentic")
+    end
     @server_io.flush
+  end
+
+  def flush_async
+    if async
+      signal = Time.now.to_f.to_s
+      @server_io.puts("say the signal is #{signal}")
+      while true
+        sleep 0.1
+        begin
+          break if @server_io.read_nonblock(1024 * 12).include?(signal)
+        rescue Errno::EAGAIN, Errno::EIO
+          false
+        end
+      end
+    end
   end
 
   def execute_command(command_line, pattern = nil)
@@ -25,7 +44,7 @@ class MinecraftClient
 
     if async
       begin
-        @server_io.read_nonblock(1024)
+        @server_io.read_nonblock(1024 * 12)
       rescue Errno::EAGAIN, Errno::EIO
         false # would_block = true
       end
