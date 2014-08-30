@@ -43,6 +43,3 @@ while true
     previous_position = ground_position
   end
 end
-
-
-
