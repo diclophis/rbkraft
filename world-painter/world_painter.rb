@@ -9,16 +9,16 @@ require_relative '../minecraft-wrapper/client.rb'
 class Vector
   attr_accessor :x, :y, :z
 
-  def initialize(x, y = nil, z = nil, debug = false)
-    if x.is_a?(Array)
-      @x, @y, @z = x
-    elsif @x.is_a?(Vector)
-      @x, @y, @z = x.x, x.y, x.z
+  def initialize(*args)
+    if args.first.is_a?(Array)
+      @x, @y, @z = args.first
+    elsif args.first.is_a?(Vector)
+      @x, @y, @z = args.first.to_a
     else
-      @x, @y, @z = x, y, z
+      @x, @y, @z = args
     end
 
-    @debug = debug
+    @x, @y, @z = @x.to_i, @y.to_i, @z.to_i
   end
 
   def -(v)
@@ -37,10 +37,6 @@ class Vector
     Vector.new(x*c, y*c, z*c)
   end
 
-  def ==(c)
-    x == c.x && y == c.y && z == c.z
-  end
-
   def length
     Math.sqrt(x*x + y*y + z*z)
   end
@@ -55,16 +51,67 @@ class Vector
   end
 
   def max
-    [x, y, z].max
+    to_a.max
   end
 
   def round
     Vector.new(x.round, y.round, z.round)
   end
+
+  def to_a
+    [x, y, z]
+  end
+
+  def [](index)
+    to_a[index]
+  end
+
+  def ==(c)
+    c && c.is_a?(Vector) && x == c.x && y == c.y && z == c.z
+  end
+
+  # For hash behavior to work the way we want, we need to override #hash and #eql?.
+
+  def hash
+    to_a.hash
+  end
+
+  alias eql? ==
 end
 
 class WorldPainter
   attr_accessor :center
+
+  TYPE_MAPPINGS = {
+    'wood' => 'log',
+    'stone' => 'stone',
+    'tile.dirt.name' => 'dirt',
+    'grass block' => 'grass',
+    'grass' => 'tallgrass',
+    'glass' => 'glass',
+    'air' => 'air',
+    'tile.sand.name' => 'sand',
+    'wooden planks' => 'planks',
+    'leaves' => 'leaves',
+    'water' => 'water',
+    'torch' => 'torch',
+    'sandstone' => 'sandstone',
+    'coal' => 'coal_ore',
+    'gravel' => 'gravel',
+    'mushroom' => 'brown_mushroom',
+    'iron ore' => 'iron_ore',
+    'farmland' => 'farmland',
+    'oak wood stairs' => 'oak_stairs',
+    'cobblestone' => 'cobblestone',
+    'wooden planks' => 'planks',
+    'crops' => 'wheat',
+    'crafting table' => 'crafting_table',
+    'fence' => 'fence',
+    'wooden door' => 'wooden_door',
+    'chest' => 'chest',
+    'furnace' => 'furnace',
+    'fence gate' => 'fence_gate'
+  }
 
   def initialize(center_x, center_y, center_z, options = {})
     @center = Vector.new(center_x, center_y, center_z)
@@ -78,6 +125,20 @@ class WorldPainter
     @debug = options[:debug]
     @async = options[:async_client]
     @client = MinecraftClient.new(@async)
+  end
+
+  def async
+    original_async = @async
+    set_async true
+    yield
+  ensure
+    flush_async
+    set_async original_async
+  end
+
+  def set_async(new_value)
+    @async = new_value
+    @client.async = new_value
   end
 
   def flush_async
@@ -97,7 +158,14 @@ class WorldPainter
     execute(cmd)
   end
 
-  def place(x, y, z, thing = 'dirt', data = 0, mode = 'replace', data_tag = nil)
+  # x, y, z, thing = 'dirt', data = 0, mode = 'replace', data_tag = nil
+  def place(*args)
+    if args.first.is_a?(Vector)
+      x, y, z = args.shift.to_a
+      thing, data, mode, data_tag = args
+    else
+      x, y, z, thing, data, mode, data_tag = args
+    end
     thing = thing.is_a?(String) ? "minecraft:#{thing}" : thing
     set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing} #{data} #{mode} #{data_tag}"
     execute set_block_command
@@ -108,7 +176,8 @@ class WorldPainter
     execute summon_command
   end
 
-  def test(x, y, z)
+  def test(x, y = nil, z = nil)
+    x, y, z = x.to_a if x.is_a?(Vector)
     result = execute("testforblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} 0", /The block at|Successfully found the block/)
     if result =~ /Successfully found the block/
       'air'
@@ -168,9 +237,9 @@ class WorldPainter
       mid = min + (max - min) / 2
 
       air = not_land?(x, mid - @center.y, z, options)
-      airDown = not_land?(x, mid - 1 - @center.y, z, options)
+      air_down = not_land?(x, mid - 1 - @center.y, z, options)
 
-      if air && !airDown
+      if air && !air_down
         return mid - @center.y
       end
 
@@ -184,7 +253,7 @@ class WorldPainter
       end
     end
 
-    return mid
+    mid
   end
 
   # Bresenham’s line drawing algorithm
@@ -193,7 +262,7 @@ class WorldPainter
     p = p1
     d = p2-p1
     n = d.abs.max
-    s = d/n.to_f;
+    s = d/n.to_f
     n.times do
       p = p+s
       (options[:xwidth] || options[:width] || 1).times do |xw|
@@ -232,6 +301,6 @@ class WorldPainter
       break if line.include?("Pitch")
     end
 
-    position
+    Vector.new(position)
   end
 end
