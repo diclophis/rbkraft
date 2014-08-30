@@ -17,25 +17,25 @@ while true
   ground_position = new_pos + Vector.new(0, -1, 0)
   if ground_position != previous_position
     floor_tiles = []
-    (-2).upto(2) do |x|
-      (-2).upto(2) do |z|
+    (-3).upto(3) do |x|
+      (-3).upto(3) do |z|
         floor_tiles << ground_position + Vector.new(x, 0, z)
       end
     end
 
-    floor_tiles.each do |tile|
-      memory[tile] ||= painter.test(tile)
+    painter.bulk_test(floor_tiles - memory.keys).each do |tile, type|
+      memory[tile] = type
     end
 
     painter.async do
-      floor_tiles.each do |tile|
-        if memory[tile] == 'air'
+      (floor_tiles - previous_floor_tiles).each do |tile|
+        if memory[tile] == 'air' || memory[tile] == 'glass'
           painter.place tile, 'glass'
         end
       end
 
       (previous_floor_tiles - floor_tiles).each do |tile|
-        painter.place tile, 'air' if memory[tile] == 'air'
+        painter.place tile, 'air' if memory[tile] == 'air' || memory[tile] == 'glass'
       end
     end
 

@@ -29,12 +29,22 @@ class MinecraftClient
       while true
         sleep 0.05
         begin
-          break if @server_io.read_nonblock(1024 * 12).include?(signal)
+          break if read_nonblock.include?(signal)
         rescue Errno::EAGAIN, Errno::EIO
           false
         end
       end
     end
+  end
+
+  def puts(line)
+    @server_io.puts(line)
+  end
+
+  def read_nonblock
+    @server_io.read_nonblock(1024 * 12)
+  rescue Errno::EAGAIN, Errno::EIO
+    ''
   end
 
   def execute_command(command_line, pattern = nil)
@@ -43,11 +53,7 @@ class MinecraftClient
     @server_io.puts(command_line)
 
     if async
-      begin
-        @server_io.read_nonblock(1024 * 12)
-      rescue Errno::EAGAIN, Errno::EIO
-        false # would_block = true
-      end
+      read_nonblock
     else
       command_result = ""
       blank = 0

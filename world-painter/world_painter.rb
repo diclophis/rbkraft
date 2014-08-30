@@ -186,6 +186,46 @@ class WorldPainter
     end
   end
 
+  # [00:49:57 INFO]: The block at 19563,70,20394 is Grass Block (expected: tile.air.name).
+  # [00:49:55 INFO]: Successfully found the block at 19558,70,20391.
+  TEST_REGEX = /Successfully found the block at (\d+),(\d+),(\d+)\.|The block at (\d+),(\d+),(\d+) is (.*?) \(/
+  def bulk_test(vectors)
+    vectors.each do |vector|
+      @client.puts("testforblock #{@center.x + vector.x} #{@center.y + vector.y} #{@center.z + vector.z} 0")
+    end
+
+    search = vectors.inject({}) { |m, v| m[v.to_a.join(',')] = v; m } # turn vectors into { "1,2,3" => Vector, "2,3,4" => Vector, ... }
+    output = {}
+    last_server_data = ''
+
+    while true
+      server_data = last_server_data + @client.read_nonblock
+      server_data.scan(TEST_REGEX).each do |match|
+        if match[0]
+          x,y,z = match
+          type = 'air'
+        else
+          _,_,_,x,y,z,type = match
+        end
+
+        x = x.to_i - @center.x
+        y = y.to_i - @center.y
+        z = z.to_i - @center.z
+
+        search_result = search.delete([x,y,z].join(','))
+        output[search_result] = type.downcase if search_result
+      end
+
+      break if search.empty?
+
+      last_server_data = server_data.split(TEST_REGEX).last || ''
+
+      sleep 0.05
+    end
+
+    output
+  end
+
   def air?(x, y, z)
     without_debug do
       !!(test(x, y, z) =~ /\bair\b/)
