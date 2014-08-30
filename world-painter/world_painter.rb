@@ -10,12 +10,12 @@ class Vector
   attr_accessor :x, :y, :z
 
   def initialize(x, y = nil, z = nil, debug = false)
-    @x = x
-    @y = y
-    @z = z
-
-    if @x.is_a?(Array)
-      @x, @y, @z = @x
+    if x.is_a?(Array)
+      @x, @y, @z = x
+    elsif @x.is_a?(Vector)
+      @x, @y, @z = x.x, x.y, x.z
+    else
+      @x, @y, @z = x, y, z
     end
 
     @debug = debug
@@ -66,10 +66,10 @@ end
 class WorldPainter
   attr_accessor :center
 
-  def initialize(centerX, centerY, centerZ, options = {})
-    @center = [centerX, centerY, centerZ]
+  def initialize(center_x, center_y, center_z, options = {})
+    @center = Vector.new(center_x, center_y, center_z)
 
-    if Vector.new(@center).magnitude < 10_000
+    if @center.magnitude < 10_000
       puts "Too close to spawn!"
       exit 1
     end
@@ -99,18 +99,17 @@ class WorldPainter
 
   def place(x, y, z, thing = 'dirt', data = 0, mode = 'replace', data_tag = nil)
     thing = thing.is_a?(String) ? "minecraft:#{thing}" : thing
-    set_block_command = "setblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{thing} #{data} #{mode} #{data_tag}"
+    set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing} #{data} #{mode} #{data_tag}"
     execute set_block_command
   end
 
   def summon(x, y, z, thing = 'air', data_tag = '')
-    # summon_command = "/summon #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} minecraft:#{thing} #{data_tag}"
-    summon_command = "summon #{thing} #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{data_tag}"
+    summon_command = "summon #{thing} #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{data_tag}"
     execute summon_command
   end
 
   def test(x, y, z)
-    result = execute("testforblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} 0", /The block at|Successfully found the block/)
+    result = execute("testforblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} 0", /The block at|Successfully found the block/)
     if result =~ /Successfully found the block/
       'air'
     else
@@ -168,11 +167,11 @@ class WorldPainter
     while max >= min && (tries += 1) < 256
       mid = min + (max - min) / 2
 
-      air = not_land?(x, mid - @center[1], z, options)
-      airDown = not_land?(x, mid - 1 - @center[1], z, options)
+      air = not_land?(x, mid - @center.y, z, options)
+      airDown = not_land?(x, mid - 1 - @center.y, z, options)
 
       if air && !airDown
-        return mid - @center[1]
+        return mid - @center.y
       end
 
       # [126, 50, 88]
