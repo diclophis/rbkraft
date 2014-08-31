@@ -142,7 +142,6 @@ class WorldPainter
     original_async = @async
     set_async true
     yield
-  ensure
     flush_async
     set_async original_async
   end
@@ -199,7 +198,7 @@ class WorldPainter
 
   # [00:49:57 INFO]: The block at 19563,70,20394 is Grass Block (expected: tile.air.name).
   # [00:49:55 INFO]: Successfully found the block at 19558,70,20391.
-  TEST_REGEX = /Successfully found the block at (\d+),(\d+),(\d+)\.|The block at (\d+),(\d+),(\d+) is (.*?) \(/
+  TEST_REGEX = /Successfully found the block at ([\d-]+),([\d-]+),([\d-]+)\.|The block at ([\d-]+),([\d-]+),([\d-]+) is (.*?) \(/
   def bulk_test(vectors)
     vectors.each do |vector|
       @client.puts("testforblock #{@center.x + vector.x} #{@center.y + vector.y} #{@center.z + vector.z} 0")
@@ -211,6 +210,7 @@ class WorldPainter
 
     while true
       server_data = last_server_data + @client.read_nonblock
+      puts server_data if debug?
       server_data.scan(TEST_REGEX).each do |match|
         if match[0]
           x,y,z = match
@@ -253,7 +253,6 @@ class WorldPainter
     old_debug = @debug
     @debug = false
     yield
-  ensure
     @debug = old_debug
   end
 
