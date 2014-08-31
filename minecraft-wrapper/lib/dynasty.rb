@@ -82,7 +82,9 @@ class Dynasty
 
     ios.each do |io|
       #puts [:sent_ios, io, DynastyIO.send_io2(replacement, io)].inspect
-      puts [:sent_ios, io, replacement.send_io(io)].inspect
+      if io
+        puts [:sent_ios, io, replacement.send_io(io)].inspect
+      end
     end
 
     #puts [:sent_leader, socket.fileno, DynastyIO.send_io2(replacement, socket)]

@@ -20,16 +20,14 @@ end
 
 puts [:ios, descriptors].inspect
 
-ruling = true
-while ruling
+running = true
+while running
   select_timeout = 0.001
-  selectable_sockets = [leader] + wrapper.descriptors
+  selectable_sockets = [leader] + wrapper.selectable_descriptors
   readable, writable, errored = IO.select(selectable_sockets, selectable_sockets, selectable_sockets, select_timeout)
 
-  readable && readable.each do |needs_reading|
-    case needs_reading
-      when leader
-        ruling = Dynasty.rule(leader, descriptors)
-    end
+  if readable
+    running = Dynasty.rule(leader, wrapper.descriptors) if readable.include?(leader)
+    wrapper.handle_descriptors_requiring_reading(readable)
   end
 end
