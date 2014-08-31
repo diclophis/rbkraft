@@ -1,20 +1,19 @@
 #!/usr/bin/env ruby
 
-$: << "."
-$: << "./lib"
+$: << File.dirname(__FILE__)
+$: << File.dirname(__FILE__) + '/lib'
 
 require 'dynasty'
 require 'dynasty_io'
 require 'wrapper'
 
-leader, descriptors = Dynasty.server
+leader, descriptors = Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
 wrapper = Wrapper.new(descriptors)
 
 while wrapper.running
-  select_timeout = 0.001
   selectable_sockets = [leader] + wrapper.selectable_descriptors
-  readable, writable, errored = IO.select(selectable_sockets, selectable_sockets, selectable_sockets, select_timeout)
+  readable, _writable, _errored = IO.select(selectable_sockets, nil, selectable_sockets, ENV["SELECT_TIMEOUT"] || (1.0 / 60.0))
 
   if readable
     if readable.include?(leader)

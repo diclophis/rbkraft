@@ -14,17 +14,23 @@
 # https://blog.jcoglan.com/2012/07/29/your-first-ruby-native-extension-c/
 
 class Dynasty
-  def self.socket_file
-    "/tmp/minecraft.sock"
-  end
-
-  def self.server
+  def self.server(socket_file, force_start = false)
     socket = nil
     ios = []
 
     if File.exists?(socket_file)
-      socket = UNIXSocket.new(socket_file)
-    else
+      begin
+        socket = UNIXSocket.new(socket_file)
+      rescue Errno::ECONNREFUSED => e
+      end
+    end
+
+    if socket == nil
+      if File.exists?(socket_file)
+        raise "server exists, force to continue" unless force_start
+        File.unlink(socket_file)
+      end
+
       socket = UNIXServer.new(socket_file)
     end
 
@@ -46,19 +52,22 @@ class Dynasty
     last = nil
     begin
       # NOTE: undocumented second option to recv_io !!!
-      while io = socket.recv_io(UNIXServer)
+      types = [IO, IO, IO, TCPServer, UNIXServer]
+      while io = socket.recv_io(types[ios.length])
       #while io = DynastyIO.recv_io2(socket)
-        puts [:gots, io].inspect
+      #  break unless io > 0
+      #  io = types[ios.length].for_fd(io)
+      #  puts [:gots, io].inspect
         ios << io
       end
     rescue => e
-      puts e.class.inspect
-      puts e.inspect
+      # puts e.class.inspect
+      # puts e.inspect
     end
 
     last = ios.pop
 
-    puts [:grabbed, last, ios.length].inspect
+    #puts [:grabbed, last, ios.length].inspect
 
     if last.respond_to?(:fileno)
       last
@@ -83,14 +92,15 @@ class Dynasty
     end
 
     ios.each do |io|
-      #puts [:sent_ios, io, DynastyIO.send_io2(replacement, io)].inspect
-      if io
-        puts [:sent_ios, io, replacement.send_io(io)].inspect
-      end
+      #if io
+      #  puts [:sent_ios, io, DynastyIO.send_io2(replacement, io)].inspect
+      #end
+
+      replacement.send_io(io) if io
     end
 
     #puts [:sent_leader, socket.fileno, DynastyIO.send_io2(replacement, socket)]
-    puts [:sent_leader, socket.fileno, replacement.send_io(socket)]
+    replacement.send_io(socket)
 
     ios
   end
