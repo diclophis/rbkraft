@@ -9,16 +9,16 @@ require_relative '../minecraft-wrapper/client.rb'
 class Vector
   attr_accessor :x, :y, :z
 
-  def initialize(x, y = nil, z = nil, debug = false)
-    @x = x
-    @y = y
-    @z = z
-
-    if @x.is_a?(Array)
-      @x, @y, @z = @x
+  def initialize(*args)
+    if args.first.is_a?(Array)
+      @x, @y, @z = args.first
+    elsif args.first.is_a?(Vector)
+      @x, @y, @z = args.first.to_a
+    else
+      @x, @y, @z = args
     end
 
-    @debug = debug
+    @x, @y, @z = @x.to_i, @y.to_i, @z.to_i
   end
 
   def -(v)
@@ -37,10 +37,6 @@ class Vector
     Vector.new(x*c, y*c, z*c)
   end
 
-  def ==(c)
-    x == c.x && y == c.y && z == c.z
-  end
-
   def length
     Math.sqrt(x*x + y*y + z*z)
   end
@@ -55,21 +51,83 @@ class Vector
   end
 
   def max
-    [x, y, z].max
+    to_a.max
   end
 
   def round
     Vector.new(x.round, y.round, z.round)
   end
+
+  def to_a
+    [x, y, z]
+  end
+
+  def [](index)
+    to_a[index]
+  end
+
+  def ==(c)
+    c && c.is_a?(Vector) && x == c.x && y == c.y && z == c.z
+  end
+
+  # For hash behavior to work the way we want, we need to override #hash and #eql?.
+
+  def hash
+    to_a.hash
+  end
+
+  alias eql? ==
 end
 
 class WorldPainter
   attr_accessor :center
 
-  def initialize(centerX, centerY, centerZ, options = {})
-    @center = [centerX, centerY, centerZ]
+  TYPE_MAPPINGS = {
+    'wood' => 'log',
+    'stone' => 'stone',
+    'tile.dirt.name' => 'dirt',
+    'grass block' => 'grass',
+    'clay' => 'clay',
+    'tile.doubleplant.name' => 'double_plant',
+    'tile.flower2.name' => 'red_flower',
+    'grass' => 'tallgrass',
+    'obsidian' => 'obsidian',
+    'bedrock' => 'bedrock',
+    'glass' => 'glass',
+    'air' => 'air',
+    'tile.sand.name' => 'sand',
+    'wooden planks' => 'planks',
+    'leaves' => 'leaves',
+    'water' => 'water',
+    'torch' => 'torch',
+    'sandstone' => 'sandstone',
+    'coal' => 'coal_ore',
+    'coal ore' => 'coal_ore',
+    'glowstone' => 'glowstone',
+    'redstone ore' => 'redstone_ore',
+    'lapis lazuli ore' => 'lapis_ore',
+    'gold ore' => 'gold_ore',
+    'lava' => 'lava',
+    'gravel' => 'gravel',
+    'mushroom' => 'brown_mushroom',
+    'iron ore' => 'iron_ore',
+    'farmland' => 'farmland',
+    'oak wood stairs' => 'oak_stairs',
+    'cobblestone' => 'cobblestone',
+    'wooden planks' => 'planks',
+    'crops' => 'wheat',
+    'crafting table' => 'crafting_table',
+    'fence' => 'fence',
+    'wooden door' => 'wooden_door',
+    'chest' => 'chest',
+    'furnace' => 'furnace',
+    'fence gate' => 'fence_gate'
+  }
 
-    if Vector.new(@center).magnitude < 10_000
+  def initialize(center_x, center_y, center_z, options = {})
+    @center = Vector.new(center_x, center_y, center_z)
+
+    if @center.magnitude < 10_000
       puts "Too close to spawn!"
       exit 1
     end
@@ -78,6 +136,19 @@ class WorldPainter
     @debug = options[:debug]
     @async = options[:async_client]
     @client = MinecraftClient.new(@async)
+  end
+
+  def async
+    original_async = @async
+    set_async true
+    yield
+    flush_async
+    set_async original_async
+  end
+
+  def set_async(new_value)
+    @async = new_value
+    @client.async = new_value
   end
 
   def flush_async
@@ -97,25 +168,73 @@ class WorldPainter
     execute(cmd)
   end
 
-  def place(x, y, z, thing = 'dirt', data = 0, mode = 'replace', data_tag = nil)
+  # x, y, z, thing = 'dirt', data = 0, mode = 'replace', data_tag = nil
+  def place(*args)
+    if args.first.is_a?(Vector)
+      x, y, z = args.shift.to_a
+      thing, data, mode, data_tag = args
+    else
+      x, y, z, thing, data, mode, data_tag = args
+    end
     thing = thing.is_a?(String) ? "minecraft:#{thing}" : thing
-    set_block_command = "setblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{thing} #{data} #{mode} #{data_tag}"
+    set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing} #{data} #{mode} #{data_tag}"
     execute set_block_command
   end
 
   def summon(x, y, z, thing = 'air', data_tag = '')
-    # summon_command = "/summon #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} minecraft:#{thing} #{data_tag}"
-    summon_command = "summon #{thing} #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} #{data_tag}"
+    summon_command = "summon #{thing} #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{data_tag}"
     execute summon_command
   end
 
-  def test(x, y, z)
-    result = execute("testforblock #{(@center[0] + x).to_i} #{(@center[1] + y).to_i} #{(@center[2] + z).to_i} 0", /The block at|Successfully found the block/)
+  def test(x, y = nil, z = nil)
+    x, y, z = x.to_a if x.is_a?(Vector)
+    result = execute("testforblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} 0", /The block at|Successfully found the block/)
     if result =~ /Successfully found the block/
       'air'
     else
       result[/\d+ is (.*?) \(/, 1].downcase
     end
+  end
+
+  # [00:49:57 INFO]: The block at 19563,70,20394 is Grass Block (expected: tile.air.name).
+  # [00:49:55 INFO]: Successfully found the block at 19558,70,20391.
+  TEST_REGEX = /Successfully found the block at ([\d-]+),([\d-]+),([\d-]+)\.|The block at ([\d-]+),([\d-]+),([\d-]+) is (.*?) \(/
+  def bulk_test(vectors)
+    vectors.each do |vector|
+      @client.puts("testforblock #{@center.x + vector.x} #{@center.y + vector.y} #{@center.z + vector.z} 0")
+    end
+
+    search = vectors.inject({}) { |m, v| m[v.to_a.join(',')] = v; m } # turn vectors into { "1,2,3" => Vector, "2,3,4" => Vector, ... }
+    output = {}
+    last_server_data = ''
+
+    while true
+      server_data = last_server_data + @client.read_nonblock
+      puts server_data if debug?
+      server_data.scan(TEST_REGEX).each do |match|
+        if match[0]
+          x,y,z = match
+          type = 'air'
+        else
+          _,_,_,x,y,z,type = match
+        end
+
+        x = x.to_i - @center.x
+        y = y.to_i - @center.y
+        z = z.to_i - @center.z
+
+        search_result = search.delete([x,y,z].join(','))
+        output[search_result] = type.downcase if search_result
+      end
+
+      break if search.empty?
+
+      last_server_data = server_data.split(TEST_REGEX).last || ''
+
+      sleep 0.05
+    end
+
+    output
   end
 
   def air?(x, y, z)
@@ -134,7 +253,6 @@ class WorldPainter
     old_debug = @debug
     @debug = false
     yield
-  ensure
     @debug = old_debug
   end
 
@@ -168,11 +286,11 @@ class WorldPainter
     while max >= min && (tries += 1) < 256
       mid = min + (max - min) / 2
 
-      air = not_land?(x, mid - @center[1], z, options)
-      airDown = not_land?(x, mid - 1 - @center[1], z, options)
+      air = not_land?(x, mid - @center.y, z, options)
+      air_down = not_land?(x, mid - 1 - @center.y, z, options)
 
-      if air && !airDown
-        return mid - @center[1]
+      if air && !air_down
+        return mid - @center.y
       end
 
       # [126, 50, 88]
@@ -185,7 +303,7 @@ class WorldPainter
       end
     end
 
-    return mid
+    mid
   end
 
   # Bresenham’s line drawing algorithm
@@ -194,7 +312,7 @@ class WorldPainter
     p = p1
     d = p2-p1
     n = d.abs.max
-    s = d/n.to_f;
+    s = d/n.to_f
     n.times do
       p = p+s
       (options[:xwidth] || options[:width] || 1).times do |xw|
@@ -233,6 +351,6 @@ class WorldPainter
       break if line.include?("Pitch")
     end
 
-    position
+    Vector.new(position)
   end
 end
