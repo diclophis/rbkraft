@@ -10,13 +10,8 @@ leader.autoclose = false
 
 puts [:leader, leader, leader.fileno, leader.path, leader.addr].inspect
 
-wrapper = Wrapper.new
+wrapper = Wrapper.new(descriptors)
 
-if descriptors.empty?
-  descriptors = wrapper.create_descriptors
-else
-  wrapper.load_descriptors(descriptors)
-end
 
 puts [:ios, descriptors].inspect
 

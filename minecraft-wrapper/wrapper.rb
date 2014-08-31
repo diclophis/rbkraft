@@ -4,12 +4,15 @@ require 'socket'
 READ_CHUNKS = 4
 
 class Wrapper
+  class Client < Struct.new(:uid, :authentic, :async, :left_over_command)
+  end
+
   attr_accessor :running, :uid,
                 :stdin, :stdout, :stderr,
                 :server_io, :clients,
                 :minecraft_stdin, :minecraft_stdout, :minecraft_stderr, :minecraft_thread
 
-  def initialize
+  def initialize(descriptors)
     self.running = true
     self.uid = 0
     self.install_trap
@@ -17,6 +20,11 @@ class Wrapper
     self.stdin = $stdin
     self.stdout = $stdout
     self.stderr = $stderr
+    if descriptors.empty?
+      create_descriptors
+    else
+      load_descriptors(descriptors)
+    end
   end
 
   def install_trap
@@ -30,7 +38,7 @@ class Wrapper
   end
 
   def create_server_io
-    self.server_io = TCPServer.new(ENV["MAVENCRAFT_WRAPPER_PORT"])
+    self.server_io = TCPServer.new(ENV["MAVENCRAFT_WRAPPER_PORT"] || 12345)
   end
 
   def create_minecraft_io
@@ -41,10 +49,16 @@ class Wrapper
   end
 
   def create_descriptors
-    descriptors
+    create_server_io
   end
 
   def load_descriptors(descriptors)
+    self.server_io = descriptors.shift
+    raise :no_server_io unless self.server_io
+
+    while client = descriptors.shift
+      install_client(client, true)
+    end
   end
 
   def descriptors
@@ -96,6 +110,8 @@ class Wrapper
 
   def handle_descriptors_requiring_reading(ready_for_read)
     ready_for_read.each do |readable_io|
+    puts readable_io.inspect
+
       case readable_io
         when self.minecraft_stdout # minecraft has emitted output / command results
           handle_minecraft_stdout
@@ -124,7 +140,7 @@ class Wrapper
     end
 
     if command_lines
-      handle_command_lines(readable_io, command_lines)
+      handle_command_lines(readable_io, command_lines, command_line_framing_even)
     else
       handle_would_block_close(readable_io, would_block, would_close)
     end
@@ -142,7 +158,7 @@ class Wrapper
     end
   end
 
-  def handle_command_lines(readable_io, command_lines)
+  def handle_command_lines(readable_io, command_lines, command_line_framing_even)
     client = self.clients[readable_io]
 
     all_lines = command_lines.include?("\n") ? (command_lines.split("\n")) : []
@@ -175,7 +191,7 @@ class Wrapper
 
     all_lines.each do |command_line|
       if client
-        next if command_async_toggle?(command_line)
+        next if command_async_toggle(command_line)
 
         if client.authentic
           unless handle_authentic_client(client, readable_io, command_line)
@@ -217,13 +233,14 @@ class Wrapper
     begin
       actual_sent_line = command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
       if (actual_sent_line && actual_sent_line.length > 0)
-        #puts [:exec, actual_sent_line].inspect
-        self.minecraft_stdin.puts(actual_sent_line)
-        if client.async
-          self.minecraft_stdout.gets
-        else
-          command_output = self.minecraft_stdout.gets.strip
-        end
+        puts [:exec, actual_sent_line].inspect
+
+        #self.minecraft_stdin.puts(actual_sent_line)
+        #if client.async
+        #  self.minecraft_stdout.gets
+        #else
+        #  command_output = self.minecraft_stdout.gets.strip
+        #end
       end
     rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
       self.stdout.puts ["server quit on epipe", closed].inspect
