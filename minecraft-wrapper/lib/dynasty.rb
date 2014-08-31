@@ -30,9 +30,11 @@ class Dynasty
 
     last = nil
     begin
-      while io = socket.recv_io
-        puts io.inspect
-        last = io
+      #while io = socket.recv_io
+      3.times do
+        io = socket.recv_io
+        puts :gots, io.fileno
+        #last = io
         ios << io
       end
     rescue => e
@@ -40,7 +42,7 @@ class Dynasty
       puts e.inspect
     end
 
-    ios.pop
+    last = ios.pop
 
     puts :grabbed, last, ios.length
 
@@ -79,11 +81,16 @@ class Dynasty
       return nil
     end
 
+    #replacement.include(DynastyIO)
+
     ios.each do |io|
-      puts :sent, replacement.send_io(io)
+    puts :send, io.fileno
+      puts :sent, DynastyIO.send_io2(replacement, io) #replacement.send_io2(io)
     end
 
-    replacement.send_io(socket)
+    #replacement.send_io(socket)
+    puts :send2, socket.fileno
+    DynastyIO.send_io2(replacement, socket)
 
     puts :passed, socket
 
