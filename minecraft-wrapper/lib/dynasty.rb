@@ -67,8 +67,6 @@ class Dynasty
 
     last = ios.pop
 
-    #puts [:grabbed, last, ios.length].inspect
-
     if last.respond_to?(:fileno)
       last
     else

@@ -13,13 +13,16 @@ class Wrapper
                 :minecraft_stdin, :minecraft_stdout, :minecraft_stderr, :minecraft_thread
 
   def initialize(descriptors)
+    self.install_trap
+
     self.running = true
     self.uid = 0
-    self.install_trap
     self.clients = Hash.new
+
     self.stdin = $stdin
     self.stdout = $stdout
     self.stderr = $stderr
+
     if descriptors.empty?
       create_descriptors
     else
@@ -48,7 +51,6 @@ class Wrapper
     command = ARGV[0]
     options = ARGV[1..-1]
     if command
-      #self.stdout.puts [:wrapping, command, options].inspect
       self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.minecraft_thread = Open3.popen3(command, *options)
     else
       raise "command required for wrapper, sleep works"
@@ -61,7 +63,6 @@ class Wrapper
   end
 
   def load_descriptors(descriptors)
-    #puts :reading_minecraft
     self.minecraft_stdin = descriptors.shift
     raise unless self.minecraft_stdin
     self.minecraft_stdout = descriptors.shift
@@ -69,12 +70,10 @@ class Wrapper
     self.minecraft_stderr = descriptors.shift
     raise unless self.minecraft_stderr
 
-    #puts :reading_server_io
     self.server_io = descriptors.shift
     raise unless self.server_io
 
     while client = descriptors.shift
-      #puts :reading_client
       install_client(client, true)
     end
   end
@@ -84,7 +83,7 @@ class Wrapper
   end
 
   def selectable_descriptors
-    [self.stdin] + (descriptors) # - [self.minecraft_stdin, self.minecraft_stderr])
+    [self.stdin] + (descriptors)
   end
 
   def accept_server_io_connection
@@ -94,7 +93,6 @@ class Wrapper
   def install_client(client_io, authentic = nil)
     self.clients[client_io] = Client.new(self.uid, authentic)
     self.uid += 1
-    #self.stdout.puts ["accept", client_io, self.clients].inspect
   end
 
   def handle_minecraft_stdout
@@ -104,9 +102,7 @@ class Wrapper
       begin
         broadcast_lines = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
       rescue Errno::EAGAIN, Errno::EIO
-        #self.stdout.puts [:read_minecraft_stdout_would_block].inspect
       rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
-        #self.stdout.puts [:read_minecraft_stdout_would_close].inspect
       end
       puts [:broadcast, broadcast_lines].inspect
       if broadcast_lines
@@ -116,11 +112,6 @@ class Wrapper
           begin
             wrote = a_io.write(broadcast_lines) unless (a_io == self.stdin)
           rescue Errno::ECONNRESET, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-            #self.stdout.puts ["quit on epipe in broadcast write to client", self.clients[a_io], closed].inspect
-            #unless (a_io == self.stdin) # client_close?
-            #  self.clients.delete(a_io)
-            #  a_io.close unless (a_io.closed?)
-            #end
             close_client(a_io)
           end
         end
@@ -129,7 +120,6 @@ class Wrapper
   end
 
   def handle_descriptors_requiring_reading(ready_for_read)
-    #puts [:ready, ready_for_read.length] if ready_for_read.length > 0
     ready_for_read.each do |readable_io|
       case readable_io
         when self.minecraft_stdout # minecraft has emitted output / command results
@@ -168,11 +158,6 @@ class Wrapper
   def handle_would_block_close(io, would_block, would_close)
     unless would_block
       if would_close
-        #self.stdout.puts ["quit on eof/econnreset...???", io, self.clients].inspect
-        #unless (io == self.stdin) # close_client?
-        #  self.clients.delete(io)
-        #  io.close unless io.closed?
-        #end
         close_client(io)
       end
     end
@@ -229,18 +214,17 @@ class Wrapper
   end
 
   def close_client(readable_io)
-    unless (readable_io == self.stdin) # close_client?
+    unless (readable_io == self.stdin)
       self.clients.delete(readable_io)
       readable_io.close unless readable_io.closed?
     end
   end
 
   def write_minecraft_command(actual_sent_line)
+    #NOTE: this needs to buffer
     begin
       result = self.minecraft_stdin.write_nonblock(actual_sent_line + "\n")
-      #puts result
     rescue IO::WaitWritable, Errno::EINTR
-      #puts :reselect
       IO.select(nil, [io])
       retry
     end
@@ -262,7 +246,6 @@ class Wrapper
         end
       end
     rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-      #self.stdout.puts ["server quit on epipe", closed].inspect
       return false
     end
 
@@ -271,13 +254,7 @@ class Wrapper
         wrote = out_io.puts(command_output)
       end
     rescue Errno::ECONNRESET, IOError, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-      #self.stdout.puts ["quit on epipe", io, self.clients, closed].inspect
-      #unless (io == self.stdin) # close_client?
-      #  self.clients.delete(io)
-      #  io.close unless io.closed?
-      #end
       close_client(io)
-
       return false
     end
 
