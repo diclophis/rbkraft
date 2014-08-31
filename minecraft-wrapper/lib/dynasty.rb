@@ -1,3 +1,18 @@
+# http://www.ruby-doc.org/stdlib-1.9.3/libdoc/socket/rdoc/UNIXSocket.html
+# http://swtch.com/plan9port/man/man3/sendfd.html
+# http://code.swtch.com/plan9port/src/0e6ae8ed3276/src/lib9/sendfd.c
+# http://stackoverflow.com/questions/4489433/sending-file-descriptor-over-unix-domain-socket-and-select
+# http://ruby-doc.org/stdlib-1.9.3/libdoc/socket/rdoc/Socket.html#method-c-unix_server_socket
+# http://ruby-doc.org/core-1.9.2/IO.html#method-i-autoclose-3D
+# http://www.jstorimer.com/blogs/workingwithcode/7766087-passing-open-files-between-processes-with-unix-sockets
+# http://ruby-doc.org/stdlib-2.0.0/libdoc/socket/rdoc/UNIXServer.html#method-i-accept
+# http://apidock.com/ruby/v1_9_3_392/Socket/accept_loop/class
+# http://clalance.blogspot.be/2011/01/writing-ruby-extensions-in-c-part-3.html
+# http://media.pragprog.com/titles/ruby3/ext_ruby.pdf
+# https://github.com/luislavena/rake-compiler
+# http://www.ruby-doc.org/stdlib-1.9.3/libdoc/socket/rdoc/UNIXSocket.html#method-i-send_io
+# https://blog.jcoglan.com/2012/07/29/your-first-ruby-native-extension-c/
+
 class Dynasty
   def self.socket_file
     "/tmp/minecraft.sock"
@@ -8,10 +23,8 @@ class Dynasty
     ios = []
 
     if File.exists?(socket_file)
-      puts :read
       socket = UNIXSocket.new(socket_file)
     else
-      puts :write
       socket = UNIXServer.new(socket_file)
     end
 
@@ -30,11 +43,10 @@ class Dynasty
 
     last = nil
     begin
-      #while io = socket.recv_io
-      3.times do
-        io = socket.recv_io
-        puts :gots, io.fileno
-        #last = io
+      # NOTE: undocumented second option to recv_io !!!
+      while io = socket.recv_io(UNIXServer)
+      #while io = DynastyIO.recv_io2(socket)
+        puts [:gots, io].inspect
         ios << io
       end
     rescue => e
@@ -44,24 +56,13 @@ class Dynasty
 
     last = ios.pop
 
-    puts :grabbed, last, ios.length
+    puts [:grabbed, last, ios.length].inspect
 
-    #a = UNIXServer.for_fd(last.fileno)
-    #puts a.stat.inspect
-    #a
-
-=begin
-    puts
-    puts last.inspect
-    last.reopen(socket)
-    puts last.inspect
-    last.reopen(socket_file)
-    puts last.inspect
-    puts
-    last
-=end
-
-    UNIXServer.for_fd(last.fileno)
+    if last.respond_to?(:fileno)
+      last
+    else
+      UNIXServer.for_fd(last)
+    end
   end
   
   def self.rule(socket, ios)
@@ -71,8 +72,6 @@ class Dynasty
   end
 
   def self.accept_and_pass(socket, ios)
-    puts :waiting
-
     replacement = nil
 
     begin
@@ -81,18 +80,13 @@ class Dynasty
       return nil
     end
 
-    #replacement.include(DynastyIO)
-
     ios.each do |io|
-    puts :send, io.fileno
-      puts :sent, DynastyIO.send_io2(replacement, io) #replacement.send_io2(io)
+      #puts [:sent_ios, io, DynastyIO.send_io2(replacement, io)].inspect
+      puts [:sent_ios, io, replacement.send_io(io)].inspect
     end
 
-    #replacement.send_io(socket)
-    puts :send2, socket.fileno
-    DynastyIO.send_io2(replacement, socket)
-
-    puts :passed, socket
+    #puts [:sent_leader, socket.fileno, DynastyIO.send_io2(replacement, socket)]
+    puts [:sent_leader, socket.fileno, replacement.send_io(socket)]
 
     ios
   end
