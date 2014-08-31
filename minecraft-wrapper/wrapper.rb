@@ -30,10 +30,11 @@ class Wrapper
   def install_trap
     Signal.trap("INT") do
       self.stdout.puts [:trap_int, self, self.uid].inspect
-      self.stdout.puts("saving...")
-      self.minecraft_stdin.puts("save-all")
-      self.minecraft_stdin.puts("stop")
+      #self.stdout.puts("saving...")
+      #self.minecraft_stdin.puts("save-all")
+      #self.minecraft_stdin.puts("stop")
       self.stdout.puts("exiting...")
+      self.running = false
     end
   end
 
@@ -44,12 +45,15 @@ class Wrapper
   def create_minecraft_io
     command = ARGV[1]
     options = ARGV[2..-1]
-    self.stdout.puts [:wrapping, command, options].inspect
-    self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.minecraft_thread = Open3.popen3(command, *options)
+    if command
+      self.stdout.puts [:wrapping, command, options].inspect
+      self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.minecraft_thread = Open3.popen3(command, *options)
+    end
   end
 
   def create_descriptors
     create_server_io
+    create_minecraft_io
   end
 
   def load_descriptors(descriptors)
@@ -110,8 +114,6 @@ class Wrapper
 
   def handle_descriptors_requiring_reading(ready_for_read)
     ready_for_read.each do |readable_io|
-    puts readable_io.inspect
-
       case readable_io
         when self.minecraft_stdout # minecraft has emitted output / command results
           handle_minecraft_stdout
@@ -200,7 +202,7 @@ class Wrapper
         else
           client.authentic = command_line.strip == "authentic"
           unless client.authentic
-            self.stdout.puts ["quit on un-authentic...!", $clients[readable_io], command_line].inspect
+            self.stdout.puts ["quit on un-authentic...!", readable_io, self.clients[readable_io], command_line].inspect
             unless (readable_io == self.stdin) # close_client?
               self.clients.delete(readable_io)
               readable_io.close unless readable_io.closed?
@@ -233,7 +235,7 @@ class Wrapper
     begin
       actual_sent_line = command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
       if (actual_sent_line && actual_sent_line.length > 0)
-        puts [:exec, actual_sent_line].inspect
+        self.stdout.puts [:exec, actual_sent_line].inspect
 
         #self.minecraft_stdin.puts(actual_sent_line)
         #if client.async

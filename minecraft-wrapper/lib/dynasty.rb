@@ -30,9 +30,11 @@ class Dynasty
 
     if socket.is_a?(UNIXServer)
       leader = accept_and_pass(socket, ios)
+      socket.autoclose = false
       return socket, ios
     else
       b = replace_and_read(socket, ios)
+      b.autoclose = false
       socket.close
       return b, ios
     end
