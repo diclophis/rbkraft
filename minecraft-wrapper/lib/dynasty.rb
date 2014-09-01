@@ -27,7 +27,7 @@ class Dynasty
 
     if socket == nil
       if File.exists?(socket_file)
-        raise "server exists, force to continue" unless force_start
+        raise "server exists, DYNASTY_FORCE to continue" unless force_start
         File.unlink(socket_file)
       end
 
@@ -54,15 +54,10 @@ class Dynasty
       # NOTE: undocumented second option to recv_io !!!
       types = [IO, IO, IO, TCPServer, UNIXServer]
       while io = socket.recv_io(types[ios.length])
-      #while io = DynastyIO.recv_io2(socket)
-      #  break unless io > 0
-      #  io = types[ios.length].for_fd(io)
-      #  puts [:gots, io].inspect
         ios << io
       end
-    rescue => e
-      # puts e.class.inspect
-      # puts e.inspect
+    rescue SocketError => e
+      #NOTE: this indicates the old server has stopped sending descriptors
     end
 
     last = ios.pop
@@ -90,14 +85,9 @@ class Dynasty
     end
 
     ios.each do |io|
-      #if io
-      #  puts [:sent_ios, io, DynastyIO.send_io2(replacement, io)].inspect
-      #end
-
       replacement.send_io(io) if io
     end
 
-    #puts [:sent_leader, socket.fileno, DynastyIO.send_io2(replacement, socket)]
     replacement.send_io(socket)
 
     ios

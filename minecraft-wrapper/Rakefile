@@ -1,8 +1,0 @@
-#!/usr/bin/env rake
-
-require 'rake/extensiontask'
-
-spec = Gem::Specification.load('dynasty_io.gemspec')
-Rake::ExtensionTask.new('dynasty_io', spec)
-
-task :default => :compile

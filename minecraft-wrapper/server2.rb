@@ -4,7 +4,6 @@ $: << File.dirname(__FILE__)
 $: << File.dirname(__FILE__) + '/lib'
 
 require 'dynasty'
-require 'dynasty_io'
 require 'wrapper'
 
 leader, descriptors = Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
