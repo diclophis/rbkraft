@@ -55,20 +55,20 @@ class Dynasty
     last = nil
     begin
       # NOTE: undocumented second option to recv_io !!!
-      types = [IO, IO, IO, TCPServer, UNIXServer]
-      while io = socket.recv_io(types[ios.length])
+      types = [UNIXServer, IO, IO, IO, TCPServer]
+      while io = socket.recv_io(types[ios.length] || TCPSocket)
         ios << io
       end
     rescue SocketError => e
       #NOTE: this indicates the old server has stopped sending descriptors
     end
 
-    last = ios.pop
+    leader = ios.shift
 
-    if last.respond_to?(:fileno)
-      last
+    if leader.respond_to?(:fileno)
+      leader
     else
-      UNIXServer.for_fd(last)
+      UNIXServer.for_fd(leader)
     end
   end
   
@@ -81,11 +81,11 @@ class Dynasty
       return nil
     end
 
+    replacement.send_io(socket)
+
     ios.each do |io|
       replacement.send_io(io) if io
     end
-
-    replacement.send_io(socket)
 
     ios
   end

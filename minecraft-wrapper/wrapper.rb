@@ -11,6 +11,7 @@ class Wrapper
                 :stdin, :stdout, :stderr,
                 :server_io, :clients,
                 :minecraft_stdin, :minecraft_stdout, :minecraft_stderr, :minecraft_thread,
+                :prefetched_broadcast,
                 :command, :options
 
   def initialize(descriptors, argv)
@@ -36,6 +37,7 @@ class Wrapper
     self.minecraft_stdin.autoclose = false
     self.minecraft_stdout.autoclose = false
     self.minecraft_stderr.autoclose = false
+    self.prefetched_broadcast = ""
 
     install_client(self.stdin, true)
   end
@@ -98,23 +100,29 @@ class Wrapper
   end
 
   def handle_minecraft_stdout
-    self.running = !self.minecraft_stdout.eof?
+    self.running = (!self.minecraft_stdin.closed? && !self.minecraft_stdout.eof?)
     if self.running
       broadcast_lines = nil
       begin
-        broadcast_lines = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+        broadcast_lines = self.minecraft_stdout.read_nonblock(READ_CHUNKS * 2)
       rescue Errno::EAGAIN, Errno::EIO
       rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
       end
-      puts [:broadcast, broadcast_lines].inspect
+
+      broadcast_lines = self.prefetched_broadcast + broadcast_lines
+      self.prefetched_broadcast = ""
+
       if broadcast_lines
+        broadcast_lines.gsub!("\\b", "")
         broadcast_lines.gsub!("\b", "")
-        broadcast_lines.gsub(" ", "")
-        self.clients.each_key do |a_io|
-          begin
-            wrote = a_io.write(broadcast_lines) unless (a_io == self.stdin)
-          rescue Errno::ECONNRESET, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
-            close_client(a_io)
+        if broadcast_lines.length > 0
+          self.stdout.puts [:broadcast, broadcast_lines].inspect.gsub("  ", "")[0, 256]
+          self.clients.each_key do |a_io|
+            begin
+              wrote = a_io.write(broadcast_lines) unless (a_io == self.stdin)
+            rescue Errno::ECONNRESET, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
+              close_client(a_io)
+            end
           end
         end
       end
@@ -196,7 +204,7 @@ class Wrapper
 
     all_lines.each do |command_line|
       if client
-        next if command_async_toggle(command_line)
+        next if command_async_toggle(client, command_line)
 
         if client.authentic
           unless handle_authentic_client(client, readable_io, command_line)
@@ -224,11 +232,17 @@ class Wrapper
 
   def write_minecraft_command(actual_sent_line)
     #NOTE: this needs to buffer
+    retries = 0
     begin
       result = self.minecraft_stdin.write_nonblock(actual_sent_line + "\n")
-    rescue IO::WaitWritable, Errno::EINTR
-      IO.select(nil, [io])
-      retry
+    rescue IOError, IO::WaitWritable, Errno::EINTR
+      retries += 1
+      if retries < (1024 * 32)
+        IO.select(nil, [self.minecraft_stdin])
+        retry
+      else
+        puts :failed
+      end
     end
   end
 
@@ -240,12 +254,21 @@ class Wrapper
       actual_sent_line = command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
       if (actual_sent_line && actual_sent_line.length > 0)
         write_minecraft_command(actual_sent_line)
-        command_output = self.minecraft_stdout.gets.strip
+        #command_output = self.minecraft_stdout.gets.strip
+        begin
+          pre_fetched = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+          if pre_fetched && pre_fetched.length > 0
+            self.prefetched_broadcast += pre_fetched
+          end
+        rescue Errno::EAGAIN, Errno::EIO
+        rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
+        end
       end
     rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
       return false
     end
 
+=begin
     begin
       if command_output && command_output.length && !client.async
         wrote = out_io.puts(command_output)
@@ -254,11 +277,12 @@ class Wrapper
       close_client(io)
       return false
     end
+=end
 
     return true
   end
 
-  def command_async_toggle(command_line)
+  def command_async_toggle(client, command_line)
     if command_line.strip == "async"
       client.async = !client.async
       return true

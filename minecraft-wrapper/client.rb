@@ -12,7 +12,7 @@ class MinecraftClient
   end
 
   def connect
-    @server_io = TCPSocket.new("mavencraft.net", 25566)
+    @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "mavencraft.net", 25566)
     @server_io.sync = true
     if async
       @server_io.puts("authentic\nasync")
