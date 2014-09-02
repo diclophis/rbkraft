@@ -27,6 +27,7 @@
     - git
     - screen
     - ruby1.9.3
+    - rake
     - openjdk-7-jre
     - python-imaging
     - python-numpy
