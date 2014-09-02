@@ -10,9 +10,10 @@ class Wrapper
   attr_accessor :running, :uid,
                 :stdin, :stdout, :stderr,
                 :server_io, :clients,
-                :minecraft_stdin, :minecraft_stdout, :minecraft_stderr, :minecraft_thread
+                :minecraft_stdin, :minecraft_stdout, :minecraft_stderr, :minecraft_thread,
+                :command, :options
 
-  def initialize(descriptors)
+  def initialize(descriptors, argv)
     self.install_trap
 
     self.running = true
@@ -22,6 +23,9 @@ class Wrapper
     self.stdin = $stdin
     self.stdout = $stdout
     self.stderr = $stderr
+
+    self.command = argv[0]
+    self.options = argv[1..-1]
 
     if descriptors.empty?
       create_descriptors
@@ -48,10 +52,8 @@ class Wrapper
   end
 
   def create_minecraft_io
-    command = ARGV[0]
-    options = ARGV[1..-1]
-    if command
-      self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.minecraft_thread = Open3.popen3(command, *options)
+    if self.command
+      self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.minecraft_thread = Open3.popen3(self.command, *self.options)
     else
       raise "command required for wrapper, sleep works"
     end
@@ -237,20 +239,15 @@ class Wrapper
     begin
       actual_sent_line = command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
       if (actual_sent_line && actual_sent_line.length > 0)
-        #self.stdout.puts [:exec, actual_sent_line].inspect
         write_minecraft_command(actual_sent_line)
-        if client.async
-          self.minecraft_stdout.gets
-        else
-          command_output = self.minecraft_stdout.gets.strip
-        end
+        command_output = self.minecraft_stdout.gets.strip
       end
     rescue Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...
       return false
     end
 
     begin
-      if command_output && command_output.length 
+      if command_output && command_output.length && !client.async
         wrote = out_io.puts(command_output)
       end
     rescue Errno::ECONNRESET, IOError, Errno::EPIPE => closed # NOTE: seems to be a neccesary evil...

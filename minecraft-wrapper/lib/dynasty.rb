@@ -14,7 +14,7 @@
 # https://blog.jcoglan.com/2012/07/29/your-first-ruby-native-extension-c/
 
 class Dynasty
-  def self.server(socket_file, force_start = false)
+  def self.server(socket_file, force_start = false, &block)
     socket = nil
     ios = []
 
@@ -34,16 +34,19 @@ class Dynasty
       socket = UNIXServer.new(socket_file)
     end
 
+    out_socket = nil
     if socket.is_a?(UNIXServer)
       leader = accept_and_pass(socket, ios)
       socket.autoclose = false
-      return socket, ios
+      out_socket = socket
     else
       b = replace_and_read(socket, ios)
       b.autoclose = false
       socket.close
-      return b, ios
+      out_socket = b
     end
+
+    yield Dynasty.new(out_socket, ios)
   end
 
   def self.replace_and_read(socket, ios)
@@ -69,12 +72,6 @@ class Dynasty
     end
   end
   
-  def self.rule(socket, ios)
-    new_leader = accept_and_pass(socket, ios)
-
-    return true unless new_leader
-  end
-
   def self.accept_and_pass(socket, ios)
     replacement = nil
 
@@ -91,5 +88,29 @@ class Dynasty
     replacement.send_io(socket)
 
     ios
+  end
+
+  def self.running(socket, ios)
+    new_leader = accept_and_pass(socket, ios)
+
+    return true unless new_leader
+  end
+
+  attr_accessor :socket_descriptor, :descriptors
+  def initialize(socket, existing_sockets)
+    self.socket_descriptor = socket
+    self.descriptors = existing_sockets
+  end
+
+  def selectable_descriptors
+    @selectable_descriptors ||= [self.socket_descriptor]
+  end
+
+  def handle_descriptors_requiring_reading(readable, descriptors)
+    if readable.include?(self.socket_descriptor)
+      return Dynasty.running(self.socket_descriptor, descriptors)
+    end
+
+    return true
   end
 end
