@@ -32,3 +32,4 @@ showlocationmarker = False
 defaultzoom = 4 
 processes = 1
 outputdir = os.environ['FULL_MAP']
+texturepath = "/opt/textures"

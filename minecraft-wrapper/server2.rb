@@ -20,6 +20,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
     readable, _writable, _errored = IO.select(selectable_sockets, nil, selectable_sockets, ENV["SELECT_TIMEOUT"] || (1.0 / 60.0))
+    #puts readable.inspect
 
     # When something is ready to read
     if readable
