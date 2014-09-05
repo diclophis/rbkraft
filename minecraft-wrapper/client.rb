@@ -12,7 +12,7 @@ class MinecraftClient
   end
 
   def connect
-    @server_io = TCPSocket.new("mavencraft.net", 25566)
+    @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "mavencraft.net", 25566)
     @server_io.sync = true
     if async
       @server_io.puts("authentic\nasync")
@@ -42,7 +42,7 @@ class MinecraftClient
   end
 
   def read_nonblock
-    @server_io.read_nonblock(1024 * 12)
+    @server_io.read_nonblock(1024 * 32)
   rescue Errno::EAGAIN, Errno::EIO
     ''
   end
