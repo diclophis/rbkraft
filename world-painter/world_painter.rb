@@ -121,8 +121,32 @@ class WorldPainter
     'wooden door' => 'wooden_door',
     'chest' => 'chest',
     'furnace' => 'furnace',
-    'fence gate' => 'fence_gate'
+    'fence gate' => 'fence_gate',
+    'diamond ore' => 'diamond_ore'
   }
+
+  GROUND_MAPPINGS = [
+    'stone',
+    'tile.dirt.name',
+    'grass block',
+    'clay',
+    'obsidian',
+    'bedrock',
+    'tile.sand.name',
+    'water',
+    'sandstone',
+    'coal',
+    'coal ore',
+    'glowstone',
+    'redstone ore',
+    'lapis lazuli ore',
+    'gold ore',
+    'lava',
+    'gravel',
+    'iron ore',
+    'farmland',
+    'diamond ore'
+  ]
 
   def initialize(center_x, center_y, center_z, options = {})
     @center = Vector.new(center_x, center_y, center_z)
@@ -237,18 +261,6 @@ class WorldPainter
     output
   end
 
-  def air?(x, y, z)
-    without_debug do
-      !!(test(x, y, z) =~ /\bair\b/)
-    end
-  end
-
-  def not_land?(x, y, z, options = {})
-    without_debug do
-      !!(test(x, y, z) =~ /(#{([options[:ignore]].flatten.compact + %w[air wood leaves flower]).join('|')})/i)
-    end
-  end
-
   def without_debug
     old_debug = @debug
     @debug = false
@@ -278,32 +290,24 @@ class WorldPainter
   end
 
   def ground(x, z, options = {})
-    max = 126
-    min = 0
-    mid = nil
+    tests = []
+    water_level = 60 - center.y
+    water_level.upto(water_level + 30) do |y|
+      tests << Vector.new(x, y, z)
+    end
 
-    tries = 0
-    while max >= min && (tries += 1) < 256
-      mid = min + (max - min) / 2
+    ground_matcher = /#{GROUND_MAPPINGS.map { |tile| Regexp::escape tile }.join('|')}/i
+    highest = Vector.new(0, water_level - 30, 0)
 
-      air = not_land?(x, mid - @center.y, z, options)
-      air_down = not_land?(x, mid - 1 - @center.y, z, options)
-
-      if air && !air_down
-        return mid - @center.y
-      end
-
-      # [126, 50, 88]
-      # 38
-
-      if air
-        max = mid
-      else
-        min = mid
+    bulk_test(tests).each do |tile, type|
+      if type =~ ground_matcher
+        if tile.y > highest.y
+          highest = tile
+        end
       end
     end
 
-    mid
+    highest.y
   end
 
   # Bresenham’s line drawing algorithm

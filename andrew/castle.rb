@@ -1,11 +1,9 @@
 #!/usr/bin/env ruby
 
-require_relative '../world-painter/world_painter.rb'
-
 class Castle
   attr_accessor :painter
 
-  def initialize(painter, options = {})
+  def initialize(painter)
     @painter = painter
   end
 
@@ -47,16 +45,18 @@ class Castle
        baseline = y if w == 0
        baselined_height = [baseline - y, 0].max + height
 
-       baselined_height.to_i.times do |h|
-         painter.place px, y + h, pz, options[:remove] ? 'air' : 'stonebrick'
-       end
-
-       if w == 0 || w == width - 1
-         if index % 3 == 0
-           painter.place px, y + baselined_height, pz, options[:remove] ? 'air' : 'stonebrick'
-           painter.place px, y + baselined_height + 1, pz, options[:remove] ? 'air' : 'torch'
+       painter.async do
+         baselined_height.to_i.times do |h|
+           painter.place px, y + h, pz, options[:remove] ? 'air' : 'stonebrick'
          end
-       end
+
+         if w == 0 || w == width - 1
+           if index % 3 == 0
+             painter.place px, y + baselined_height, pz, options[:remove] ? 'air' : 'stonebrick'
+             painter.place px, y + baselined_height + 1, pz, options[:remove] ? 'air' : 'torch'
+           end
+         end
+        end
      end
 
      x += 1 if x < end_pos.x
@@ -69,11 +69,14 @@ class Castle
 end
 
 if __FILE__ == $0
+  require_relative 'andrew.rb'
+
+  painter = load_painter
+
   remove = false
 
-  painter = WorldPainter.new(19_747, 72, 20_031)
-  painter = Castle.new(painter, :debug => true)
-  painter.wall(Vector.new(0, 0, 0), Vector.new(70, 0, 0), :remove => remove)
-  painter.wall(Vector.new(0, 0, 0), Vector.new(0, 0, -50), :remove => remove)
-  painter.wall(Vector.new(2, 0, 0), Vector.new(2, 0, 50), :remove => remove)
+  castle = Castle.new(painter)
+  castle.wall(Vector.new(0, 0, 0), Vector.new(20, 0, 0), :remove => remove)
+  castle.wall(Vector.new(0, 0, 0), Vector.new(0, 0, -20), :remove => remove)
+  castle.wall(Vector.new(2, 0, 0), Vector.new(2, 0, 20), :remove => remove)
 end
