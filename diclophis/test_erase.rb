@@ -15,7 +15,7 @@ oz = 19900
 #painter = nil
 #puts position.inspect
 
-painter = DiclophisWorldPainter.new(ox, oy, oz, { :async_client => true})
+painter = DiclophisWorldPainter.new(ox, oy, oz)
 
 blocks = Array.new
 
@@ -47,23 +47,41 @@ end
 
 #while true do
 
-  #x, y, z = painter.player_position("diclophis")
-  position = [20574.0, 71.0, 19173.0]
-  painter.center[0] = (position[0]).to_i
-  painter.center[1] = (position[1]).to_i
-  painter.center[2] = (position[2]).to_i
+  #@x=20597
+  #@y=106
+  #@z=19187
 
-  puts position.inspect
+  @x=20567
+  @y=130
+  @z=18795
 
-  ph = 50
-  pw = 110
-  pd = 110
-  ph.times { |i|
-    (pw).times { |x|
-      (pd).times { |z|
-        painter.place(-x, -i, -z, sandstone_type)
+  painter.center = Vector.new(@x, @y, @z)
+  #painter.center = painter.player_position("diclophis") + Vector.new(-2.0, -2.0, -2.0)
+
+  puts painter.center.inspect
+
+  painter.async do
+    ph = 90
+    pw = 90
+    pd = 90
+
+    c = 0
+    ph.times { |i|
+      (pw).times { |x|
+        (pd).times { |z|
+          painter.place(-x, -i, -z, sandstone_type)
+          sleep 0.002
+        }
+        #  c += 1
+        #  if (c % 200) == 0
+        #    painter.place(-x, 2, -z, sandstone_type)
+        #    #puts [-x, @y + 18, -z].inspect
+        #    #puts [-x + @y, @y + 19, -z + @z].inspect
+        #    painter.teleport("diclophis", -x + @x, @y + 4, -z + @z)
+        #  end
+        #  #sleep 0.001
       }
     }
-  }
+  end
 
 #end
