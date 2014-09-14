@@ -1,8 +1,6 @@
 Stuff for Minecraft
 ===================
 
-http://mavencraft.net
-
 ![image](images/pyramid.png)
 
 ![image](images/maze.png)
