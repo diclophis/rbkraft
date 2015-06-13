@@ -251,7 +251,7 @@ class Wrapper
     rescue IOError, IO::WaitWritable, Errno::EINTR
       retries += 1
       if retries < (1024 * 32)
-        IO.select(nil, [self.minecraft_stdin])
+        IO.select(nil, [self.minecraft_stdin], nil, (1.0 / 60.0))
         retry
       else
         puts :failed
