@@ -52,8 +52,6 @@
 
 - name: clone mavencraft
   git: repo=git@github.com:mavenlink/mavencraft.git dest=~/mavencraft version=master
-#- name: copy mavencraft
-#  copy: 
 
 - name: install minecraft world-dir
   file: dest=/opt/minecraft state=directory
