@@ -51,7 +51,11 @@ painter.async do
               painter.place(x, y, z, painter.air_type)
             end
           else
-            painter.place(x, y, z, painter.air_type)
+            if (((x-7) % 9) == 0) && (((z-7) % 9) == 0)
+              painter.place(x, y, z, painter.sandstone_type)
+            else
+              painter.place(x, y, z, painter.air_type)
+            end
           end
 
 =begin
