@@ -38,14 +38,14 @@
     - libwebpmux1
     - nginx
 
-- name: fetch overviewer
-  get_url: url="http://overviewer.org/builds/952/overviewer-0.11.164-deb64.deb" dest=/root/ mode=0440 sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
+#- name: fetch overviewer
+#  get_url: url="http://overviewer.org/builds/952/overviewer-0.11.164-deb64.deb" dest=/root/ mode=0440 sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
 
-- name: install overviewer
-  shell: dpkg -i /root/overviewer-0.11.164-deb64.deb
+#- name: install overviewer
+#  shell: dpkg -i /root/overviewer-0.11.164-deb64.deb
 
-- name: fetch bukkit
-  get_url: url="http://cbukk.it/craftbukkit-beta.jar" dest=/root/minecraft.jar mode=0440 sha256sum=44355482cf7ae9238ad91bddf9b0b7076d6b1c77
+#- name: fetch bukkit
+#  get_url: url="http://cbukk.it/craftbukkit-beta.jar" dest=/root/minecraft.jar mode=0440 sha256sum=44355482cf7ae9238ad91bddf9b0b7076d6b1c77
 
 - name: install github ssh host key
   lineinfile: backup=true create=true dest=~/.ssh/known_hosts line="github.com,192.30.252.131 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" state=present
