@@ -5,7 +5,8 @@ require 'world-painter/world_painter'
 class DiclophisWorldPainter < WorldPainter
   attr_accessor :type, :air_type, :debug_type,
   :alt_type, :corner_type, :slab, :glass_type, :glow_type,
-  :sand_type, :sandstone_type, :water_type, :tnt_type, :lava_type
+  :sand_type, :sandstone_type, :water_type, :tnt_type, :lava_type,
+  :iron_bars_type
 
   def initialize(*args)
     super(*args)
@@ -23,6 +24,7 @@ class DiclophisWorldPainter < WorldPainter
     @water_type = air_type
     @tnt_type = air_type
     @lava_type = air_type
+    @iron_bars_type = air_type
 
     if ARGV[0] == "draw"
       @type = "stone"
@@ -36,7 +38,8 @@ class DiclophisWorldPainter < WorldPainter
       @sandstone_type = "sandstone"
       @water_type = "water"
       @tnt_type = "water"
-      @lava_type = "water"
+      @lava_type = "lava"
+      @iron_bars_type = "iron_bars"
     end
   end
 end
