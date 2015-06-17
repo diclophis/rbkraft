@@ -20,10 +20,17 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
     open_selectable_sockets = selectable_sockets.reject { |io| io.closed? }
-    readable, _writable, _errored = IO.select(selectable_sockets, nil, selectable_sockets, 2.0)
+    readable, writable, _errored = IO.select(selectable_sockets, nil, selectable_sockets, 2.0)
+
+    if writable && writable.length > 0
+      # If the wrapped command is still running
+      if wrapper.running
+        wrapper.handle_descriptors_requiring_writing(writable)
+      end
+    end
 
     # When something is ready to read
-    if readable
+    if readable && readable.length > 0
       # NOTE: When the dynasty socket is passed on, we need to exit immediatly
       # because we no longer own the sockets we have reference to
       break unless dynasty.handle_descriptors_requiring_reading(readable, wrapper.descriptors)
