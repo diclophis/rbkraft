@@ -37,7 +37,7 @@ class DiclophisWorldPainter < WorldPainter
       @sand_type = "sand"
       @sandstone_type = "sandstone"
       @water_type = "water"
-      @tnt_type = "water"
+      @tnt_type = "tnt"
       @lava_type = "lava"
       @iron_bars_type = "iron_bars"
     end
