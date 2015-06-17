@@ -1,7 +1,8 @@
 require 'open3'
 require 'socket'
+require 'fcntl'
 
-READ_CHUNKS = 1024 * 8
+READ_CHUNKS = 1024 * 64
 
 class Wrapper
   class Client < Struct.new(:uid, :authentic, :async, :left_over_command)
@@ -34,12 +35,22 @@ class Wrapper
       load_descriptors(descriptors)
     end
 
+    #self.minecraft_stdin.fcntl(Fcntl::F_SETFL, Fcntl::O_NONBLOCK)
+    #self.minecraft_stdout.fcntl(Fcntl::F_SETFL, Fcntl::O_NONBLOCK)
+    #self.minecraft_stderr.fcntl(Fcntl::F_SETFL, Fcntl::O_NONBLOCK)
+
+    #self.clients.each_key do |a_io|
+    #  a_io.fcntl(Fcntl::F_SETFL, Fcntl::O_NONBLOCK)
+    #end
+
     self.minecraft_stdin.autoclose = false
     self.minecraft_stdout.autoclose = false
     self.minecraft_stderr.autoclose = false
     self.prefetched_broadcast = ""
 
-    install_client(self.stdin, true)
+    puts self.inspect
+
+    #install_client(self.stdin, true)
   end
 
   def install_trap
@@ -96,37 +107,34 @@ class Wrapper
 
   def install_client(client_io, authentic = nil)
     self.clients[client_io] = Client.new(self.uid, authentic)
+    #client_io.fcntl(Fcntl::F_SETFL, Fcntl::O_NONBLOCK)
     self.uid += 1
   end
 
   def handle_minecraft_stdout
     self.running = (!self.minecraft_stdin.closed? && !self.minecraft_stdout.eof?)
     if self.running
-      while true
+      #while true
         broadcast_lines = nil
         begin
-          broadcast_lines = self.minecraft_stdout.read_nonblock(READ_CHUNKS * 1024 * 4)
-        rescue Errno::EAGAIN, Errno::EIO
-          break
+          broadcast_lines = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+        rescue Errno::EAGAIN, Errno::EIO, IOError => e
+          #$stderr.write("a #{e.inspect}")
+          #break
+          return
         rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
-          break
+          #$stderr.write("b")
+          #break
+          return
         end
 
-        break if broadcast_lines.length == 0
+        return if broadcast_lines && broadcast_lines.length == 0
 
         broadcast_lines = self.prefetched_broadcast + broadcast_lines
         self.prefetched_broadcast = ""
 
         if broadcast_lines
           if broadcast_lines.length > 0
-            if false
-              lines = broadcast_lines.split("\n")
-              bline = lines[0].to_s.gsub("\b", "").gsub("  ", "")[0, 64]
-              if bline.length > 0
-                out_bline = "> " + bline + " -- " + (lines.length - 1).to_s + " more lines: " + broadcast_lines.length.to_s + " bytes.\n"
-                self.stdout.write(out_bline)
-              end  
-            end
             self.clients.each_key do |a_io|
               begin
                 wrote = a_io.write(broadcast_lines) unless ((a_io == self.stdin) || self.clients[a_io].async)
@@ -136,7 +144,7 @@ class Wrapper
             end
           end
         end
-      end
+      #end
     end
   end
 
@@ -159,7 +167,7 @@ class Wrapper
     command_line = nil
     command_line_framing_even = false
     begin
-      command_lines = readable_io.read_nonblock(READ_CHUNKS / 2)
+      command_lines = readable_io.read_nonblock(READ_CHUNKS)
       if command_lines && command_lines.length > 0 && command_lines[command_lines.length - 1] == "\n"
         command_line_framing_even = true
       end
@@ -246,34 +254,49 @@ class Wrapper
   def write_minecraft_command(actual_sent_line)
     #NOTE: this needs to buffer
     retries = 0
+    got_stdout = ""
+    result = nil
     begin
       result = self.minecraft_stdin.write_nonblock(actual_sent_line + "\n")
     rescue IOError, IO::WaitWritable, Errno::EINTR
       retries += 1
-      if retries < (1024 * 32)
-        IO.select(nil, [self.minecraft_stdin], nil, (1.0 / 60.0))
+      if retries < (32)
+        IO.select(nil, [self.minecraft_stdin], nil, (1.0))
+        #begin
+        #  got_stdout << self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+        #  #if got_stdout && pre_fetched.length > 0
+        #  #  self.prefetched_broadcast += pre_fetched
+        #  #end
+        #rescue Errno::EAGAIN, Errno::EIO
+        #rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
+        #end
         retry
       else
         puts :failed
+        exit 1
       end
+    rescue Errno::EPIPE => e
+      return "", ""
     end
+
+    return result, got_stdout
   end
 
   def handle_authentic_client(client, io, command_line)
-    command_output = nil
+    #command_output = nil
     out_io = (io == self.stdin) ? self.stdout : io
-
+    pre_fetched = ""
     begin
       actual_sent_line = command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
       if (actual_sent_line && actual_sent_line.length > 0)
-        write_minecraft_command(actual_sent_line)
+        _, pre_fetched = write_minecraft_command(actual_sent_line)
         #command_output = self.minecraft_stdout.gets.strip
         begin
-          pre_fetched = self.minecraft_stdout.read_nonblock(READ_CHUNKS / 2)
+          pre_fetched << self.minecraft_stdout.read_nonblock(READ_CHUNKS)
           if pre_fetched && pre_fetched.length > 0
             self.prefetched_broadcast += pre_fetched
           end
-        rescue Errno::EAGAIN, Errno::EIO
+        rescue Errno::EAGAIN, Errno::EIO, IOError
         rescue Errno::ETIMEDOUT, Errno::ECONNRESET, EOFError => e
         end
       end
