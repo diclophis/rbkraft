@@ -24,7 +24,9 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
     open_selectable_sockets = selectable_sockets.reject { |io| io.closed? }
     open_writable_sockets = writable_sockets.reject { |io| io.closed? }
 
-    readable, writable, _errored = IO.select(selectable_sockets, open_writable_sockets, selectable_sockets, 2.0)
+    next unless (open_selectable_sockets.length > 0 || open_writable_sockets.length > 0)
+
+    readable, writable, _errored = IO.select(selectable_sockets, open_writable_sockets, selectable_sockets, 1.0)
 
     if writable && writable.length > 0
       # If the wrapped command is still running
@@ -47,6 +49,6 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
       end
     end
 
-    sleep 0.01
+    sleep 0.005 # to prevent cpu burn
   end
 end

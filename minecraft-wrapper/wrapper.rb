@@ -15,9 +15,11 @@ class Wrapper
                 :minecraft_stdin, :minecraft_stdout, :minecraft_stderr, :minecraft_thread,
                 :prefetched_broadcast,
                 :command, :options,
-                :input_waiting_to_be_written_to_minecraft
+                :input_waiting_to_be_written_to_minecraft,
+                :full_commands_waiting_to_be_written_to_minecraft
 
   def initialize(descriptors, argv)
+    self.full_commands_waiting_to_be_written_to_minecraft = []
     self.install_trap
 
     self.running = true
@@ -136,7 +138,7 @@ class Wrapper
         begin
           client_input_bytes = readable_io.read_nonblock(READ_CHUNKS)
           enqueue_input_for_minecraft(readable_io, client_input_bytes)
-        rescue IOError => e
+        rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
           close_client(readable_io, e)
         end
       end
@@ -155,7 +157,6 @@ class Wrapper
   end
 
   def handle_minecraft_stdin
-    full_commands_waiting_to_be_written_to_minecraft = []
 
     self.input_waiting_to_be_written_to_minecraft.each do |io, byte_scanner|
       client = self.clients[io]
@@ -167,7 +168,7 @@ class Wrapper
           if full_command_line.strip == "async" #NOTE: this doesnt do much now
             client.async = !client.async
           else
-            full_commands_waiting_to_be_written_to_minecraft << full_command_line
+            self.full_commands_waiting_to_be_written_to_minecraft << full_command_line
           end
         else
           client.authentic = full_command_line.strip == "authentic"
@@ -178,8 +179,10 @@ class Wrapper
       end
     end
 
-    full_commands_waiting_to_be_written_to_minecraft.each do |full_command_line|
+    commands_run = 0
+    while commands_run < 18 && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
       write_minecraft_command(full_command_line)
+      commands_run += 1
     end
   end
 
@@ -189,7 +192,12 @@ class Wrapper
     unless client.nil? || client.broadcast_scanner.eos?
       while has_eol = client.broadcast_scanner.check_until(/\n/)
         broadcast_line = client.broadcast_scanner.scan_until(/\n/)
-        writable_io.write(broadcast_line) unless client.async
+        begin
+          writable_io.write(broadcast_line) unless client.async
+        rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
+          # Broken pipe (Errno::EPIPE)
+          close_client(writable_io, e)
+        end
       end
     end
   end
@@ -210,7 +218,12 @@ class Wrapper
   def write_minecraft_command(actual_command_line)
     filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
     if (filtered_sent_line && filtered_sent_line.length > 0)
-      self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
+      begin
+        self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
+      rescue Errno::EPIPE => e
+        puts "minecraft exited"
+        exit 1
+      end
     end
   end
 end

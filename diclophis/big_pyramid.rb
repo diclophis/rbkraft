@@ -24,13 +24,17 @@ def mostly_air(painter)
   painter.air_type
 end
 
-painter = DiclophisWorldPainter.new(24000, 63, 24000)
+oox = 24000
+ooy = 63
+ooz = 24000
+
+painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
 position = painter.player_position("diclophis")
 puts position.inspect
 puts "wtf"
 
-s = 100 #87
+s = 1024 #87
 floors = 3
 floors_per_tier = 1
 i = 0
@@ -41,11 +45,15 @@ oz = 0
 
 painter.async do
   s.times { |x|
-    s.times { |y|
+    64.times { |y|
       s.times { |z|
-        #$stdout.write("+")
-        painter.place(x, y - 4, z, painter.tnt_type)
-        #$stdout.write("-")
+        #if ((x + oox) - position.x).abs > 128 || ((y + ooy) - position.y).abs > 128 || ((z + ooz) - position.z).abs > 128
+        #  painter.teleport("diclophis", oox + x + 1, ooy + y + 16, ooz + z + 1)
+        #  painter.execute("/fly diclophis on")
+        #  position = painter.player_position("diclophis")
+        #end
+
+        painter.place(x, y, z, painter.type)
       }
     }
     painter.flush_async
