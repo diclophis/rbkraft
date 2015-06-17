@@ -19,12 +19,17 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
+    writable_sockets = wrapper.writable_descriptors
+
     open_selectable_sockets = selectable_sockets.reject { |io| io.closed? }
-    readable, writable, _errored = IO.select(selectable_sockets, nil, selectable_sockets, 2.0)
+    open_writable_sockets = writable_sockets.reject { |io| io.closed? }
+
+    readable, writable, _errored = IO.select(selectable_sockets, open_writable_sockets, selectable_sockets, 2.0)
 
     if writable && writable.length > 0
       # If the wrapped command is still running
       if wrapper.running
+        #$stderr.write("w#{writable.length}\n")
         wrapper.handle_descriptors_requiring_writing(writable)
       end
     end
@@ -37,8 +42,11 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
       # If the wrapped command is still running
       if wrapper.running
+        #$stderr.write("r#{readable.length}\n")
         wrapper.handle_descriptors_requiring_reading(readable)
       end
     end
+
+    sleep 0.01
   end
 end

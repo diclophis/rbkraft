@@ -91,7 +91,11 @@ class Wrapper
   end
 
   def selectable_descriptors
-    [self.stdin] + (descriptors)
+    [self.stdin, self.minecraft_stdout, self.server_io] + self.clients.keys
+  end
+
+  def writable_descriptors
+    [self.minecraft_stdin] + (self.clients.keys - [self.stdin])
   end
 
   def accept_server_io_connection
@@ -129,8 +133,12 @@ class Wrapper
         when self.server_io # client is connecting over unix socket
           accept_server_io_connection
       else # some input from the api server from a client script
-        client_input_bytes = readable_io.read_nonblock(READ_CHUNKS)
-        enqueue_input_for_minecraft(readable_io, client_input_bytes)
+        begin
+          client_input_bytes = readable_io.read_nonblock(READ_CHUNKS)
+          enqueue_input_for_minecraft(readable_io, client_input_bytes)
+        rescue IOError => e
+          close_client(readable_io, e)
+        end
       end
     end
   end
@@ -152,7 +160,7 @@ class Wrapper
     self.input_waiting_to_be_written_to_minecraft.each do |io, byte_scanner|
       client = self.clients[io]
 
-      while has_eol = byte_scanner.check_until(/\n/)
+      while client && has_eol = byte_scanner.check_until(/\n/)
         full_command_line = byte_scanner.scan_until(/\n/)
 
         if client.authentic
@@ -164,8 +172,7 @@ class Wrapper
         else
           client.authentic = full_command_line.strip == "authentic"
           unless client.authentic
-            self.stdout.puts ["quit on un-authentic...!", io, self.clients[io], full_command_line].inspect
-            close_client(io)
+            close_client(io, Exception.new("not authentic"))
           end
         end
       end
@@ -177,24 +184,26 @@ class Wrapper
   end
 
   def broadcast_latest_stdout(writable_io)
-    client = self.client[writable_io]
+    client = self.clients[writable_io]
 
-    unless client.broadcast_scanner.eos?
-      broadcast_bytes = client.broadcast_scanner.scan(/.*/)
-      writable_io.write(broadcast_bytes)
+    unless client.nil? || client.broadcast_scanner.eos?
+      while has_eol = client.broadcast_scanner.check_until(/\n/)
+        broadcast_line = client.broadcast_scanner.scan_until(/\n/)
+        writable_io.write(broadcast_line) unless client.async
+      end
     end
   end
-
 
   def enqueue_input_for_minecraft(io, bytes)
     self.input_waiting_to_be_written_to_minecraft[io] ||= StringScanner.new("")
     self.input_waiting_to_be_written_to_minecraft[io] << bytes
   end
 
-  def close_client(readable_io)
+  def close_client(readable_io, exception = nil)
     unless (readable_io == self.stdin)
       self.clients.delete(readable_io)
       readable_io.close unless readable_io.closed?
+      self.stdout.puts("closed #{readable_io} #{exception}")
     end
   end
 
