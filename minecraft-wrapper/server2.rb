@@ -17,13 +17,18 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
   # Install your main server runloop
   while wrapper.running
 
+
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
-    readable, _writable, _errored = IO.select(selectable_sockets, nil, selectable_sockets, (1.0 / 60.0))
+    puts selectable_sockets.inspect
+    readable, _writable, _errored = IO.select(selectable_sockets, nil, selectable_sockets, 2.0)
     #puts readable.inspect
 
     # When something is ready to read
     if readable
+      #$stdout.write("+")
+      #$stdout.write(readable.inspect)
+      #$stdin.gets
 
       # NOTE: When the dynasty socket is passed on, we need to exit immediatly
       # because we no longer own the sockets we have reference to
@@ -33,6 +38,8 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
       if wrapper.running
         wrapper.handle_descriptors_requiring_reading(readable)
       end
+    else
+      $stdout.write(_errored).inspect
     end
   end
 end
