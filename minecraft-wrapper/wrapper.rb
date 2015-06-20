@@ -52,7 +52,7 @@ class Wrapper
   end
 
   def puts(*args)
-    self.logger.info(args)
+    self.logger.info(*args)
   end
 
   def install_trap
