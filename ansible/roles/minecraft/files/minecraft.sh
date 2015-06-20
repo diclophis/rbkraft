@@ -8,7 +8,7 @@ OK_TO_RUN_WHEN_ONE=$?
 
 if [ $OK_TO_RUN_WHEN_ONE = 0 ];
 then
-  cat /tmp/minecraft.log
+  tail -n 32 /tmp/minecraft.log
   exit 1
 fi;
 

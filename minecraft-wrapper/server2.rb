@@ -26,7 +26,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
     next unless (open_selectable_sockets.length > 0 || open_writable_sockets.length > 0)
 
-    readable, writable, _errored = IO.select(selectable_sockets, open_writable_sockets, selectable_sockets, 1.0)
+    readable, writable, _errored = IO.select(open_selectable_sockets, open_writable_sockets, selectable_sockets, 1.0)
 
     if writable && writable.length > 0
       # If the wrapped command is still running
