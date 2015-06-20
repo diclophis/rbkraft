@@ -73,6 +73,14 @@
 #    #- plugins
 #    - xinetd
 
+- name: dir
+  sudo: true
+  file: dest=/root/.minecraft/versions/1.7.10 state=directory
+
+- name: symlink jar
+  sudo: true
+  file: dest=/root/.minecraft/versions/1.7.10/1.7.10.jar src=/opt/minecraft/minecraft.jar state=link
+
 - name: symlink start script
   sudo: true
   shell: rm -Rf /etc/xinetd.d/* && ln -sf /opt/minecraft/xinetd /etc/xinetd.d/minecraft && /etc/init.d/xinetd restart
