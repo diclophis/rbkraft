@@ -1,7 +1,16 @@
 #!/bin/sh
 
-set -e
+#set -e
 set -x
+
+pgrep "nc"
+OK_TO_RUN_WHEN_ONE=$?
+
+if [ $OK_TO_RUN_WHEN_ONE = 0 ];
+then
+  cat /tmp/minecraft.log
+  exit 1
+fi;
 
 RAM=1500M
 MINECRAFT_ROOT=/opt/minecraft
@@ -19,7 +28,6 @@ rm -f /tmp/dynasty.sock
 #sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
 
 ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=2 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar nogui &
-MCPID=$!
 
 nc -l 0.0.0.0 20021
 

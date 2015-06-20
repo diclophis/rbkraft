@@ -14,8 +14,6 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
   # command using the Wrapper class
   wrapper = Wrapper.new(dynasty.descriptors, ARGV)
 
-  puts wrapper.inspect
-
   # Install your main server runloop
   while wrapper.running
 

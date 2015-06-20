@@ -19,6 +19,8 @@ class Wrapper
                 :full_commands_waiting_to_be_written_to_minecraft
 
   def initialize(descriptors, argv)
+    self.logger = Logger.new("/tmp/minecraft.log")
+
     self.full_commands_waiting_to_be_written_to_minecraft = []
     self.install_trap
 
@@ -27,7 +29,7 @@ class Wrapper
     self.clients = Hash.new
 
     self.stdin = $stdin
-    self.stdout = $stdout
+    #self.stdout = $stdout
     self.stderr = $stderr
 
     self.command = argv[0]
@@ -46,6 +48,10 @@ class Wrapper
     self.input_waiting_to_be_written_to_minecraft = {}
 
     #install_client(self.stdin, true)
+  end
+
+  def puts(*args)
+    self.logger.info(args)
   end
 
   def install_trap
@@ -208,10 +214,10 @@ class Wrapper
   end
 
   def close_client(readable_io, exception = nil)
+    puts("closed #{readable_io} #{exception}")
     unless (readable_io == self.stdin)
       self.clients.delete(readable_io)
       readable_io.close unless readable_io.closed?
-      self.stdout.puts("closed #{readable_io} #{exception}")
     end
   end
 
