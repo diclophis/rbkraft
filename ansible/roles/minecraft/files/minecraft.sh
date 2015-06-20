@@ -11,7 +11,7 @@ then
   ps f -U root
   ps f -U www-data
   ps f -U mavencraft
-  tail -n 6 /var/log/syslog
+  tail -n 128 /var/log/syslog
   sleep 1
   exit 1
 fi;
@@ -26,7 +26,8 @@ cd $MINECRAFT_ROOT
 
 pkill -9 -f java || true
 
-rm -Rf /opt/minecraft/world*
+#NOTE: rm -Rf /opt/minecraft/world*
+
 rm -f /tmp/dynasty.sock
 
 ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=2 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar nogui &
