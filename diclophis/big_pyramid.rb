@@ -47,13 +47,14 @@ painter.async do
   s.times { |x|
     64.times { |y|
       s.times { |z|
-        #if ((x + oox) - position.x).abs > 128 || ((y + ooy) - position.y).abs > 128 || ((z + ooz) - position.z).abs > 128
-        #  painter.teleport("diclophis", oox + x + 1, ooy + y + 16, ooz + z + 1)
-        #  painter.execute("/fly diclophis on")
-        #  position = painter.player_position("diclophis")
-        #end
+        if ((x + oox) - position.x).abs > 128 || ((y + ooy) - position.y).abs > 128 || ((z + ooz) - position.z).abs > 128
+          painter.teleport("diclophis", oox + x + 1, ooy + y + 16, ooz + z + 1)
+          painter.execute("/fly diclophis on")
+          position = painter.player_position("diclophis")
+          sleep 0.5
+        end
 
-        painter.place(x, y, z, painter.type)
+        painter.place(x, y, z, painter.sandstone_type)
       }
     }
     painter.flush_async
