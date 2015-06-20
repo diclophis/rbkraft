@@ -3,12 +3,13 @@
 #set -e
 set -x
 
-pgrep "nc"
+pgrep "ruby"
 OK_TO_RUN_WHEN_ONE=$?
 
 if [ $OK_TO_RUN_WHEN_ONE = 0 ];
 then
-  tail -n 3 /var/log/syslog
+  tail -n 6 /var/log/syslog
+  sleep 1
   exit 1
 fi;
 
@@ -29,16 +30,17 @@ ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RA
 
 while [ true ];
 do
-  echo -e "authentic\nsave-all\nexit\n" | nc localhost 25566 | grep 'Save complete'
+  echo 'authentic\nsave-all'
+  echo 'authentic\nsave-all' | nc -w 5 localhost 25566 | grep 'Save complete'
   SAVED=$?
   if [ $SAVED = 0 ];
   then
     break
   fi
-  sleep 1
+  sleep 5
 done
 
-#sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
+sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
 
 nc -l 0.0.0.0 20021
 
