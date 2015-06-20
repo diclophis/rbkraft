@@ -20,9 +20,8 @@ class Wrapper
                 :full_commands_waiting_to_be_written_to_minecraft,
                 :logger
 
-  def initialize(descriptors, argv)
-    self.logger = Logger.new("/tmp/minecraft.log")
-
+  def initialize(logger, descriptors, argv)
+    self.logger = logger
     self.full_commands_waiting_to_be_written_to_minecraft = []
     self.install_trap
 
