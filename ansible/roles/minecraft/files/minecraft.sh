@@ -25,9 +25,20 @@ pkill -9 -f java || true
 rm -Rf /opt/minecraft/world*
 rm -f /tmp/dynasty.sock
 
-#sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
-
 ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=2 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar nogui &
+
+while [ true ];
+do
+  echo -e "authentic\nsave-all\nexit\n" | nc localhost 25566 | grep 'Save complete'
+  SAVED=$?
+  if [ $SAVED = 0 ];
+  then
+    break
+  fi
+  sleep 1
+done
+
+#sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
 
 nc -l 0.0.0.0 20021
 

@@ -173,7 +173,9 @@ class Wrapper
         full_command_line = byte_scanner.scan_until(/\n/)
 
         if client.authentic
-          if full_command_line.strip == "async" #NOTE: this doesnt do much now
+          if full_command_line.strip == "exit"
+            close_client(io, Exception.new("exit"))
+          elsif full_command_line.strip == "async" #NOTE: this doesnt do much now
             client.async = !client.async
           else
             self.full_commands_waiting_to_be_written_to_minecraft << full_command_line
