@@ -8,6 +8,9 @@ OK_TO_RUN_WHEN_ONE=$?
 
 if [ $OK_TO_RUN_WHEN_ONE = 0 ];
 then
+  ps f -U root
+  ps f -U www-data
+  ps f -U mavencraft
   tail -n 6 /var/log/syslog
   sleep 1
   exit 1
@@ -28,16 +31,6 @@ rm -f /tmp/dynasty.sock
 
 ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=2 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar nogui &
 
-while [ true ];
-do
-  echo 'authentic\nsave-all' | nc -w 5 localhost 25566 | grep 'Save complete'
-  SAVED=$?
-  if [ $SAVED = 0 ];
-  then
-    break
-  fi
-  sleep 5
-done
 
 sudo -u mavencraft sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
 

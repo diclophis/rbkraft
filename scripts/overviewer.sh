@@ -22,6 +22,17 @@ do
   export FULL_BACKUP
   export FULL_MAP
 
+  while [ true ];
+  do
+    echo 'authentic\nsave-all' | nc -w 5 localhost 25566 | grep 'Save complete'
+    SAVED=$?
+    if [ $SAVED = 0 ];
+    then
+      break
+    fi
+    sleep 5
+  done
+
   overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py | logger
 
   #sleep 30
