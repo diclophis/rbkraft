@@ -173,7 +173,7 @@ class Wrapper
         else
           client.authentic = full_command_line.strip == "authentic"
           unless client.authentic
-            close_client(io, Exception.new("not authentic"))
+            close_client(io, Exception.new("not authentic: #{full_command_line}"))
           end
         end
       end
