@@ -22,7 +22,7 @@ do
   export FULL_BACKUP
   export FULL_MAP
 
-  overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py
+  overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py | logger
 
   #sleep 30
   #sh ~/mavencraft/scripts/film.sh a b foo

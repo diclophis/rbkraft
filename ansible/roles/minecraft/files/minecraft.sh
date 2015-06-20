@@ -39,7 +39,7 @@ do
   sleep 5
 done
 
-sudo -u mavencraft sh /home/mavencraft/mavencraft/scripts/overviewer.sh | logger &
+sudo -u mavencraft sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
 
 nc -l 0.0.0.0 20021
 
