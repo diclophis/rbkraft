@@ -33,7 +33,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
     break unless dynasty.handle_descriptors_requiring_reading(readable, wrapper.descriptors)
 
     dynasty.selectable_descriptors.each { |dio| readable.delete(dio) }
-    readable.reject! { |io| begin
+    readable.reject! { |io|
       begin
         io.eof?
       rescue Errno::ENOTCONN => e
