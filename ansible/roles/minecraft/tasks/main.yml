@@ -1,79 +1,86 @@
 ---
-- name: update and upgrade apt-get
-  sudo: true
-  apt: update_cache=true cache_valid_time=6000
-
-- name: bootstrap python-apt package #NOTE: BBG OpenVZ base image does not include these
-  sudo: true
-  command: apt-get -y --force-yes install -o APT::Immediate-Configure=false python-minimal python-apt lzma
-
-# apt-get install -o APT::Immediate-Configure=false -f apt python-minimal
-- name: bootstrap apt package 2 #NOTE: BBG requires this
-  sudo: true
-  environment:
-    DEBIAN_FRONTEND: noninteractive
-  command: apt-get -y --force-yes upgrade
-
-- name: ensure https support for apt is installed
-  sudo: true
-  apt: pkg=apt-transport-https state=present
-
-- name: install main system packages
-  apt: pkg={{ item }} state=latest
-  sudo: true
-  with_items:
-    - apt-transport-https
-    - vim
-    - git
-    - screen
-    - ruby1.9.3
-    - rake
-    - openjdk-7-jre
-    - python-imaging
-    - python-numpy
-    - python-pil
-    - liblapack3
-    - libgfortran3
-    - libwebp5
-    - libwebpmux1
-    - nginx
-
+#- name: update and upgrade apt-get
+#  sudo: true
+#  apt: update_cache=true cache_valid_time=6000
+#
+#- name: bootstrap python-apt package
+#  sudo: true
+#  command: apt-get -y --force-yes install -o APT::Immediate-Configure=false python-minimal python-apt lzma
+#
+#- name: bootstrap apt package 2
+#  sudo: true
+#  environment:
+#    DEBIAN_FRONTEND: noninteractive
+#  command: apt-get -y --force-yes upgrade
+#
+#- name: ensure https support for apt is installed
+#  sudo: true
+#  apt: pkg=apt-transport-https state=present
+#
+#- name: install main system packages
+#  apt: pkg={{ item }} state=latest
+#  sudo: true
+#  with_items:
+#    - apt-transport-https
+#    - vim
+#    - git
+#    - screen
+#    - ruby1.9.3
+#    - rake
+#    - openjdk-7-jre
+#    - python-imaging
+#    - python-numpy
+#    - python-pil
+#    - liblapack3
+#    - libgfortran3
+#    - libwebp5
+#    - libwebpmux1
+#    - nginx
+#    - htop
+#
 #- name: fetch overviewer
-#  get_url: url="http://overviewer.org/builds/952/overviewer-0.11.164-deb64.deb" dest=/root/ mode=0440 sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
-
+#  sudo: true
+#  get_url: url="http://overviewer.org/builds/deb64/2/overviewer-0.12.70.deb" dest=/var/tmp/ mode=0440 #sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
+#
 #- name: install overviewer
-#  shell: dpkg -i /root/overviewer-0.11.164-deb64.deb
+#  sudo: true
+#  shell: dpkg -i /var/tmp/overviewer-0.12.70.deb
+#
+#- name: install github ssh host key
+#  lineinfile: backup=true create=true dest=~/.ssh/known_hosts line="github.com,192.30.252.131 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" state=present
+#
+#- name: clone mavencraft
+#  git: repo=git@github.com:mavenlink/mavencraft.git dest=~/mavencraft version=master
+#
+#- name: install minecraft world-dir
+#  sudo: true
+#  file: dest=/opt/minecraft state=directory
+#
+#- name: install minecraft config
+#  sudo: true
+#  copy: src={{ item }} dest=/opt/minecraft
+#  with_items:
+#    - banned-ips.json
+#    - banned-players.json
+#    - bukkit.yml
+#    - commands.yml
+#    - help.yml
+#    - ops.json
+#    - permissions.yml
+#    - server.properties
+#    - whitelist.json
+#    #- minecraft.jar
+#    #- plugins
+#    - xinetd
 
-#- name: fetch bukkit
-#  get_url: url="http://cbukk.it/craftbukkit-beta.jar" dest=/root/minecraft.jar mode=0440 sha256sum=44355482cf7ae9238ad91bddf9b0b7076d6b1c77
-
-- name: install github ssh host key
-  lineinfile: backup=true create=true dest=~/.ssh/known_hosts line="github.com,192.30.252.131 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" state=present
-
-- name: clone mavencraft
-  git: repo=git@github.com:mavenlink/mavencraft.git dest=~/mavencraft version=master
-
-- name: install minecraft world-dir
-  file: dest=/opt/minecraft state=directory
-
-- name: install minecraft config
-  copy: src={{ item }} dest=/opt/minecraft
-  with_items:
-    - banned-ips.json
-    - banned-players.json
-    - bukkit.yml
-    - commands.yml
-    - help.yml
-    - ops.json
-    - permissions.yml
-    - server.properties
-    - whitelist.json
+- name: symlink start script
+  sudo: true
+  shell: rm -Rf /etc/xinetd.d/* && ln -sf /opt/minecraft/xinetd /etc/xinetd.d/minecraft && /etc/init.d/xinetd restart
 
 - name: install minecraft.sh
+  sudo: true
   copy: src=minecraft.sh dest=/usr/bin/minecraft.sh mode=777
 
 - name: install minecraft backup
+  sudo: true
   file: dest=/opt/backup state=directory
-
-#- name: fetch DragonTravel
-#  get_url: url="http://dev.bukkit.org/media/files/809/608/DragonTravel.jar" dest=/tmp mode=0440

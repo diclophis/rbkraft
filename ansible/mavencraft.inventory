@@ -1,2 +1,2 @@
 [mavencraft]
-mavencraft.net ansible_ssh_user=root
+mavencraft.net ansible_ssh_user=mavencraft

@@ -1,0 +1,10 @@
+service minecraft
+{
+   type                = UNLISTED
+   socket_type         = stream
+   protocol            = tcp
+   wait                = no
+   user                = root
+   server              = /usr/bin/minecraft.sh
+   port                = 20020
+}
