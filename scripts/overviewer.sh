@@ -23,8 +23,8 @@ do
   export FULL_MAP
 
   overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py
-  sleep 30
 
+  #sleep 30
   #sh ~/mavencraft/scripts/film.sh a b foo
   #screen -r minecraft -x -p 0 -X stuff "say MAP DONE\n"
 done

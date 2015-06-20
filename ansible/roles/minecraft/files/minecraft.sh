@@ -30,7 +30,6 @@ ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RA
 
 while [ true ];
 do
-  echo 'authentic\nsave-all'
   echo 'authentic\nsave-all' | nc -w 5 localhost 25566 | grep 'Save complete'
   SAVED=$?
   if [ $SAVED = 0 ];
@@ -47,3 +46,5 @@ nc -l 0.0.0.0 20021
 pkill -9 -f overviewer || true
 pkill -9 -f java || true
 pkill -9 -f ruby || true
+
+reboot

@@ -51,7 +51,7 @@
 #
 - name: clone mavencraft
   git: update=true repo=git@github.com:mavenlink/mavencraft.git dest=~/mavencraft version=master
-#
+
 #- name: install minecraft world-dir
 #  sudo: true
 #  file: dest=/opt/minecraft state=directory
@@ -85,7 +85,7 @@
 
 - name: dir
   sudo: true
-  file: dest=/root/.minecraft state=absent
+  file: dest=/usr/share/nginx/html state=directory owner=mavencraft group=root
 
 #- name: symlink jar
 #  sudo: true
