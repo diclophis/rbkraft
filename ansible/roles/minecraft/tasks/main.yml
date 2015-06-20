@@ -56,20 +56,25 @@
 #  sudo: true
 #  file: dest=/opt/minecraft state=directory
 #
-- name: install minecraft config
+#- name: install minecraft config
+#  sudo: true
+#  copy: src={{ item }} dest=/opt/minecraft
+#  with_items:
+#    - banned-ips.json
+#    - banned-players.json
+#    - bukkit.yml
+#    - commands.yml
+#    - help.yml
+#    - ops.json
+#    - permissions.yml
+#    - server.properties
+#    - whitelist.json
+#    - xinetd
+
+- name: faster sync
   sudo: true
-  copy: src={{ item }} dest=/opt/minecraft
+  synchronize: mode=push src="{{ item }}" dest="/opt/minecraft"
   with_items:
-    - banned-ips.json
-    - banned-players.json
-    - bukkit.yml
-    - commands.yml
-    - help.yml
-    - ops.json
-    - permissions.yml
-    - server.properties
-    - whitelist.json
-    - xinetd
     - textures
     #- minecraft.jar
     #- plugins

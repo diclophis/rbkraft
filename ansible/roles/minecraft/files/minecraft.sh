@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #set -e
-set -x
+#set -x
 
 pgrep "ruby"
 OK_TO_RUN_WHEN_ONE=$?
@@ -40,9 +40,10 @@ do
   sleep 5
 done
 
-sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
+sudo -u mavencraft sh /home/mavencraft/mavencraft/scripts/overviewer.sh | logger &
 
 nc -l 0.0.0.0 20021
 
+pkill -9 -f overviewer || true
 pkill -9 -f java || true
 pkill -9 -f ruby || true
