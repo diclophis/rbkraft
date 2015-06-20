@@ -21,12 +21,18 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
     writable_sockets = wrapper.writable_descriptors
 
-    open_selectable_sockets = selectable_sockets.reject { |io| io.closed? || io.eof? }
+    open_selectable_sockets = selectable_sockets.reject { |io| io.closed? }
     open_writable_sockets = writable_sockets.reject { |io| io.closed? }
 
     next unless (open_selectable_sockets.length > 0 || open_writable_sockets.length > 0)
 
     readable, writable, _errored = IO.select(open_selectable_sockets, open_writable_sockets, selectable_sockets, 1.0)
+
+    # NOTE: When the dynasty socket is passed on, we need to exit immediatly
+    # because we no longer own the sockets we have reference to
+    break unless dynasty.handle_descriptors_requiring_reading(readable, wrapper.descriptors)
+
+    dynasty.selectable_descriptors.each { |dio| readable.delete(dio) }
 
     if writable && writable.length > 0
       # If the wrapped command is still running
@@ -38,10 +44,6 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
     # When something is ready to read
     if readable && readable.length > 0
-      # NOTE: When the dynasty socket is passed on, we need to exit immediatly
-      # because we no longer own the sockets we have reference to
-      break unless dynasty.handle_descriptors_requiring_reading(readable, wrapper.descriptors)
-
       # If the wrapped command is still running
       if wrapper.running
         #$stderr.write("r#{readable.length}\n")
