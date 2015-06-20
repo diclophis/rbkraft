@@ -56,30 +56,35 @@
 #  sudo: true
 #  file: dest=/opt/minecraft state=directory
 #
-#- name: install minecraft config
+- name: install minecraft config
+  sudo: true
+  copy: src={{ item }} dest=/opt/minecraft
+  with_items:
+    - banned-ips.json
+    - banned-players.json
+    - bukkit.yml
+    - commands.yml
+    - help.yml
+    - ops.json
+    - permissions.yml
+    - server.properties
+    - whitelist.json
+    - xinetd
+    - textures
+    #- minecraft.jar
+    #- plugins
+
+#- name: dir
 #  sudo: true
-#  copy: src={{ item }} dest=/opt/minecraft
-#  with_items:
-#    - banned-ips.json
-#    - banned-players.json
-#    - bukkit.yml
-#    - commands.yml
-#    - help.yml
-#    - ops.json
-#    - permissions.yml
-#    - server.properties
-#    - whitelist.json
-#    #- minecraft.jar
-#    #- plugins
-#    - xinetd
+#  file: dest=/root/.minecraft/versions/1.7.10 state=directory
 
 - name: dir
   sudo: true
-  file: dest=/root/.minecraft/versions/1.7.10 state=directory
+  file: dest=/root/.minecraft state=absent
 
-- name: symlink jar
-  sudo: true
-  file: dest=/root/.minecraft/versions/1.7.10/1.7.10.jar src=/opt/minecraft/minecraft.jar state=link
+#- name: symlink jar
+#  sudo: true
+#  file: dest=/root/.minecraft/versions/1.7.10/1.7.10.jar src=/opt/minecraft/minecraft.jar state=link
 
 - name: symlink start script
   sudo: true
