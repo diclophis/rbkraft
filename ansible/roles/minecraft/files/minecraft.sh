@@ -11,14 +11,12 @@ MAVENCRAFT_BLOCKER=/home/mavencraft/mavencraft/minecraft-wrapper/blocker.rb
 mkdir -p $MINECRAFT_ROOT
 cd $MINECRAFT_ROOT
 
-#pkill -9 -f java || true
-#pkill -9 -f nc || true
 pkill -9 -f java || true
 
 rm -Rf /opt/minecraft/world*
 rm -f /tmp/dynasty.sock
 
-sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
+#sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
 
 ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=2 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar nogui &
 MCPID=$!
