@@ -9,3 +9,6 @@ minecraft-wrapper/usercache.json
 minecraft-wrapper/whitelist.json
 minecraft-wrapper/world/
 .idea
+
+ansible/roles/minecraft/files/minecraft.jar
+ansible/roles/minecraft/files/plugins
