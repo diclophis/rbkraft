@@ -3,7 +3,7 @@
 # makes map and invokes film
 
 #set -e
-set -x
+#set -x
 
 while true;
 do
