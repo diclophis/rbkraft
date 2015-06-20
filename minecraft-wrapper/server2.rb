@@ -5,12 +5,12 @@ $: << File.dirname(__FILE__) + '/lib'
 
 require 'dynasty'
 require 'wrapper'
-require 'syslog/logger'
+require 'syslog'
 
 # Start a hot-reloadable server on desired socket
 Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"]) do |dynasty|
   # log to the system log
-  logger = Syslog::Logger.new 'mavencraft'
+  logger = Syslog.open("mavencraft", Syslog::LOG_DAEMON)
 
   # In your server, consume any ancestored descriptors, order is important
   # this case, the first 3 sockets are the stdin,stdout,stderr of the wrapped
