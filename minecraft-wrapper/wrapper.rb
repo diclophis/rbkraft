@@ -49,10 +49,11 @@ class Wrapper
     self.input_waiting_to_be_written_to_minecraft = {}
 
     #install_client(self.stdin, true)
+    self.logger.crit("starting")
   end
 
   def puts(*args)
-    self.logger.info(*args)
+    self.logger.crit(*args)
   end
 
   def install_trap
