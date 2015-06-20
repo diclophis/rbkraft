@@ -18,7 +18,9 @@ do
   export FULL_BACKUP
   export FULL_MAP
 
-  echo 'authentic\nsave-all' | nc -w 30 -4 -i 1 -I 2 -t localhost 25566 | grep 'Save complete'
+  echo 'authentic\nsave-all' | nc -w 10 localhost 25566
+
+  test -e /opt/minecraft/world/level.dat
   SAVED=$?
   if [ $SAVED = 0 ];
   then
