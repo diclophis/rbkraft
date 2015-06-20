@@ -18,7 +18,7 @@ do
   export FULL_BACKUP
   export FULL_MAP
 
-  echo -e 'authentic\nsave-all' | nc -w 30 -4 -i 1 -I 2 -t localhost 25566 | grep 'Save complete'
+  echo 'authentic\nsave-all' | nc -w 30 -4 -i 1 -I 2 -t localhost 25566 | grep 'Save complete'
   SAVED=$?
   if [ $SAVED = 0 ];
   then
