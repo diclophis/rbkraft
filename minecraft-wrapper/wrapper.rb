@@ -2,6 +2,7 @@ require 'open3'
 require 'socket'
 require 'fcntl'
 require 'strscan'
+require 'logger'
 
 READ_CHUNKS = 1024 * 64
 
