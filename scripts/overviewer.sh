@@ -24,7 +24,7 @@ do
 
   overviewer.py -v -v -v -v --config ~/mavencraft/scripts/overviewerConfig.py
 
-  #sh ~/mavencraft/scripts/film.sh
+  sh ~/mavencraft/scripts/film.sh a b foo
 
   #screen -r minecraft -x -p 0 -X stuff "say MAP DONE\n"
 done
