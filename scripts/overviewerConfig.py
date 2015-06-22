@@ -30,6 +30,6 @@ renders["normal"] = {
 
 showlocationmarker = False
 defaultzoom = 4 
-processes = 2
+processes = 6
 outputdir = os.environ['FULL_MAP']
 texturepath = "/home/mavencraft/textures"

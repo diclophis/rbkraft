@@ -88,6 +88,10 @@
   sudo: true
   file: dest=/usr/share/nginx/html state=directory owner=mavencraft group=root
 
+- name: fix existing
+  sudo: true
+  shell: chown -Rv mavencraft:users /usr/share/nginx/html
+
 - name: symlink start script
   sudo: true
   shell: rm -Rf /etc/xinetd.d/* && ln -sf /home/mavencraft/xinetd /etc/xinetd.d/mavencraft && /etc/init.d/xinetd restart
