@@ -1,4 +1,5 @@
 ---
+
 - name: update and upgrade apt-get
   sudo: true
   apt: update_cache=true cache_valid_time=6000
@@ -37,6 +38,7 @@
     - libwebpmux1
     - nginx
     - htop
+    - xinetd
 
 - name: fetch overviewer
   sudo: true
@@ -46,19 +48,27 @@
   sudo: true
   shell: dpkg -i /var/tmp/overviewer-0.12.70.deb
 
+- name: add mavencraft group
+  sudo: true
+  group: name=mavencraft state=present
+
+- name: add mavencraft user
+  sudo: true
+  user: name=mavencraft state=present groups=mavencraft shell=/bin/bash
+
 - name: install github ssh host key
   lineinfile: backup=true create=true dest=~/.ssh/known_hosts line="github.com,192.30.252.131 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" state=present
 
-- name: clone mavencraft
-  git: update=true repo=git@github.com:mavenlink/mavencraft.git dest=~/mavencraft version=master
-
-- name: install minecraft world-dir
+- name: home dir
   sudo: true
-  file: dest=/opt/minecraft state=directory
+  file: dest=/home/mavencraft state=directory mode=777
+
+- name: clone mavencraft
+  git: update=true repo=git@github.com:mavenlink/mavencraft.git dest=/home/mavencraft/mavencraft version=master
 
 - name: faster sync
   sudo: true
-  synchronize: mode=push src="{{ item }}" dest="/opt/minecraft"
+  synchronize: mode=push src="{{ item }}" dest="/home/mavencraft"
   with_items:
     - banned-ips.json
     - banned-players.json
@@ -80,7 +90,7 @@
 
 - name: symlink start script
   sudo: true
-  shell: rm -Rf /etc/xinetd.d/* && ln -sf /opt/minecraft/xinetd /etc/xinetd.d/minecraft && /etc/init.d/xinetd restart
+  shell: rm -Rf /etc/xinetd.d/* && ln -sf /home/mavencraft/xinetd /etc/xinetd.d/mavencraft && /etc/init.d/xinetd restart
 
 - name: install minecraft.sh
   sudo: true
@@ -88,4 +98,4 @@
 
 - name: install minecraft backup
   sudo: true
-  file: dest=/opt/backup state=directory
+  file: dest=/home/mavencraft/backup state=directory

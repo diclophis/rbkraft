@@ -32,4 +32,4 @@ showlocationmarker = False
 defaultzoom = 4 
 processes = 2
 outputdir = os.environ['FULL_MAP']
-texturepath = "/opt/minecraft/textures"
+texturepath = "/home/mavencraft/textures"

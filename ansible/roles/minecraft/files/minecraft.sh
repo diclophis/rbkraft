@@ -18,7 +18,7 @@ fi;
 
 
 RAM=1500M
-MINECRAFT_ROOT=/opt/minecraft
+MINECRAFT_ROOT=/home/mavencraft
 MAVENCRAFT_WRAPPER=/home/mavencraft/mavencraft/minecraft-wrapper/server2.rb
 MAVENCRAFT_BLOCKER=/home/mavencraft/mavencraft/minecraft-wrapper/blocker.rb
 
@@ -27,7 +27,7 @@ cd $MINECRAFT_ROOT
 
 pkill -9 -f java || true
 
-#NOTE: rm -Rf /opt/minecraft/world*
+rm -Rf /home/mavencraft/world*
 
 rm -f /tmp/dynasty.sock
 

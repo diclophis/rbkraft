@@ -1,2 +1,2 @@
 [mavencraft]
-mavencraft.net ansible_ssh_user=mavencraft
+mavencraft.net ansible_ssh_user=ubuntu

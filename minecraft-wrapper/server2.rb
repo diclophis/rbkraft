@@ -39,7 +39,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
     readable.reject! { |io|
       begin
         io.eof?
-      rescue Errno::ENOTCONN => e
+      rescue Errno::ECONNRESET, Errno::ENOTCONN => e
         # Transport endpoint is not connected
         puts e.inspect
       end

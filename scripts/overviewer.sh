@@ -8,7 +8,7 @@
 while true;
 do
   echo overviewer-start | logger
-  FULL_BACKUP=/opt/minecraft/world
+  FULL_BACKUP=/home/mavencraft/world
 
   MAP_BASE=/usr/share/nginx
   LAST_MAP=html
@@ -20,9 +20,7 @@ do
 
   echo 'authentic\nsave-all' | nc -w 10 localhost 25566
 
-  test -e /opt/minecraft/world/level.dat
-  SAVED=$?
-  if [ $SAVED = 0 ];
+  if [ -e /home/mavencraft/world/level.dat ];
   then
     overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py | logger
     echo 'authentic\nsay charted' | nc -w 1 localhost 25566
