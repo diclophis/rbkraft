@@ -128,7 +128,7 @@ class Wrapper
           return
         else
           self.clients.each do |io, client|
-            client.broadcast_scanner << broadcast_bytes
+            client.broadcast_scanner << broadcast_bytes if client.authentic
           end
         end
       end
