@@ -179,6 +179,9 @@ class Wrapper
             client.async = !client.async
           else
             self.full_commands_waiting_to_be_written_to_minecraft << full_command_line
+            if full_command_line.strip == "save-all"
+              close_client(io, Exception.new("saved: #{full_command_line}"))
+            end
           end
         else
           client.authentic = full_command_line.strip == "authentic"
