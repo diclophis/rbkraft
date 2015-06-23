@@ -165,7 +165,6 @@ class Wrapper
   end
 
   def handle_minecraft_stdin
-
     self.input_waiting_to_be_written_to_minecraft.each do |io, byte_scanner|
       client = self.clients[io]
 
@@ -178,9 +177,11 @@ class Wrapper
           elsif full_command_line.strip == "async" #NOTE: this doesnt do much now
             client.async = !client.async
           else
-            self.full_commands_waiting_to_be_written_to_minecraft << full_command_line
             if full_command_line.strip == "save-all"
+              self.full_commands_waiting_to_be_written_to_minecraft.unshift(full_command_line)
               close_client(io, Exception.new("saved: #{full_command_line}"))
+            else
+              self.full_commands_waiting_to_be_written_to_minecraft << full_command_line
             end
           end
         else
