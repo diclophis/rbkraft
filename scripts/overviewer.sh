@@ -18,12 +18,13 @@ do
   export FULL_BACKUP
   export FULL_MAP
 
-  echo 'authentic\nsave-all' | nc -w 10 localhost 25566
+  echo 'authentic\nsave-all' | nc -w 10 localhost 25566 2>&1 | logger
+  echo overviewer-saved | logger
 
   if [ -e /home/mavencraft/world/level.dat ];
   then
     overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py | logger
-    echo 'authentic\nsay charted' | nc -w 1 localhost 25566
+    echo 'authentic\nsay charted' | nc -w 1 localhost 25566 2>&1 | logger
   fi
   echo overviewer-end | logger
 done
