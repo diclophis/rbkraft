@@ -193,7 +193,7 @@ class Wrapper
     end
 
     commands_run = 0
-    while commands_run < 32 && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
+    while commands_run < 1024 && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
       write_minecraft_command(full_command_line)
       commands_run += 1
     end
