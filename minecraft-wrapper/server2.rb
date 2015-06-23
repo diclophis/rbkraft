@@ -62,6 +62,6 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
       end
     end
 
-    sleep 0.005 # to prevent cpu burn
+    sleep 0.001 # to prevent cpu burn
   end
 end

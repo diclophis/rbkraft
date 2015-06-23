@@ -4,7 +4,7 @@ require 'fcntl'
 require 'strscan'
 require 'logger'
 
-READ_CHUNKS = 1024 * 64
+READ_CHUNKS = 1024 * 64 * 64
 
 class Wrapper
   class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner)
@@ -190,7 +190,7 @@ class Wrapper
     end
 
     commands_run = 0
-    while commands_run < 18 && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
+    while commands_run < 32 && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
       write_minecraft_command(full_command_line)
       commands_run += 1
     end
