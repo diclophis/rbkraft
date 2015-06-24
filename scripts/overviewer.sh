@@ -25,6 +25,9 @@ do
   then
     overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py | logger
     echo 'authentic\nsay charted' | nc -w 1 localhost 25566 2>&1 > /dev/null
+  else
+    echo overview-sleep | logger
+    sleep 5
   fi
   echo overviewer-end | logger
 done

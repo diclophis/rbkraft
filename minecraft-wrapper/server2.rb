@@ -36,14 +36,15 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
     break unless dynasty.handle_descriptors_requiring_reading(readable, wrapper.descriptors)
 
     dynasty.selectable_descriptors.each { |dio| readable.delete(dio) }
-    readable.reject! { |io|
-      begin
-        io.eof?
-      rescue Errno::ECONNRESET, Errno::ENOTCONN => e
-        # Transport endpoint is not connected
-        puts e.inspect
-      end
-    }
+    
+    #readable.reject! { |io|
+    #  begin
+    #    io.eof?
+    #  rescue Errno::ECONNRESET, Errno::ENOTCONN => e
+    #    # Transport endpoint is not connected
+    #    puts e.inspect
+    #  end
+    #}
 
     if writable && writable.length > 0
       # If the wrapped command is still running
@@ -62,6 +63,5 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
       end
     end
 
-    sleep 0.1 # to prevent cpu burn
   end
 end
