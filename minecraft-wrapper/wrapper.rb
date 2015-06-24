@@ -4,8 +4,9 @@ require 'fcntl'
 require 'strscan'
 require 'logger'
 
-READ_CHUNKS = 32 #1024 * 1024 * 1024
-COMMANDS_PER_SWEEP = 8
+READ_CHUNKS = 8192 / 16
+COMMANDS_PER_SWEEP = 64
+COMMANDS_PER_MOD = 16
 
 class Wrapper
   class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner)
@@ -30,7 +31,7 @@ class Wrapper
     self.uid = 0
     self.clients = Hash.new
 
-    self.stdin = $stdin
+    #self.stdin = $stdin
     #self.stdout = $stdout
     self.stderr = $stderr
 
@@ -72,7 +73,7 @@ class Wrapper
     if self.command
       self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.minecraft_thread = Open3.popen3(self.command, *self.options)
     else
-      raise "command required for wrapper, sleep works"
+      raise "command required for wrapper"
     end
   end
 
@@ -98,15 +99,15 @@ class Wrapper
   end
 
   def descriptors
-    [self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.server_io] + (self.clients.keys - [self.stdin])
+    [self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.server_io] + (self.clients.keys)
   end
 
   def selectable_descriptors
-    [self.stdin, self.minecraft_stdout, self.server_io] + self.clients.keys
+    [self.minecraft_stdout, self.server_io] + self.clients.keys
   end
 
   def writable_descriptors
-    [self.minecraft_stdin] + (self.clients.keys - [self.stdin])
+    [self.minecraft_stdin] + (self.clients.keys)
   end
 
   def accept_server_io_connection
@@ -120,11 +121,22 @@ class Wrapper
   end
 
   def handle_minecraft_stdout
-    self.running = (!self.minecraft_stdin.closed? && !self.minecraft_stdout.eof?)
+    self.running = (!self.minecraft_stdin.closed?) # && !self.minecraft_stdout.eof?)
     if self.running
-      broadcast_bytes = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+      broadcast_bytes = nil
+
+      begin
+        broadcast_bytes = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+      rescue IO::EAGAINWaitReadable, Errno::EAGAIN => e
+        puts "ok #{e}"
+      rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
+        puts "wtf #{e}"
+      end
 
       if broadcast_bytes
+        broadcast_bytes.gsub!("\b", "")
+        broadcast_bytes.squeeze!(" ")
+
         if broadcast_bytes.length == 0
           return
         else
@@ -198,6 +210,11 @@ class Wrapper
     while commands_run < COMMANDS_PER_SWEEP && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
       write_minecraft_command(full_command_line)
       commands_run += 1
+
+      if (commands_run % COMMANDS_PER_MOD) == 0
+    	sleep 0.01 # to prevent cpu burn
+        handle_minecraft_stdout
+      end
     end
   end
 
@@ -224,10 +241,10 @@ class Wrapper
 
   def close_client(readable_io, exception = nil)
     puts("closed #{readable_io} #{exception}")
-    unless (readable_io == self.stdin)
+    #unless (readable_io == self.stdin)
       self.clients.delete(readable_io)
       readable_io.close unless readable_io.closed?
-    end
+    #end
   end
 
   def write_minecraft_command(actual_command_line)
