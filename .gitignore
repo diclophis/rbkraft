@@ -9,7 +9,7 @@ minecraft-wrapper/usercache.json
 minecraft-wrapper/whitelist.json
 minecraft-wrapper/world/
 .idea
-
+last_center.dat
 ansible/roles/minecraft/files/minecraft.jar
 ansible/roles/minecraft/files/plugins
 ansible/roles/minecraft/files/textures

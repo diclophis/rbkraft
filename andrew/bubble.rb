@@ -1,3 +1,5 @@
+# This script is similar to tunnel.rb, but it makes a box of glass around you while tunneling.
+
 require_relative '../world-painter/world_painter.rb'
 require 'pp'
 

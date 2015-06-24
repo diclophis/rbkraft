@@ -1,3 +1,7 @@
+# Build a bubble of air around the player, reading in block data, and reconstructing it when the player moves.
+#   https://www.youtube.com/watch?v=wrvlkLELqwg&feature=youtu.be
+#   https://www.youtube.com/watch?v=VCY2VKXJkSw&feature=youtu.be
+
 require_relative '../world-painter/world_painter.rb'
 require 'pp'
 
