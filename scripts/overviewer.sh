@@ -1,18 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 # makes map and invokes film
 
-set -e
+#set -e
+#set -x
 
 while true;
 do
-  #screen -r minecraft -x -p 0 -X stuff "say GEN MAP\n"
-
-  #BACKUP_BASE=/opt/backup
-  #LAST_BACKUP=`ls -1tr $BACKUP_BASE | tail -n 1`
-  #FULL_BACKUP=$BACKUP_BASE/$LAST_BACKUP
-
-  FULL_BACKUP=/opt/minecraft/world
+  echo overviewer-start | logger
+  FULL_BACKUP=/home/mavencraft/world
 
   MAP_BASE=/usr/share/nginx
   LAST_MAP=html
@@ -22,9 +18,13 @@ do
   export FULL_BACKUP
   export FULL_MAP
 
-  overviewer.py -v -v -v -v --config ~/mavencraft/scripts/overviewerConfig.py
+  echo 'authentic\nsave-all' | nc -w 10 localhost 25566 2>&1 > /dev/null
+  echo overviewer-saved | logger
 
-  #sh ~/mavencraft/scripts/film.sh
-
-  #screen -r minecraft -x -p 0 -X stuff "say MAP DONE\n"
+  if [ -e /home/mavencraft/world/level.dat ];
+  then
+    overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py | logger
+    echo 'authentic\nsay charted' | nc -w 1 localhost 25566 2>&1 > /dev/null
+  fi
+  echo overviewer-end | logger
 done

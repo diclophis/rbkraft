@@ -5,34 +5,63 @@ $: << File.dirname(__FILE__) + '/lib'
 
 require 'dynasty'
 require 'wrapper'
+require 'syslog'
 
 # Start a hot-reloadable server on desired socket
 Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"]) do |dynasty|
+  # log to the system log
+  logger = Syslog.open("mavencraft", Syslog::LOG_DAEMON)
 
   # In your server, consume any ancestored descriptors, order is important
   # this case, the first 3 sockets are the stdin,stdout,stderr of the wrapped
   # command using the Wrapper class
-  wrapper = Wrapper.new(dynasty.descriptors, ARGV)
+  wrapper = Wrapper.new(logger, dynasty.descriptors, ARGV)
 
   # Install your main server runloop
   while wrapper.running
 
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
-    readable, _writable, _errored = IO.select(selectable_sockets, nil, selectable_sockets, ENV["SELECT_TIMEOUT"] || (1.0 / 60.0))
-    #puts readable.inspect
+    writable_sockets = wrapper.writable_descriptors
 
-    # When something is ready to read
-    if readable
+    open_selectable_sockets = selectable_sockets.reject { |io| io.closed? }
+    open_writable_sockets = writable_sockets.reject { |io| io.closed? }
 
-      # NOTE: When the dynasty socket is passed on, we need to exit immediatly
-      # because we no longer own the sockets we have reference to
-      break unless dynasty.handle_descriptors_requiring_reading(readable, wrapper.descriptors)
+    next unless (open_selectable_sockets.length > 0 || open_writable_sockets.length > 0)
 
+    readable, writable, _errored = IO.select(open_selectable_sockets, open_writable_sockets, selectable_sockets, 1.0)
+
+    # NOTE: When the dynasty socket is passed on, we need to exit immediatly
+    # because we no longer own the sockets we have reference to
+    break unless dynasty.handle_descriptors_requiring_reading(readable, wrapper.descriptors)
+
+    dynasty.selectable_descriptors.each { |dio| readable.delete(dio) }
+    readable.reject! { |io|
+      begin
+        io.eof?
+      rescue Errno::ECONNRESET, Errno::ENOTCONN => e
+        # Transport endpoint is not connected
+        puts e.inspect
+      end
+    }
+
+    if writable && writable.length > 0
       # If the wrapped command is still running
       if wrapper.running
+        #$stderr.write("w#{writable.length}\n")
+        wrapper.handle_descriptors_requiring_writing(writable)
+      end
+    end
+
+    # When something is ready to read
+    if readable && readable.length > 0
+      # If the wrapped command is still running
+      if wrapper.running
+        #$stderr.write("r#{readable.length}\n")
         wrapper.handle_descriptors_requiring_reading(readable)
       end
     end
+
+    sleep 0.001 # to prevent cpu burn
   end
 end

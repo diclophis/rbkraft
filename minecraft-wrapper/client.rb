@@ -27,7 +27,7 @@ class MinecraftClient
       signal = Time.now.to_f.to_s
       @server_io.puts("say the signal is #{signal}")
       while true
-        sleep 0.05
+        sleep 0.01
         begin
           break if read_nonblock.include?(signal)
         rescue Errno::EAGAIN, Errno::EIO
@@ -42,7 +42,7 @@ class MinecraftClient
   end
 
   def read_nonblock
-    @server_io.read_nonblock(1024 * 32)
+    @server_io.read_nonblock(1024 * 64)
   rescue Errno::EAGAIN, Errno::EIO
     ''
   end

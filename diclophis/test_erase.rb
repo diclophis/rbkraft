@@ -19,47 +19,28 @@ painter = DiclophisWorldPainter.new(ox, oy, oz)
 
 blocks = Array.new
 
-air_type = "air"
-type = air_type
-debug_type = air_type
-alt_type = air_type
-corner_type = air_type 
-slab = air_type 
-glass_type = air_type
-glow_type = air_type
-sand_type = air_type
-sandstone_type = air_type
-water_type = air_type
 
-if ARGV[0] == "draw"
-  puts "draw"
-  type = "stone"
-  glow_type = "glowstone"
-  slab = "stone_slab"
-  debug_type = "glowstone"
-  alt_type = "stonebrick"
-  corner_type = "log"
-  glass_type = "glass"
-  sand_type = "sand"
-  sandstone_type = "sandstone"
-  water_type = "water"
-end
+  #@x = 20567
+  #@y = 130
+  #@z = 18795
 
-#while true do
-
-  #@x=20597
-  #@y=106
-  #@z=19187
-
-  @x=20567
-  @y=130
-  @z=18795
-
-  painter.center = Vector.new(@x, @y, @z)
-  #painter.center = painter.player_position("diclophis") + Vector.new(-2.0, -2.0, -2.0)
-
+  #painter.center = Vector.new(@x, @y, @z)
+  painter.center = painter.player_position("diclophis") + Vector.new(-2.0, -2.0, -2.0)
   puts painter.center.inspect
 
+  type = false 
+  while true do
+
+    painter.async do
+      painter.place(0, 0, 0, type ? painter.sandstone_type : painter.air_type)
+    end
+
+    type = !type
+    sleep 1
+  end
+
+
+=begin
   painter.async do
     ph = 90
     pw = 90
@@ -83,5 +64,4 @@ end
       }
     }
   end
-
-#end
+=end

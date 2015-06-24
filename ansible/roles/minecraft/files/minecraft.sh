@@ -1,19 +1,47 @@
 #!/bin/sh
 
-set -e
+#set -e
+#set -x
 
-RAM=1500M
-MINECRAFT_JAR=/root/minecraft.jar
-MINECRAFT_ROOT=/opt/minecraft
-MAVENCRAFT_WRAPPER=/root/mavencraft/minecraft-wrapper/server.rb
-#MAVENCRAFT_WRAPPER_SOCK=0.0.0.0:25566
-#/tmp/minecraft-wrapper.sock
-export MAVENCRAFT_WRAPPER_PORT=25566
+pgrep "ruby"
+OK_TO_RUN_WHEN_ONE=$?
+
+if [ $OK_TO_RUN_WHEN_ONE = 0 ];
+then
+  ps f -U root
+  ps f -U www-data
+  ps f -U mavencraft
+  tail -n 128 /var/log/syslog
+  sleep 1
+  exit 1
+fi;
+
+
+RAM=10000M
+MINECRAFT_ROOT=/home/mavencraft
+MAVENCRAFT_WRAPPER=/home/mavencraft/mavencraft/minecraft-wrapper/server2.rb
+MAVENCRAFT_BLOCKER=/home/mavencraft/mavencraft/minecraft-wrapper/blocker.rb
 
 mkdir -p $MINECRAFT_ROOT
 cd $MINECRAFT_ROOT
 
-#touch $MAVENCRAFT_WRAPPER_SOCK
-#rm $MAVENCRAFT_WRAPPER_SOCK
+pkill -9 -f java || true
 
-ruby $MAVENCRAFT_WRAPPER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=2 -XX:+AggressiveOpts -server -jar $MINECRAFT_JAR nogui
+rm -Rf /home/mavencraft/world*
+
+rm -f /tmp/dynasty.sock
+
+echo starting-minecraft
+ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=4 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar nogui &
+
+echo starting-overviewer
+sudo -u mavencraft sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
+
+echo starting-blocker
+nc -l 0.0.0.0 20021
+
+pkill -9 -f overviewer || true
+pkill -9 -f java || true
+pkill -9 -f ruby || true
+
+reboot

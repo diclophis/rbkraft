@@ -1,14 +1,14 @@
 ---
+
 - name: update and upgrade apt-get
   sudo: true
   apt: update_cache=true cache_valid_time=6000
 
-- name: bootstrap python-apt package #NOTE: BBG OpenVZ base image does not include these
+- name: bootstrap python-apt package
   sudo: true
   command: apt-get -y --force-yes install -o APT::Immediate-Configure=false python-minimal python-apt lzma
 
-# apt-get install -o APT::Immediate-Configure=false -f apt python-minimal
-- name: bootstrap apt package 2 #NOTE: BBG requires this
+- name: bootstrap apt package 2
   sudo: true
   environment:
     DEBIAN_FRONTEND: noninteractive
@@ -37,29 +37,38 @@
     - libwebp5
     - libwebpmux1
     - nginx
+    - htop
+    - xinetd
 
 - name: fetch overviewer
-  get_url: url="http://overviewer.org/builds/952/overviewer-0.11.164-deb64.deb" dest=/root/ mode=0440 sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
+  sudo: true
+  get_url: url="http://overviewer.org/builds/deb64/2/overviewer-0.12.70.deb" dest=/var/tmp/ mode=0440 #sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
 
 - name: install overviewer
-  shell: dpkg -i /root/overviewer-0.11.164-deb64.deb
+  sudo: true
+  shell: dpkg -i /var/tmp/overviewer-0.12.70.deb
 
-- name: fetch bukkit
-  get_url: url="http://cbukk.it/craftbukkit-beta.jar" dest=/root/minecraft.jar mode=0440 sha256sum=44355482cf7ae9238ad91bddf9b0b7076d6b1c77
+- name: add mavencraft group
+  sudo: true
+  group: name=mavencraft state=present
+
+- name: add mavencraft user
+  sudo: true
+  user: name=mavencraft state=present groups=mavencraft shell=/bin/bash
 
 - name: install github ssh host key
   lineinfile: backup=true create=true dest=~/.ssh/known_hosts line="github.com,192.30.252.131 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" state=present
 
+- name: home dir
+  sudo: true
+  file: dest=/home/mavencraft state=directory mode=777
+
 - name: clone mavencraft
-  git: repo=git@github.com:mavenlink/mavencraft.git dest=~/mavencraft version=master
-#- name: copy mavencraft
-#  copy: 
+  git: update=true repo=git@github.com:mavenlink/mavencraft.git dest=/home/mavencraft/mavencraft version=master
 
-- name: install minecraft world-dir
-  file: dest=/opt/minecraft state=directory
-
-- name: install minecraft config
-  copy: src={{ item }} dest=/opt/minecraft
+- name: faster sync
+  sudo: true
+  synchronize: mode=push src="{{ item }}" dest="/home/mavencraft"
   with_items:
     - banned-ips.json
     - banned-players.json
@@ -70,12 +79,27 @@
     - permissions.yml
     - server.properties
     - whitelist.json
+    - xinetd
+    - minecraft.jar
+    - textures
+    - plugins
+
+- name: dir
+  sudo: true
+  file: dest=/usr/share/nginx/html state=directory owner=mavencraft group=root
+
+- name: fix existing
+  sudo: true
+  shell: chown -Rv mavencraft:users /usr/share/nginx/html
+
+- name: symlink start script
+  sudo: true
+  shell: rm -Rf /etc/xinetd.d/* && ln -sf /home/mavencraft/xinetd /etc/xinetd.d/mavencraft && /etc/init.d/xinetd restart
 
 - name: install minecraft.sh
+  sudo: true
   copy: src=minecraft.sh dest=/usr/bin/minecraft.sh mode=777
 
 - name: install minecraft backup
-  file: dest=/opt/backup state=directory
-
-#- name: fetch DragonTravel
-#  get_url: url="http://dev.bukkit.org/media/files/809/608/DragonTravel.jar" dest=/tmp mode=0440
+  sudo: true
+  file: dest=/home/mavencraft/backup state=directory
