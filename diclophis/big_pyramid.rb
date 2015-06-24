@@ -35,9 +35,9 @@ painter.center = position
 puts position.inspect
 puts "wtf"
 
-s = 87
-floors = 32
-floors_per_tier = 5
+s = 27
+floors = 11
+floors_per_tier = 3
 i = 0
 
 ox = 0
@@ -70,9 +70,9 @@ painter.async do
   floors.times { |f|
     if ((f % floors_per_tier) == (floors_per_tier - 1))
       i = 0
-      s -= 19
-      ox += 11
-      oz += 11
+      s -= 3
+      ox += 0
+      oz += 0
     end
     s.times { |x|
       i += 1
