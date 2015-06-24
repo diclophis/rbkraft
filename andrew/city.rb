@@ -12,8 +12,8 @@ class City
     xwidth = opts[:xwidth] || 8
     zwidth = opts[:zwidth] || 10
     height = opts[:height] || 4
-    deck = opts.has_key?(:desk) ? opts[:deck] : true
-    ground = painter.ground(center.x, center.y)
+    deck = opts.has_key?(:deck) ? opts[:deck] : true
+    ground, ground_type = painter.ground(center.x, center.z)
 
     minx = center.x - xwidth / 2
     maxx = center.x + xwidth / 2
@@ -21,6 +21,20 @@ class City
     maxz = center.z + zwidth / 2
     floory = ground + 1
     ceilingy = floory + height
+
+    # fill open ground
+    unless options[:remove]
+      minx.upto(maxx) do |x|
+        minz.upto(maxz) do |z|
+          other_ground, other_ground_type = painter.ground(x, z)
+          if other_ground < ground
+            other_ground.upto(ground) do |y|
+              painter.place(x, y, z, WorldPainter::TYPE_MAPPINGS[other_ground_type])
+            end
+          end
+        end
+      end
+    end
 
     painter.async do
       floory.upto(deck ? ceilingy + 2 : ceilingy) do |y|
@@ -58,6 +72,8 @@ class City
 
               type = 'air' if options[:remove]
               painter.place x, y, z, type
+            else
+              painter.place x, y, z, 'air'
             end
           end
         end
@@ -74,5 +90,7 @@ if __FILE__ == $0
   remove = prompt("Remove?") =~ /^y/i
 
   castle = City.new(painter, remove: remove)
-  castle.house(Vector.new(0,0,0))
+  15.times do
+    castle.house(Vector.new(rand * 100, 0, rand * 100), xwidth: 5 + rand(20), ywidth: 5 + rand(20), height: 3 + rand(6), deck: rand > 0.5)
+  end
 end

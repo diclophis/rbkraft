@@ -80,7 +80,7 @@ class Vector
 end
 
 class WorldPainter
-  attr_accessor :center
+  attr_accessor :center, :client
 
   TYPE_MAPPINGS = {
     'wood' => 'log',
@@ -174,11 +174,11 @@ class WorldPainter
 
   def set_async(new_value)
     @async = new_value
-    @client.async = new_value
+    client.async = new_value
   end
 
   def flush_async
-    @client.flush_async if @async
+    client.flush_async if @async
   end
 
   def dry_run?
@@ -227,7 +227,7 @@ class WorldPainter
   TEST_REGEX = /Successfully found the block at ([\d-]+),([\d-]+),([\d-]+)\.|The block at ([\d-]+),([\d-]+),([\d-]+) is (.*?) \(/
   def bulk_test(vectors)
     vectors.each do |vector|
-      @client.puts("testforblock #{@center.x + vector.x} #{@center.y + vector.y} #{@center.z + vector.z} 0")
+      client.puts("testforblock #{@center.x + vector.x} #{@center.y + vector.y} #{@center.z + vector.z} 0")
     end
 
     search = vectors.inject({}) { |m, v| m[v.to_a.join(',')] = v; m } # turn vectors into { "1,2,3" => Vector, "2,3,4" => Vector, ... }
@@ -235,7 +235,7 @@ class WorldPainter
     last_server_data = ''
 
     while true
-      server_data = last_server_data + @client.read_nonblock
+      server_data = last_server_data + client.read_nonblock
       puts server_data if debug?
       server_data.scan(TEST_REGEX).each do |match|
         if match[0]
@@ -275,7 +275,7 @@ class WorldPainter
       puts cmd
     else
       puts cmd if debug?
-      output = @client.execute_command(cmd, pattern)
+      output = client.execute_command(cmd, pattern)
       puts output if debug?
       output
     end
@@ -294,22 +294,24 @@ class WorldPainter
   def ground(x, z, options = {})
     tests = []
     water_level = 60 - center.y
-    water_level.upto(water_level + 30) do |y|
+    water_level.upto(water_level + 60) do |y|
       tests << Vector.new(x, y, z)
     end
 
     ground_matcher = /#{GROUND_MAPPINGS.map { |tile| Regexp::escape tile }.join('|')}/i
     highest = Vector.new(0, water_level - 30, 0)
+    highest_type = ''
 
     bulk_test(tests).each do |tile, type|
       if type =~ ground_matcher
         if tile.y > highest.y
           highest = tile
+          highest_type = type
         end
       end
     end
 
-    highest.y
+    [highest.y, highest_type]
   end
 
   # Bresenham’s line drawing algorithm
@@ -350,7 +352,7 @@ class WorldPainter
   def player_position(player_name)
     position = []
     execute("getpos #{player_name}")
-    while line = @client.gets
+    while line = client.gets
       [:x, :y, :z].each do |c|
         position << (line.split(" ")[3].gsub(",", "")).to_f if line.include?(c.to_s.upcase + ": ")
       end

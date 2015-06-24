@@ -41,7 +41,7 @@ class Castle
      width.to_i.times do |w|
        px = x + perp.x * w
        pz = z + perp.z * w
-       y = painter.ground(px, pz, :ignore => ignore)
+       y, _ = painter.ground(px, pz, :ignore => ignore)
        baseline = y if w == 0
        baselined_height = [baseline - y, 0].max + height
 
