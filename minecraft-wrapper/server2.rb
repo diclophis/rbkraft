@@ -29,7 +29,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
     next unless (open_selectable_sockets.length > 0 || open_writable_sockets.length > 0)
 
-    readable, writable, _errored = IO.select(open_selectable_sockets, open_writable_sockets, selectable_sockets, 1.0)
+    readable, writable, _errored = IO.select(open_selectable_sockets, open_writable_sockets, selectable_sockets, 2.0)
 
     # NOTE: When the dynasty socket is passed on, we need to exit immediatly
     # because we no longer own the sockets we have reference to
@@ -62,6 +62,6 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
       end
     end
 
-    sleep 0.001 # to prevent cpu burn
+    sleep 0.1 # to prevent cpu burn
   end
 end
