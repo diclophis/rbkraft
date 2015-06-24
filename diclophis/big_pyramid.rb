@@ -31,18 +31,20 @@ ooz = 24000
 painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
 position = painter.player_position("diclophis")
+painter.center = position
 puts position.inspect
 puts "wtf"
 
-s = 1024 #87
-floors = 3
-floors_per_tier = 1
+s = 87
+floors = 32
+floors_per_tier = 5
 i = 0
 
 ox = 0
 oy = 0
 oz = 0
 
+=begin
 painter.async do
   s.times { |x|
     64.times { |y|
@@ -62,8 +64,9 @@ painter.async do
 end
 
 exit 0
+=end
 
-#painter.async do
+painter.async do
   floors.times { |f|
     if ((f % floors_per_tier) == (floors_per_tier - 1))
       i = 0
@@ -106,4 +109,4 @@ exit 0
 
     oy += 7
   }
-#end
+end
