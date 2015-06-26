@@ -103,3 +103,14 @@
 - name: install minecraft backup
   sudo: true
   file: dest=/home/mavencraft/backup state=directory
+
+- name: fetch chunky
+  get_url: url="http://chunkyupdate.llbit.se/ChunkyLauncher.jar" dest=~/
+
+- name: update chunky
+  shell: "java -jar ChunkyLauncher.jar --update"
+
+- shell: "java -jar ChunkyLauncher.jar -download-mc 1.7.10"
+
+#- shell: ~/.chunky/scenes
+#- shell: "java -jar ~/ChunkyLauncher.jar -render SceneName"

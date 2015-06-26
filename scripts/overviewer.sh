@@ -18,7 +18,7 @@ do
   export FULL_BACKUP
   export FULL_MAP
 
-  echo 'authentic\nsave-all' | nc -w 10 localhost 25566 2>&1 > /dev/null
+  echo 'authentic\nsetworldspawn 0 0 0\nsave-all' | nc -w 10 localhost 25566 2>&1 > /dev/null
   echo overviewer-saved | logger
 
   if [ -e /home/mavencraft/world/level.dat ];

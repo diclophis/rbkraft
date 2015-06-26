@@ -162,6 +162,7 @@ class WorldPainter
     @debug = options[:debug]
     @async = options[:async_client]
     @client = MinecraftClient.new(@async)
+    @client.execute_command("spawn")
   end
 
   def async
@@ -202,8 +203,11 @@ class WorldPainter
     else
       x, y, z, thing, data, mode, data_tag = args
     end
-    thing = thing.is_a?(String) ? "minecraft:#{thing}" : thing
-    set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing} #{data} #{mode} #{data_tag}"
+    #thing = thing.is_a?(String) ? "minecraft:#{thing}" : thing
+    thing = thing.is_a?(String) ? "#{thing}" : thing
+    #set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing} #{data} #{mode} #{data_tag}"
+    #set_block_command = "bpe '#{thing} #{data} #{mode} #{data_tag}' world,#{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i}"
+    set_block_command = "bpe #{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
     execute set_block_command
   end
 
@@ -275,7 +279,12 @@ class WorldPainter
       puts cmd
     else
       puts cmd if debug?
-      output = client.execute_command(cmd, pattern)
+      #output = client.execute_command(cmd, pattern)
+      if cmd.include?("spawn")
+        output = @client.execute_command(cmd, pattern)
+      else
+        output = @client.execute_command("dc faker " + cmd, pattern)
+      end
       puts output if debug?
       output
     end
@@ -354,7 +363,16 @@ class WorldPainter
     execute("getpos #{player_name}")
     while line = client.gets
       [:x, :y, :z].each do |c|
-        position << (line.split(" ")[3].gsub(",", "")).to_f if line.include?(c.to_s.upcase + ": ")
+        position << (line.split(" ")[6].gsub(",", "")).to_f if line.include?(c.to_s.upcase + ": ")
+        #puts line.inspect if line.include?(c.to_s.upcase + ": ")
+        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Current World: world'
+        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= X: 0 (+East <-> -West)'
+        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Y: 0 (+Up <-> -Down)'
+        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Z: 704 (+South <-> -North)'
+        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Yaw: 180 (Rotation)'
+        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Pitch: 0 (Head angle)'
+        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Distance: 0'
+        #[09:04:08 INFO]: [diclophis] 'diclophis gettingMessage= [Server] charted'
       end
       break if line.include?("Pitch")
     end

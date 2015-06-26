@@ -28,16 +28,33 @@ oox = 24000
 ooy = 63
 ooz = 24000
 
-painter = DiclophisWorldPainter.new(oox, ooy, ooz)
+global_painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
-position = painter.player_position("diclophis")
+puts global_painter.execute("setworldspawn 0 0 0")
+#position = global_painter.player_position("diclophis")
+#painter.center = position
+#puts position.inspect
+#exit
+
+0.times { |ttx|
+  0.times { |tty|
+    global_painter.execute("tp world,#{ttx * 8},#{(rand * 100.0).to_i},#{tty * 8}")
+    puts "."
+  }
+}
+
+def drop_tower(painter, tx, ty)
+
+painter.execute("tp world,#{tx},#{60 + (rand * 16.0).to_i},#{ty}")
+position = Vector.new(tx, 47 + (rand * 12.0), ty) #painter.player_position("faker")
 painter.center = position
 puts position.inspect
+
 puts "wtf"
 
-s = 27
-floors = 11
-floors_per_tier = 3
+s = 20 + (rand * 10.0).to_i
+floors = 7 + (rand * 10.0).to_i
+floors_per_tier = 2 + (rand * 7.0).to_i
 i = 0
 
 ox = 0
@@ -62,7 +79,6 @@ painter.async do
     painter.flush_async
   }
 end
-
 exit 0
 =end
 
@@ -101,7 +117,7 @@ painter.async do
             end
           end
 
-          painter.place(x + ox, y + oy, z + oz, type)
+          painter.place(x + ox, y + oy, z + oz, type) if (rand > 0.8)
         }
       }
       #painter.flush_async
@@ -110,3 +126,11 @@ painter.async do
     oy += 7
   }
 end
+
+end
+
+5.times { |x|
+  5.times { |y|
+    drop_tower(global_painter, (x * (25 + rand * 3.0)) - 65, (y * (25 + rand * 3.0)) - 65)
+  }
+}

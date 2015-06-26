@@ -17,7 +17,7 @@ then
 fi;
 
 
-RAM=10000M
+RAM=1000M
 MINECRAFT_ROOT=/home/mavencraft
 MAVENCRAFT_WRAPPER=/home/mavencraft/mavencraft/minecraft-wrapper/server2.rb
 MAVENCRAFT_BLOCKER=/home/mavencraft/mavencraft/minecraft-wrapper/blocker.rb
@@ -44,4 +44,4 @@ pkill -9 -f overviewer || true
 pkill -9 -f java || true
 pkill -9 -f ruby || true
 
-reboot
+#reboot
