@@ -212,7 +212,7 @@ class Wrapper
       commands_run += 1
 
       if (commands_run % COMMANDS_PER_MOD) == 0
-    	sleep 0.01 # to prevent cpu burn
+    	sleep 0.001 # to prevent cpu burn
         handle_minecraft_stdout
       end
     end
