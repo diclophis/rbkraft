@@ -27,7 +27,12 @@ cd $MINECRAFT_ROOT
 
 pkill -9 -f java || true
 
-rm -Rf /home/mavencraft/world*
+echo "mode?"
+read line < "${1:-/dev/stdin}"
+echo "$line"
+
+#rm -Rf /home/mavencraft/world*
+#rm -Rf /usr/share/nginx/html/normal
 
 rm -f /tmp/dynasty.sock
 
