@@ -7,7 +7,7 @@
   "postprocess": 1,
   "renderTime": 1670433,
   "spp": 0,
-  "sppTarget": 50,
+  "sppTarget": 20,
   "rayDepth": 2,
   "pathTrace": true,
   "dumpFrequency": 500,
@@ -24,10 +24,10 @@
     "green": 0.5858024691358026,
     "blue": 1.0
   },
-  "fastFog": false,
+  "fastFog": true,
   "biomeColorsEnabled": true,
   "transparentSky": false,
-  "fogDensity": 0.005,
+  "fogDensity": 0.0,
   "waterHeight": 0,
   "world": {
     "path": "/home/mavencraft/world",
@@ -35,9 +35,9 @@
   },
   "camera": {
     "position": {
-      "x": -75.0,
+      "x": -12.0,
       "y": 100.0,
-      "z": 150.0
+      "z": -12.0
     },
     "orientation": {
       "roll": 0.0,
@@ -60,10 +60,10 @@
     }
   },
   "sky": {
+    "skyMirrored": false,
     "skyYaw": 0.0,
     "skyMirrored": true,
     "skyLight": 0.1,
-    "mode": "SIMULATED",
     "horizonOffset": 0.1,
     "cloudsEnabled": false,
     "cloudSize": 64.0,
@@ -71,17 +71,7 @@
       "x": 0.0,
       "y": 0.0,
       "z": 0.0
-    },
-    "gradient": [
-      {
-        "rgb": "09B7D9",
-        "pos": 0.0
-      },
-      {
-        "rgb": "D4F5FB",
-        "pos": 1.0
-      }
-    ]
+    }
   },
   "cameraPresets": {
     
