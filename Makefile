@@ -17,4 +17,4 @@ render:
 	rsync render.sh ubuntu@mavencraft.net:/usr/share/nginx/html/scenes
 	cat TowerScene.json | ruby render.rb > /tmp/TowerScene.json
 	rsync /tmp/TowerScene.json ubuntu@mavencraft.net:/usr/share/nginx/html/scenes
-	time ssh ubuntu@mavencraft.net sh /usr/share/nginx/html/scenes/render.sh
+	ssh ubuntu@mavencraft.net sh /usr/share/nginx/html/scenes/render.sh

@@ -25,7 +25,7 @@ if true
         #position = Vector.new(ttx, 180, tty) #painter.player_position("faker")
         global_painter.place(ttx * v, 1, tty * v, global_painter.bedrock_type)
         global_painter.place(ttx * v, 2, tty * v, global_painter.bedrock_type)
-        sleep 0.01
+        sleep 0.0001
         $stdout.write(".")
       }
     }

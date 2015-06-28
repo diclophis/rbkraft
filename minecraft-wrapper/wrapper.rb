@@ -5,8 +5,8 @@ require 'strscan'
 require 'logger'
 
 READ_CHUNKS = 8192 / 16
-COMMANDS_PER_SWEEP = 256
-COMMANDS_PER_MOD = 128
+COMMANDS_PER_SWEEP = 16
+COMMANDS_PER_MOD = 4
 
 class Wrapper
   class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner)

@@ -31,7 +31,7 @@ read line
 echo starting "$line"
 
 echo starting-minecraft
-ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=1 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar nogui &
+ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar nogui &
 
 echo starting-overviewer
 sh /home/mavencraft/mavencraft/scripts/overviewer.sh &
