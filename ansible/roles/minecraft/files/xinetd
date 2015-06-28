@@ -6,5 +6,19 @@ service minecraft
    wait                = no
    user                = root
    server              = /usr/bin/minecraft.sh
+   server_args         = 128M 1
    port                = 20020
+   instances           = 1
+}
+
+service minecraft-repair
+{
+   type                = UNLISTED
+   socket_type         = stream
+   protocol            = tcp
+   wait                = no
+   user                = root
+   server              = /usr/bin/minecraft-repair.sh
+   port                = 20021
+   instances           = 1
 }

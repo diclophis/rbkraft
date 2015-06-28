@@ -96,9 +96,12 @@
   sudo: true
   shell: rm -Rf /etc/xinetd.d/* && ln -sf /home/mavencraft/xinetd /etc/xinetd.d/mavencraft && /etc/init.d/xinetd restart
 
-- name: install minecraft.sh
+- name: install minecraft shell scripts
   sudo: true
-  copy: src=minecraft.sh dest=/usr/bin/minecraft.sh mode=777
+  copy: src={{ item }} dest=/usr/bin/{{ item }} mode=777
+  with_items:
+    - minecraft.sh
+    - minecraft-repair.sh
 
 - name: install minecraft backup
   sudo: true
