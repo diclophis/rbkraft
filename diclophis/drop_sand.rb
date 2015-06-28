@@ -35,7 +35,7 @@ painter.async do
         x,z = xy_from_angle_radius(random_angle, 6 + (rand * 32))
         s = (2.0 - (1.0 + Math.sin(((38.0 - d.to_f) / 38.0))))
         if rand > s
-          painter.place(x, (rand * 32) + 5, z, painter.sand_type)
+          painter.place(x, -(rand * 32) + 5, z, painter.tnt_type)
         end
 
         #x,z = xy_from_angle_radius(a, r + 4)

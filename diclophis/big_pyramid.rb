@@ -24,42 +24,54 @@ def mostly_air(painter)
   painter.air_type
 end
 
-oox = 24000
-ooy = 63
-ooz = 24000
+oox = 0
+ooy = 0
+ooz = 0
 
 global_painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
-puts global_painter.execute("setworldspawn 0 0 0")
+puts global_painter.execute("setworldspawn 0 70 0")
 #position = global_painter.player_position("diclophis")
 #painter.center = position
 #puts position.inspect
 #exit
 
-0.times { |ttx|
-  0.times { |tty|
-    global_painter.execute("tp world,#{ttx * 8},#{(rand * 100.0).to_i},#{tty * 8}")
-    puts "."
-  }
-}
+if true
+  global_painter.async do
+    (-122..122).each { |ttx|
+      (-122..122).each { |tty|
+        v = 14
+        #global_painter.execute("tp world,#{(ttx * v).to_i},#{(200).to_i},#{(tty * v).to_i}")
+        global_painter.execute("setworldspawn #{ttx.to_i * v} 70 #{tty.to_i * v}")
+        #position = Vector.new(ttx, 180, tty) #painter.player_position("faker")
+        global_painter.place(ttx * v, 1, tty * v, global_painter.sand_type)
+        global_painter.place(ttx * v, 2, tty * v, global_painter.sand_type)
+        sleep 0.1
+        $stdout.write(".")
+      }
+    }
+  end
+  exit
+end
 
 def drop_tower(painter, tx, ty)
 
-painter.execute("tp world,#{tx},#{60 + (rand * 16.0).to_i},#{ty}")
+#painter.execute("tp world,#{tx},#{60 + (rand * 16.0).to_i},#{ty}")
+puts painter.execute("setworldspawn #{tx.to_i} 70 #{ty.to_i}")
 position = Vector.new(tx, 47 + (rand * 12.0), ty) #painter.player_position("faker")
-painter.center = position
+#painter.center = position
 puts position.inspect
 
 puts "wtf"
 
 s = 20 + (rand * 10.0).to_i
-floors = 7 + (rand * 10.0).to_i
-floors_per_tier = 2 + (rand * 7.0).to_i
+floors = 11 + (rand * 10.0).to_i
+floors_per_tier = 1 + (rand * 8.5).to_i
 i = 0
 
-ox = 0
+ox = tx
 oy = 0
-oz = 0
+oz = ty
 
 =begin
 painter.async do
@@ -99,25 +111,38 @@ painter.async do
             if ((i % 9) == 0) && (x != 0 && x != (s-1)) && (z != 0 && z != (s-1))
               type = painter.glow_type
             else
-              type = painter.sandstone_type
+              type = painter.type
             end
           else
             if ((x) == 0) || ((x) == (s-1)) || (z == 0) || (z == (s-1))
               if ((x % 9) > 5) || ((z % 9) > 5)
-                type = painter.sandstone_type
+                type = painter.type
               else
                 type = painter.air_type
               end
             else
               if (((x-7) % 9) == 0) && (((z-7) % 9) == 0)
-                type = painter.sandstone_type
+                type = painter.type
               else
                 type = painter.air_type
               end
             end
           end
 
-          painter.place(x + ox, y + oy, z + oz, type) if (rand > 0.8)
+          place = false
+          case type
+            when painter.air_type
+              place = (rand > 0.00001)
+            when painter.type
+              place = (rand > 0.01)
+            when painter.glow_type
+              place = (rand > 0.1)
+              if (rand > 0.999)
+                type = painter.water_type
+              end
+          end
+
+          painter.place(x + ox, y + oy, z + oz, type) if place
         }
       }
       #painter.flush_async
@@ -129,8 +154,13 @@ end
 
 end
 
-5.times { |x|
-  5.times { |y|
-    drop_tower(global_painter, (x * (25 + rand * 3.0)) - 65, (y * (25 + rand * 3.0)) - 65)
+10.times { |x|
+  10.times { |y|
+    drop_tower(global_painter, (x * (20 + rand * 5.0)) - 90, (y * (25 + rand * 8.0)) - 90)
   }
 }
+
+
+## maze through buildings
+## wall of lava
+## cirle of obsidian around spawn
