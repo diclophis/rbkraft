@@ -17,7 +17,7 @@ then
 fi;
 
 
-RAM=1000M
+RAM=128M
 MINECRAFT_ROOT=/home/mavencraft
 MAVENCRAFT_WRAPPER=/home/mavencraft/mavencraft/minecraft-wrapper/server2.rb
 MAVENCRAFT_BLOCKER=/home/mavencraft/mavencraft/minecraft-wrapper/blocker.rb
