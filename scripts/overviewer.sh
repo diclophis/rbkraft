@@ -23,7 +23,7 @@ do
 
   if [ -e /home/mavencraft/world/level.dat ];
   then
-    overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py | logger
+    time overviewer.py -v -v -v -v --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py 2>&1 | logger -t ov-py
     echo 'authentic\nsay charted' | nc -w 1 localhost 25566 2>&1 > /dev/null
   else
     echo overview-sleep | logger
