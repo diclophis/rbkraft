@@ -50,7 +50,12 @@ class MinecraftClient
   def execute_command(command_line, pattern = nil)
     start_time = Time.now
 
-    @server_io.puts(command_line)
+    begin
+      @server_io.puts(command_line)
+    rescue Errno::EPIPE => e
+      puts e.inspect, :oops
+      exit 1
+    end
 
     if async
       read_nonblock

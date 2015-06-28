@@ -1,13 +1,25 @@
-service minecraft
+service mavencraft
+{
+   type                = UNLISTED
+   socket_type         = stream
+   protocol            = tcp
+   wait                = no
+   user                = mavencraft
+   server              = /usr/bin/minecraft.sh
+   server_args         = 256M
+   port                = 20020
+   instances           = 1
+}
+
+service mavencraft-status
 {
    type                = UNLISTED
    socket_type         = stream
    protocol            = tcp
    wait                = no
    user                = root
-   server              = /usr/bin/minecraft.sh
-   server_args         = 128M 1
-   port                = 20020
+   server              = /usr/bin/minecraft-status.sh
+   port                = 20021
    instances           = 1
 }
 
@@ -17,8 +29,8 @@ service minecraft-repair
    socket_type         = stream
    protocol            = tcp
    wait                = no
-   user                = root
+   user                = mavencraft
    server              = /usr/bin/minecraft-repair.sh
-   port                = 20021
+   port                = 20022
    instances           = 1
 }

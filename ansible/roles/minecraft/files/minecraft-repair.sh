@@ -2,12 +2,12 @@
 
 #nc -l 0.0.0.0 20023
 
-#rm -Rf /home/mavencraft/world*
-#rm -Rf /usr/share/nginx/html/normal
-rm /home/mavencraft/running
+echo minecraft-repair
 
-pkill -9 -f overviewer || true
-pkill -9 -f java || true
-pkill -9 -f ruby || true
+rm -Rf /home/mavencraft/world*
+rm -Rf /usr/share/nginx/html/normal
 
+rm -Rf /home/mavencraft/running
+
+sleep 1
 #reboot
