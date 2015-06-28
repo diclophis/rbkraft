@@ -153,10 +153,10 @@ class WorldPainter
   def initialize(center_x, center_y, center_z, options = {})
     @center = Vector.new(center_x, center_y, center_z)
 
-    if @center.magnitude < 10_000
-      puts "Too close to spawn!"
-      exit 1
-    end
+    #if @center.magnitude < 10_000
+    #  puts "Too close to spawn!"
+    #  exit 1
+    #end
 
     @dry_run = options[:dry_run]
     @debug = options[:debug]
