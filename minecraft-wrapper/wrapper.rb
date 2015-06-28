@@ -5,8 +5,8 @@ require 'strscan'
 require 'logger'
 
 READ_CHUNKS = 8192 / 16
-COMMANDS_PER_SWEEP = 64
-COMMANDS_PER_MOD = 16
+COMMANDS_PER_SWEEP = 256
+COMMANDS_PER_MOD = 128
 
 class Wrapper
   class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner)
@@ -212,7 +212,7 @@ class Wrapper
       commands_run += 1
 
       if (commands_run % COMMANDS_PER_MOD) == 0
-    	sleep 0.001 # to prevent cpu burn
+        sleep 0.001 # to prevent cpu burn
         handle_minecraft_stdout
       end
     end

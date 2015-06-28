@@ -11,4 +11,10 @@ towers:
 	time ruby diclophis/big_pyramid.rb draw
 
 render:
-	time ssh ubuntu@mavencraft.net sh /home/mavencraft/mavencraft/render.sh
+	ssh ubuntu@mavencraft.net sudo mkdir -p /usr/share/nginx/html/scenes
+	ssh ubuntu@mavencraft.net sudo chown  www-data:ubuntu /usr/share/nginx/html/scenes
+	ssh ubuntu@mavencraft.net sudo chmod g+w /usr/share/nginx/html/scenes
+	rsync render.sh ubuntu@mavencraft.net:/usr/share/nginx/html/scenes
+	cat TowerScene.json | ruby render.rb > /tmp/TowerScene.json
+	rsync /tmp/TowerScene.json ubuntu@mavencraft.net:/usr/share/nginx/html/scenes
+	time ssh ubuntu@mavencraft.net sh /usr/share/nginx/html/scenes/render.sh

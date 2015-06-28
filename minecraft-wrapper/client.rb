@@ -53,7 +53,7 @@ class MinecraftClient
     begin
       @server_io.puts(command_line)
     rescue Errno::EPIPE => e
-      puts e.inspect, :oops
+      #e.inspect, :oops
       exit 1
     end
 
