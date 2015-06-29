@@ -15,7 +15,6 @@ render:
 	ssh ubuntu@mavencraft.net sudo chown  www-data:ubuntu /usr/share/nginx/html/scenes
 	ssh ubuntu@mavencraft.net sudo chmod g+w /usr/share/nginx/html/scenes
 	rsync render.sh ubuntu@mavencraft.net:/usr/share/nginx/html/scenes
-	rsync TowerScene.jpg ubuntu@mavencraft.net:/usr/share/nginx/html/scenes
 	cat TowerScene.json | ruby render.rb > /tmp/TowerScene.json
 	rsync /tmp/TowerScene.json ubuntu@mavencraft.net:/usr/share/nginx/html/scenes
 	ssh ubuntu@mavencraft.net sh /usr/share/nginx/html/scenes/render.sh

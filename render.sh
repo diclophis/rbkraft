@@ -16,7 +16,7 @@ rm -f /usr/share/nginx/html/scenes/*.png
 sudo mkdir -p /usr/share/nginx/html/scenes
 sudo chown  www-data:ubuntu /usr/share/nginx/html/scenes
 sudo chmod 777 /usr/share/nginx/html/scenes
-java -jar ~/ChunkyLauncher.jar -threads 64 -scene-dir /usr/share/nginx/html/scenes -render TowerScene
+java -jar ~/ChunkyLauncher.jar -threads 1 -scene-dir /usr/share/nginx/html/scenes -render TowerScene
 
 #sudo cp -Rv ~/.chunky/scenes /usr/share/nginx/html/
 #sudo chown -Rv www-data:www-data /usr/share/nginx/html/scenes

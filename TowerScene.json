@@ -7,17 +7,17 @@
   "postprocess": 1,
   "renderTime": 1670433,
   "spp": 0,
-  "sppTarget": 20,
-  "rayDepth": 2,
+  "sppTarget": 25,
+  "rayDepth": 1,
   "pathTrace": true,
-  "dumpFrequency": 500,
+  "dumpFrequency": 100,
   "saveSnapshots": true,
   "emittersEnabled": true,
   "emitterIntensity": 8.0,
   "sunEnabled": true,
   "stillWater": false,
   "waterOpacity": 0.42,
-  "waterVisibility": 9.0,
+  "waterVisibility": 6.0,
   "useCustomWaterColor": false,
   "fogColor": {
     "red": 0.42814502293337064,
@@ -35,9 +35,9 @@
   },
   "camera": {
     "position": {
-      "x": -12.0,
+      "x": -256.0,
       "y": 100.0,
-      "z": -12.0
+      "z": 256.0
     },
     "orientation": {
       "roll": 0.0,

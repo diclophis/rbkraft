@@ -275,7 +275,7 @@ class WorldPainter
   end
 
   def execute(cmd, pattern = nil)
-    sleep 0.001
+    sleep 0.004
     if dry_run?
       puts cmd
     else
