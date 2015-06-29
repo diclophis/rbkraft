@@ -19,7 +19,7 @@ if true
   global_painter.async do
     (-32..32).each { |ttx|
       (-32..32).each { |tty|
-        v = 18 
+        v = 16 
         #global_painter.execute("tp world,#{(ttx * v).to_i},#{(200).to_i},#{(tty * v).to_i}")
         #global_painter.execute("setworldspawn #{ttx.to_i * v} 70 #{tty.to_i * v}")
         #position = Vector.new(ttx, 180, tty) #painter.player_position("faker")

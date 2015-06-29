@@ -1,14 +1,14 @@
 {
   "sdfVersion": 5,
   "name": "TowerScene",
-  "width": 900,
-  "height": 420,
+  "width": 450,
+  "height": 200,
   "exposure": 1.0,
   "postprocess": 1,
   "renderTime": 1670433,
   "spp": 0,
-  "sppTarget": 25,
-  "rayDepth": 1,
+  "sppTarget": 1,
+  "rayDepth": 128,
   "pathTrace": true,
   "dumpFrequency": 100,
   "saveSnapshots": true,
@@ -36,7 +36,7 @@
   "camera": {
     "position": {
       "x": -256.0,
-      "y": 100.0,
+      "y": 93.0,
       "z": 256.0
     },
     "orientation": {
@@ -46,8 +46,8 @@
     },
     "projectionMode": "PINHOLE",
     "fov": 66.0,
-    "dof": 1500.0,
-    "focalOffset": 0.005
+    "dof": 256.0,
+    "focalOffset": 32.00
   },
   "sun": {
     "altitude": 0.8,
