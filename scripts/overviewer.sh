@@ -18,16 +18,16 @@ do
   export FULL_BACKUP
   export FULL_MAP
 
-  echo 'authentic\nsetworldspawn 0 0 0\nsave-all' | nc -w 10 localhost 25566 2>&1 > /dev/null
-  echo overviewer-saved | logger
+  echo overview-sleep | logger
+  sleep 15
 
   if [ -e /home/mavencraft/world/level.dat ];
   then
     time overviewer.py -p $1 --simple-output --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py 2>&1 | logger -t ov-py
     echo 'authentic\nsay charted' | nc -w 1 localhost 25566 2>&1 > /dev/null
   else
-    echo overview-sleep | logger
-    sleep 5
+    echo 'authentic\nsetworldspawn 0 0 0\nsave-on\nsave-all' | nc -w 10 localhost 25566 2>&1 > /dev/null
+    echo overviewer-saved | logger
   fi
   echo overviewer-end | logger
 done

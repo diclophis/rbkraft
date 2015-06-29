@@ -192,7 +192,7 @@ class Wrapper
           else
             if full_command_line.strip == "save-all"
               self.full_commands_waiting_to_be_written_to_minecraft.unshift(full_command_line)
-              close_client(io, Exception.new("saved: #{full_command_line}"))
+              close_client(io, Exception.new("saved: #{full_command_line}")) unless client.async
             else
               self.full_commands_waiting_to_be_written_to_minecraft << full_command_line
             end
