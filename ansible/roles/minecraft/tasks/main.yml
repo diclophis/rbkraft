@@ -63,12 +63,9 @@
   sudo: true
   file: dest=/home/mavencraft state=directory mode=777
 
-- name: fix existing
-  sudo: true
-  shell: chown -Rv ubuntu:users /home/mavencraft/mavencraft
-
 - name: clone mavencraft
   git: update=true repo=git@github.com:mavenlink/mavencraft.git dest=/home/mavencraft/mavencraft version=master
+
 
 - name: faster sync
   sudo: true
@@ -99,6 +96,10 @@
 - name: fix existing
   sudo: true
   shell: chown -Rv mavencraft:users /home/mavencraft
+
+- name: fix existing
+  sudo: true
+  shell: chown -Rv ubuntu:users /home/mavencraft/mavencraft
 
 - name: symlink start script
   sudo: true

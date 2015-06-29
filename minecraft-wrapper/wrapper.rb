@@ -4,9 +4,9 @@ require 'fcntl'
 require 'strscan'
 require 'logger'
 
-READ_CHUNKS = 1
-COMMANDS_PER_SWEEP = 1024
-COMMANDS_PER_MOD = 2048
+READ_CHUNKS = 1024 * 8 * 8
+COMMANDS_PER_SWEEP = 8
+COMMANDS_PER_MOD = 4
 
 class Wrapper
   class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner)

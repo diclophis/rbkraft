@@ -51,4 +51,8 @@ sh /home/mavencraft/mavencraft/scripts/overviewer.sh $PROCS_PER_TASK &
 #done
 sleep 1
 
+0<&-
+
+exit
+
 

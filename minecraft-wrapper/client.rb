@@ -43,7 +43,7 @@ class MinecraftClient
 
   def read_nonblock
     @server_io.read_nonblock(1024 * 64)
-  rescue Errno::EAGAIN, Errno::EIO
+  rescue Errno::EAGAIN, Errno::EIO #, Errno::ECONNRESET
     ''
   end
 
