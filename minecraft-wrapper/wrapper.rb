@@ -4,9 +4,9 @@ require 'fcntl'
 require 'strscan'
 require 'logger'
 
-READ_CHUNKS = 8192 / 16
-COMMANDS_PER_SWEEP = 16
-COMMANDS_PER_MOD = 4
+READ_CHUNKS = 1
+COMMANDS_PER_SWEEP = 1024
+COMMANDS_PER_MOD = 2048
 
 class Wrapper
   class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner)
@@ -210,11 +210,12 @@ class Wrapper
     while commands_run < COMMANDS_PER_SWEEP && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
       write_minecraft_command(full_command_line)
       commands_run += 1
+      sleep 0.0000001
 
-      if (commands_run % COMMANDS_PER_MOD) == 0
-        sleep 0.001 # to prevent cpu burn
-        handle_minecraft_stdout
-      end
+      #if (commands_run % COMMANDS_PER_MOD) == 0
+      #  sleep 0.001 # to prevent cpu burn
+      #  handle_minecraft_stdout
+      #end
     end
   end
 
