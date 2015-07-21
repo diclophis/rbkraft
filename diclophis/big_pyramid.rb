@@ -116,8 +116,8 @@ end
 
 end
 
-10.times { |x|
-  10.times { |y|
+100.times { |x|
+  100.times { |y|
     drop_tower(global_painter, (x * (20 + rand * 5.0)) - 90, (y * (25 + rand * 8.0)) - 90)
   }
 }
