@@ -24,3 +24,5 @@ https://www.youtube.com/watch?v=VCY2VKXJkSw&feature=youtu.be
     pkill -9 -f ruby; pkill -9 -f java; DYNASTY_FORCE=1 minecraft.sh
     sh ~/mavencraft/scripts/overviewer.sh
     /usr/share/pyshared/overviewer_core/data/web_assets/index.html
+
+# spawn camera
