@@ -6,7 +6,7 @@ service mavencraft
    wait                = no
    user                = mavencraft
    server              = /usr/bin/minecraft.sh
-   server_args         = 40024M 16
+   server_args         = 4000M 2
    port                = 20020
    instances           = 1
 }
@@ -32,5 +32,5 @@ service minecraft-repair
    user                = mavencraft
    server              = /usr/bin/minecraft-repair.sh
    port                = 20022
-   instances           = 1
+   instances           = 0
 }
