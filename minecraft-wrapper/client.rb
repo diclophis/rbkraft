@@ -9,7 +9,9 @@ class MinecraftClient
   attr_accessor :gzip_buffer_sink
   attr_accessor :gzip_buffer_pump
 
-  def initialize(async = false)
+  READ_CHUNK = 8 * 8 * 1024
+
+  def initialize(async = true)
     self.async = async
     rp, wp = IO.pipe
 
@@ -30,15 +32,19 @@ class MinecraftClient
 
   def flush_async
     if async
-      self.gzip_buffer_sink.close
+      begin
+        self.gzip_buffer_sink.close
+      rescue Zlib::GzipFile::Error => e
+        $stderr.write(e.inspect)
+      end
 
       while true
         begin
-          gzd = self.gzip_buffer_pump.readpartial(1024)
+          gzd = self.gzip_buffer_pump.readpartial(READ_CHUNK)
           #$stdout.write gzd.inspect
           @server_io.write(gzd)
         rescue EOFError => e
-          #$stderr.write(e.inspect)
+          $stderr.write(e.inspect)
           break
         end
       end
@@ -54,18 +60,19 @@ class MinecraftClient
       #  end
       #end
 
+      @server_io.puts("exit")
       @server_io.flush
       disconnect
 
-      #connect
-      #$stdout.write "foop"
+      connect
+      $stdout.write "foop"
     end
   end
 
   def puts(line)
     if async
       self.gzip_buffer_sink.write(line)
-      gzd = self.gzip_buffer_pump.readpartial(1024 * 8 * 32)
+      gzd = self.gzip_buffer_pump.readpartial(READ_CHUNK)
       @server_io.write(gzd)
     else
       @server_io.puts(line)
@@ -73,7 +80,7 @@ class MinecraftClient
   end
 
   def read_nonblock
-    @server_io.read_nonblock(1024 * 64)
+    @server_io.read_nonblock(READ_CHUNK)
   rescue Errno::EAGAIN, Errno::EIO #, Errno::ECONNRESET
     ''
   end
@@ -89,7 +96,7 @@ class MinecraftClient
     end
 
     if async
-      read_nonblock
+      #read_nonblock
     else
       command_result = ""
       blank = 0

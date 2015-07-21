@@ -1,0 +1,6 @@
+#!/bin/sh
+
+while read line
+do
+  echo echo "$line"
+done < "${1:-/dev/stdin}"

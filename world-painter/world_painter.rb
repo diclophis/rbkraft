@@ -160,7 +160,7 @@ class WorldPainter
 
     @dry_run = options[:dry_run]
     @debug = options[:debug]
-    @async = options[:async_client]
+    @async = options[:async_client] || true
     @client = MinecraftClient.new(@async)
     @client.execute_command("spawn")
   end
@@ -275,7 +275,7 @@ class WorldPainter
   end
 
   def execute(cmd, pattern = nil)
-    sleep 0.0105
+    #sleep 0.0105
     if dry_run?
       puts cmd
     else

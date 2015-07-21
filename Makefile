@@ -4,7 +4,7 @@ world:
 light:
 	echo | nc -w 1 mavencraft.net 20020
 
-clean:
+status:
 	echo | nc -w 1 mavencraft.net 20021
 
 towers:

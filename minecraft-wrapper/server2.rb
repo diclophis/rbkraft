@@ -10,7 +10,7 @@ require 'syslog'
 # Start a hot-reloadable server on desired socket
 Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"]) do |dynasty|
   # log to the system log
-  logger = Syslog.open("mavencraft", Syslog::LOG_DAEMON)
+  logger = Syslog.open("mavencraft", Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
 
   # In your server, consume any ancestored descriptors, order is important
   # this case, the first 3 sockets are the stdin,stdout,stderr of the wrapped
@@ -19,18 +19,18 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
   # Install your main server runloop
   while wrapper.running
-    sleep 0.001
+    #sleep 0.01
 
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
     writable_sockets = wrapper.writable_descriptors
 
-    open_selectable_sockets = selectable_sockets.reject { |io| io.closed? }
-    open_writable_sockets = writable_sockets.reject { |io| io.closed? }
+    open_selectable_sockets = selectable_sockets #.reject { |io| io.closed? }
+    open_writable_sockets = writable_sockets #.reject { |io| io.closed? }
 
     next unless (open_selectable_sockets.length > 0 || open_writable_sockets.length > 0)
 
-    readable, writable, _errored = IO.select(open_selectable_sockets, open_writable_sockets, selectable_sockets, 2.0)
+    readable, writable, _errored = IO.select(open_selectable_sockets, open_writable_sockets, selectable_sockets, 10.0)
 
     # NOTE: When the dynasty socket is passed on, we need to exit immediatly
     # because we no longer own the sockets we have reference to

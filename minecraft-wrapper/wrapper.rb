@@ -5,7 +5,7 @@ require 'fcntl'
 require 'strscan'
 require 'logger'
 
-READ_CHUNKS = 256 #1024 * 8 * 8
+READ_CHUNKS = 1024 * 8 * 8
 COMMANDS_PER_SWEEP = 8
 COMMANDS_PER_MOD = 4
 
@@ -24,6 +24,8 @@ class Wrapper
                 :logger
 
   def initialize(logger, descriptors, argv)
+    @count = 0
+
     self.logger = logger
     self.full_commands_waiting_to_be_written_to_minecraft = []
     self.install_trap
@@ -34,7 +36,7 @@ class Wrapper
 
     #self.stdin = $stdin
     #self.stdout = $stdout
-    self.stderr = $stderr
+    #self.stderr = $stderr
 
     self.command = argv[0]
     self.options = argv[1..-1]
@@ -116,7 +118,7 @@ class Wrapper
   end
 
   def install_client(client_io, authentic = nil)
-    self.clients[client_io] = Client.new(self.uid, authentic)
+    self.clients[client_io] = Client.new(self.uid, authentic, true)
     self.clients[client_io].broadcast_scanner = StringScanner.new("")
     self.uid += 1
   end
@@ -132,6 +134,7 @@ class Wrapper
         puts "ok #{e}"
       rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
         puts "wtf #{e}"
+        exit 1
       end
 
       if broadcast_bytes
@@ -243,23 +246,22 @@ class Wrapper
 
     client = self.clients[io]
 
-$stderr.write client.async.inspect
+    #puts client.async.inspect
 
     if client.async
-    raise "!#!@#!@#!@#!@#!@#"
       if client.gzip_pump == nil
         #rp, wp = IO.pipe
         #client.gzip_pump = Zlib::Inflate.new
-      end
+      else
+        #self.clients[client_io].gzip_sink = wp
+        #client.gzip_sink.write(bytes)
+        #bytes = client.gzip_pump.read_partial(1024)
 
-      #self.clients[client_io].gzip_sink = wp
-      #client.gzip_sink.write(bytes)
-      #bytes = client.gzip_pump.read_partial(1024)
+        bytes = client.gzip_pump.inflate(bytes)
 
-      bytes = client.gzip_pump.inflate(bytes)
-
-      if bytes == nil
-      $stderr.write "!@#!@#!@#!@#!@#"
+        if bytes == nil
+          puts "!@#!@#!@#!@#!@#"
+        end
       end
     end
 
@@ -277,9 +279,11 @@ $stderr.write client.async.inspect
   end
 
   def write_minecraft_command(actual_command_line)
+    @count += 1
     filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
     if (filtered_sent_line && filtered_sent_line.length > 0)
       begin
+        puts filtered_sent_line if ((@count % 1024) == 0)
         self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
       rescue Errno::EPIPE => e
         puts "minecraft exited"
