@@ -1,15 +1,16 @@
+require 'zlib'
 require 'open3'
 require 'socket'
 require 'fcntl'
 require 'strscan'
 require 'logger'
 
-READ_CHUNKS = 1024 * 8 * 8
+READ_CHUNKS = 256 #1024 * 8 * 8
 COMMANDS_PER_SWEEP = 8
 COMMANDS_PER_MOD = 4
 
 class Wrapper
-  class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner)
+  class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner, :gzip_pump, :gzip_sink)
   end
 
   attr_accessor :running, :uid,
@@ -180,9 +181,10 @@ class Wrapper
   def handle_minecraft_stdin
     self.input_waiting_to_be_written_to_minecraft.each do |io, byte_scanner|
       client = self.clients[io]
-
       while client && has_eol = byte_scanner.check_until(/\n/)
         full_command_line = byte_scanner.scan_until(/\n/)
+
+        #$stderr.write(full_command_line)
 
         if client.authentic
           if full_command_line.strip == "exit"
@@ -236,7 +238,33 @@ class Wrapper
   end
 
   def enqueue_input_for_minecraft(io, bytes)
+
     self.input_waiting_to_be_written_to_minecraft[io] ||= StringScanner.new("")
+
+    client = self.clients[io]
+
+$stderr.write client.async.inspect
+
+    if client.async
+    raise "!#!@#!@#!@#!@#!@#"
+      if client.gzip_pump == nil
+        #rp, wp = IO.pipe
+        #client.gzip_pump = Zlib::Inflate.new
+      end
+
+      #self.clients[client_io].gzip_sink = wp
+      #client.gzip_sink.write(bytes)
+      #bytes = client.gzip_pump.read_partial(1024)
+
+      bytes = client.gzip_pump.inflate(bytes)
+
+      if bytes == nil
+      $stderr.write "!@#!@#!@#!@#!@#"
+      end
+    end
+
+    #$stdout.write(bytes.inspect)
+
     self.input_waiting_to_be_written_to_minecraft[io] << bytes
   end
 

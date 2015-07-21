@@ -60,7 +60,8 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
       # If the wrapped command is still running
       if wrapper.running
         #$stderr.write("r#{readable.length}\n")
-        wrapper.handle_descriptors_requiring_reading(readable)
+        ff = wrapper.handle_descriptors_requiring_reading(readable)
+        #$stderr.write("r#{ff}\n")
       end
     end
 

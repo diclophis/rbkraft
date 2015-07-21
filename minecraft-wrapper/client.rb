@@ -1,13 +1,19 @@
 #!/usr/bin/env ruby
 
+require 'zlib'
 require 'open3'
 require 'socket'
 
 class MinecraftClient
   attr_accessor :async
+  attr_accessor :gzip_buffer_sink
+  attr_accessor :gzip_buffer_pump
 
   def initialize(async = false)
     self.async = async
+    rp, wp = IO.pipe
+
+    self.gzip_buffer_pump, self.gzip_buffer_sink = rp, Zlib::GzipWriter.new(wp)
     connect
   end
 
@@ -24,21 +30,46 @@ class MinecraftClient
 
   def flush_async
     if async
-      signal = Time.now.to_f.to_s
-      @server_io.puts("say the signal is #{signal}")
+      self.gzip_buffer_sink.close
+
       while true
-        sleep 0.01
         begin
-          break if read_nonblock.include?(signal)
-        rescue Errno::EAGAIN, Errno::EIO
-          false
+          gzd = self.gzip_buffer_pump.readpartial(1024)
+          #$stdout.write gzd.inspect
+          @server_io.write(gzd)
+        rescue EOFError => e
+          #$stderr.write(e.inspect)
+          break
         end
       end
+
+      #while true
+      #  signal = Time.now.to_f.to_s
+      #  @server_io.puts("say the signal is #{signal}")
+      #  sleep 0.01
+      #  begin
+      #    break if read_nonblock.include?(signal)
+      #  rescue Errno::EAGAIN, Errno::EIO
+      #    false
+      #  end
+      #end
+
+      @server_io.flush
+      disconnect
+
+      #connect
+      #$stdout.write "foop"
     end
   end
 
   def puts(line)
-    @server_io.puts(line)
+    if async
+      self.gzip_buffer_sink.write(line)
+      gzd = self.gzip_buffer_pump.readpartial(1024 * 8 * 32)
+      @server_io.write(gzd)
+    else
+      @server_io.puts(line)
+    end
   end
 
   def read_nonblock
