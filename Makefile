@@ -7,6 +7,9 @@ light:
 status:
 	echo | nc -w 1 mavencraft.net 20021
 
+clean:
+	echo | nc -w 1 mavencraft.net 20022
+
 towers:
 	time ruby diclophis/big_pyramid.rb draw
 

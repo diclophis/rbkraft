@@ -14,6 +14,8 @@ ooz = 0
 global_painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
 
+global_painter.execute("setworldspawn 0 70 0")
+
 def drop_tower(painter, tx, ty)
 
 #painter.execute("tp world,#{tx},#{60 + (rand * 16.0).to_i},#{ty}")

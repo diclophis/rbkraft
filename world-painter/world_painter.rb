@@ -203,10 +203,7 @@ class WorldPainter
     else
       x, y, z, thing, data, mode, data_tag = args
     end
-    #thing = thing.is_a?(String) ? "minecraft:#{thing}" : thing
     thing = thing.is_a?(String) ? "#{thing}" : thing
-    #set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing} #{data} #{mode} #{data_tag}"
-    #set_block_command = "bpe '#{thing} #{data} #{mode} #{data_tag}' world,#{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i}"
     set_block_command = "bpe #{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
     execute set_block_command
   end
@@ -280,12 +277,7 @@ class WorldPainter
       puts cmd
     else
       puts cmd if debug?
-      #output = client.execute_command(cmd, pattern)
-      if cmd.include?("spawn")
-        output = @client.execute_command(cmd, pattern)
-      else
-        output = @client.execute_command("dc faker " + cmd, pattern)
-      end
+      output = @client.execute_command("vdc faker " + cmd, pattern)
       puts output if debug?
       output
     end
