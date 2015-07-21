@@ -15,10 +15,9 @@ global_painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
 #puts global_painter.execute("setworldspawn 0 70 0")
 
-if true
   global_painter.async do
-    (-32..32).each { |ttx|
-      (-32..32).each { |tty|
+    (-22..22).each { |ttx|
+      (-22..22).each { |tty|
         v = 16 
         #global_painter.execute("tp world,#{(ttx * v).to_i},#{(200).to_i},#{(tty * v).to_i}")
         #global_painter.execute("setworldspawn #{ttx.to_i * v} 70 #{tty.to_i * v}")
@@ -32,10 +31,12 @@ if true
         #  }
         ##  global_painter.place(ttx * v, hh, tty * v, global_painter.water_type)
         #}
+        puts "wtf"
         global_painter.place(ttx * v, 1, tty * v, global_painter.bedrock_type)
+        global_painter.place((ttx * v) + 8, 1, (tty * v) + 8, global_painter.bedrock_type)
         $stdout.write(".")
       }
     }
   end
-  exit
-end
+
+  puts "done"

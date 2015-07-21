@@ -7,58 +7,18 @@ require 'diclophis_world_painter'
 
 srand
 
-def water_or_tnt(i, painter)
-  #if rand > 0.9
-  #  painter.lava_type
-  #elsif rand > 0.9
-  #  painter.water_type
-  #else
-  if ((i % 64) % 128) == 0
-    painter.glow_type
-  else
-    painter.sandstone_type
-  end
-end
-
-def mostly_air(painter)
-  painter.air_type
-end
-
 oox = 0
 ooy = 0
 ooz = 0
 
 global_painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
-puts global_painter.execute("setworldspawn 0 70 0")
-#position = global_painter.player_position("diclophis")
-#painter.center = position
-#puts position.inspect
-#exit
-
-if true
-  global_painter.async do
-    (-122..122).each { |ttx|
-      (-122..122).each { |tty|
-        v = 14
-        #global_painter.execute("tp world,#{(ttx * v).to_i},#{(200).to_i},#{(tty * v).to_i}")
-        global_painter.execute("setworldspawn #{ttx.to_i * v} 70 #{tty.to_i * v}")
-        #position = Vector.new(ttx, 180, tty) #painter.player_position("faker")
-        global_painter.place(ttx * v, 1, tty * v, global_painter.sand_type)
-        global_painter.place(ttx * v, 2, tty * v, global_painter.sand_type)
-        sleep 0.1
-        $stdout.write(".")
-      }
-    }
-  end
-  exit
-end
 
 def drop_tower(painter, tx, ty)
 
 #painter.execute("tp world,#{tx},#{60 + (rand * 16.0).to_i},#{ty}")
-puts painter.execute("setworldspawn #{tx.to_i} 70 #{ty.to_i}")
-position = Vector.new(tx, 47 + (rand * 12.0), ty) #painter.player_position("faker")
+#puts painter.execute("setworldspawn #{tx.to_i} 70 #{ty.to_i}")
+position = Vector.new(tx, 55, ty) #painter.player_position("faker")
 #painter.center = position
 puts position.inspect
 
@@ -70,7 +30,7 @@ floors_per_tier = 1 + (rand * 8.5).to_i
 i = 0
 
 ox = tx
-oy = 0
+oy = 55
 oz = ty
 
 =begin
