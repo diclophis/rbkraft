@@ -1,13 +1,13 @@
 {
   "sdfVersion": 5,
   "name": "TowerScene",
-  "width": 450,
-  "height": 200,
+  "width": 1920,
+  "height": 1080,
   "exposure": 1.0,
   "postprocess": 1,
-  "renderTime": 1670433,
+  "renderTime": 0,
   "spp": 0,
-  "sppTarget": 1,
+  "sppTarget": 1000,
   "rayDepth": 128,
   "pathTrace": true,
   "dumpFrequency": 100,
@@ -27,7 +27,7 @@
   "fastFog": true,
   "biomeColorsEnabled": true,
   "transparentSky": false,
-  "fogDensity": 0.0,
+  "fogDensity": 0.0001,
   "waterHeight": 0,
   "world": {
     "path": "/home/mavencraft/world",
@@ -35,24 +35,24 @@
   },
   "camera": {
     "position": {
-      "x": -256.0,
-      "y": 93.0,
-      "z": 256.0
+      "x": -56.0,
+      "y": 120.0,
+      "z": 56.0
     },
     "orientation": {
       "roll": 0.0,
-      "pitch": -1.005,
+      "pitch": -0.995,
       "yaw": -2.2
     },
     "projectionMode": "PINHOLE",
-    "fov": 66.0,
-    "dof": 256.0,
+    "fov": 65.0,
+    "dof": 128.0,
     "focalOffset": 32.00
   },
   "sun": {
-    "altitude": 0.8,
+    "altitude": 0.7,
     "azimuth": 4.711986642890533,
-    "intensity": 0.5,
+    "intensity": 0.6,
     "color": {
       "red": 1.0,
       "green": 0.9,
