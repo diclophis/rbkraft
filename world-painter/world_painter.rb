@@ -162,7 +162,7 @@ class WorldPainter
     @debug = options[:debug]
     @async = options[:async_client] || true
     @client = MinecraftClient.new(@async)
-    @client.execute_command("spawn")
+    #@client.execute_command("spawn")
   end
 
   def async

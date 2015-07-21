@@ -6,7 +6,7 @@ require 'strscan'
 require 'logger'
 
 READ_CHUNKS = 1024 * 8 * 8
-COMMANDS_PER_SWEEP = 8
+COMMANDS_PER_SWEEP = 32
 COMMANDS_PER_MOD = 4
 
 class Wrapper
@@ -187,7 +187,7 @@ class Wrapper
       while client && has_eol = byte_scanner.check_until(/\n/)
         full_command_line = byte_scanner.scan_until(/\n/)
 
-        #$stderr.write(full_command_line)
+        #puts(full_command_line)
 
         if client.authentic
           if full_command_line.strip == "exit"
@@ -215,7 +215,7 @@ class Wrapper
     while commands_run < COMMANDS_PER_SWEEP && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
       write_minecraft_command(full_command_line)
       commands_run += 1
-      sleep 0.0000001
+      #sleep 0.0000001
 
       #if (commands_run % COMMANDS_PER_MOD) == 0
       #  sleep 0.001 # to prevent cpu burn
@@ -231,7 +231,11 @@ class Wrapper
       while has_eol = client.broadcast_scanner.check_until(/\n/)
         broadcast_line = client.broadcast_scanner.scan_until(/\n/)
         begin
-          writable_io.write(broadcast_line) unless client.async
+          if client.async
+          else
+            #puts "response >> #{broadcast_line}"
+            writable_io.write(broadcast_line)
+          end
         rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
           # Broken pipe (Errno::EPIPE)
           close_client(writable_io, e)

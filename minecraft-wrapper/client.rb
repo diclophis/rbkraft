@@ -23,42 +23,43 @@ class MinecraftClient
     @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "mavencraft.net", 25566)
     @server_io.sync = true
     if async
-      @server_io.puts("authentic\nasync")
-    else
       @server_io.puts("authentic")
+    else
+      @server_io.puts("authentic\nasync")
     end
     @server_io.flush
   end
 
   def flush_async
     if async
+      execute_command("async")
+
       begin
         self.gzip_buffer_sink.close
       rescue Zlib::GzipFile::Error => e
-        $stderr.write(e.inspect)
+        #$stderr.write(e.inspect)
       end
 
       while true
         begin
           gzd = self.gzip_buffer_pump.readpartial(READ_CHUNK)
-          #$stdout.write gzd.inspect
           @server_io.write(gzd)
         rescue EOFError => e
-          $stderr.write(e.inspect)
+          #$stderr.write(e.inspect)
           break
         end
       end
 
-      #while true
-      #  signal = Time.now.to_f.to_s
-      #  @server_io.puts("say the signal is #{signal}")
-      #  sleep 0.01
-      #  begin
-      #    break if read_nonblock.include?(signal)
-      #  rescue Errno::EAGAIN, Errno::EIO
-      #    false
-      #  end
-      #end
+      signal = Time.now.to_f.to_s
+      while true
+        @server_io.puts("say the signal is #{signal}")
+        sleep 0.1
+        begin
+          break if read_nonblock.include?(signal)
+        rescue Errno::EAGAIN, Errno::EIO
+          false
+        end
+      end
 
       @server_io.puts("exit")
       @server_io.flush
