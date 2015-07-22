@@ -4,16 +4,30 @@
 
 echo minecraft-repair
 
-rm -Rf /home/mavencraft/world*
-rm -Rf /usr/share/nginx/html/normal
-rm -Rf /usr/share/nginx/html/scenes
+echo "mode?"
+read line
 
-rm -Rf /home/mavencraft/running
+if [ "$line" = "destroy" ];
+then
+  echo destroying
 
-pkill -9 -f overviewer || true
-pkill -9 -f java || true
-pkill -9 -f java || true
-pkill -9 -f ruby || true
+  rm -Rf /home/mavencraft/world*
+  rm -Rf /usr/share/nginx/html/normal
+  rm -Rf /usr/share/nginx/html/scenes
+
+  line="kill"
+fi;
+
+if [ "$line" = "kill" ];
+then
+  echo killing
+
+  pkill -9 -f overviewer || true
+  pkill -9 -f java || true
+  pkill -9 -f java || true
+  pkill -9 -f ruby || true
+
+  rm -Rf /home/mavencraft/running
+fi;
 
 sleep 1
-#reboot

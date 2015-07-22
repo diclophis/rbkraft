@@ -6,7 +6,7 @@ require 'strscan'
 require 'logger'
 
 READ_CHUNKS = 1024 * 8 * 8
-COMMANDS_PER_SWEEP = 32
+COMMANDS_PER_SWEEP = 16
 COMMANDS_PER_MOD = 4
 
 class Wrapper
