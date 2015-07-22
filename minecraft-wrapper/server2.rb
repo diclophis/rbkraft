@@ -19,7 +19,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
   # Install your main server runloop
   while wrapper.running
-    #sleep 0.01
+    sleep 0.001
 
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
@@ -50,7 +50,6 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
     if writable && writable.length > 0
       # If the wrapped command is still running
       if wrapper.running
-        #$stderr.write("w#{writable.length}\n")
         wrapper.handle_descriptors_requiring_writing(writable)
       end
     end
@@ -59,11 +58,8 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
     if readable && readable.length > 0
       # If the wrapped command is still running
       if wrapper.running
-        #$stderr.write("r#{readable.length}\n")
         ff = wrapper.handle_descriptors_requiring_reading(readable)
-        #$stderr.write("r#{ff}\n")
       end
     end
-
   end
 end
