@@ -234,7 +234,7 @@ class Wrapper
           if client.async
           else
             #puts "response >> #{broadcast_line}"
-            writable_io.write(broadcast_line) unless broadcast_line.include?("[faker]")
+            writable_io.write(broadcast_line) unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
           end
         rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
           # Broken pipe (Errno::EPIPE)
