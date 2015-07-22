@@ -196,23 +196,27 @@ class Wrapper
       while client && has_eol = byte_scanner.check_until(/\n/)
         full_command_line = byte_scanner.scan_until(/\n/)
 
-        #puts(full_command_line)
+        stripped_command = full_command_line.strip
+
+        #puts(stripped_command)
 
         if client.authentic
-          if full_command_line.strip == "exit"
-            close_client(io, Exception.new("exit"))
-          elsif full_command_line.strip == "async" #NOTE: this doesnt do much now
-            client.async = !client.async
-          else
-            if full_command_line.strip == "save-all"
-              self.full_commands_waiting_to_be_written_to_minecraft.unshift(full_command_line)
-              close_client(io, Exception.new("saved: #{full_command_line}")) unless client.async
+          if stripped_command.length > 0
+            if stripped_command == "exit"
+              close_client(io, Exception.new("exit"))
+            elsif stripped_command == "async" #NOTE: this doesnt do much now
+              client.async = !client.async
             else
-              self.full_commands_waiting_to_be_written_to_minecraft << full_command_line
+              if stripped_command == "save-all"
+                self.full_commands_waiting_to_be_written_to_minecraft.unshift(full_command_line)
+                close_client(io, Exception.new("saved: #{full_command_line}")) unless client.async
+              else
+                self.full_commands_waiting_to_be_written_to_minecraft << stripped_command
+              end
             end
           end
         else
-          client.authentic = full_command_line.strip == "authentic"
+          client.authentic = stripped_command == "authentic"
           unless client.authentic
             close_client(io, Exception.new("not authentic: #{full_command_line}"))
           end
