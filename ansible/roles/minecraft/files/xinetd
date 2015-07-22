@@ -6,7 +6,7 @@ service mavencraft
    wait                = no
    user                = mavencraft
    server              = /usr/bin/minecraft.sh
-   server_args         = 4000M 2
+   server_args         = 10000M 2
    port                = 20020
    instances           = 1
 }
