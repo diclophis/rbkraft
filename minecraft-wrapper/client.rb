@@ -1,13 +1,21 @@
 #!/usr/bin/env ruby
 
+require 'zlib'
 require 'open3'
 require 'socket'
 
 class MinecraftClient
   attr_accessor :async
+  attr_accessor :gzip_buffer_sink
+  attr_accessor :gzip_buffer_pump
 
-  def initialize(async = false)
+  READ_CHUNK = 8 * 8 * 1024
+
+  def initialize(async = true)
     self.async = async
+    rp, wp = IO.pipe
+
+    self.gzip_buffer_pump, self.gzip_buffer_sink = rp, Zlib::GzipWriter.new(wp)
     connect
   end
 
@@ -15,18 +23,36 @@ class MinecraftClient
     @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "mavencraft.net", 25566)
     @server_io.sync = true
     if async
-      @server_io.puts("authentic\nasync")
-    else
       @server_io.puts("authentic")
+    else
+      @server_io.puts("authentic\nasync")
     end
     @server_io.flush
   end
 
   def flush_async
     if async
-      signal = Time.now.to_f.to_s
-      @server_io.puts("say the signal is #{signal}")
+      execute_command("async")
+
+      begin
+        self.gzip_buffer_sink.close
+      rescue Zlib::GzipFile::Error => e
+        #$stderr.write(e.inspect)
+      end
+
       while true
+        begin
+          gzd = self.gzip_buffer_pump.readpartial(READ_CHUNK)
+          @server_io.write(gzd)
+        rescue EOFError => e
+          #$stderr.write(e.inspect)
+          break
+        end
+      end
+
+      signal = Time.now.to_f.to_s
+      while true
+        @server_io.puts("say the signal is #{signal}")
         sleep 0.01
         begin
           break if read_nonblock.include?(signal)
@@ -34,26 +60,43 @@ class MinecraftClient
           false
         end
       end
+
+      @server_io.puts("exit")
+      @server_io.flush
+      disconnect
+
+      connect
     end
   end
 
   def puts(line)
-    @server_io.puts(line)
+    if async
+      self.gzip_buffer_sink.write(line)
+      gzd = self.gzip_buffer_pump.readpartial(READ_CHUNK)
+      @server_io.write(gzd)
+    else
+      @server_io.puts(line)
+    end
   end
 
   def read_nonblock
-    @server_io.read_nonblock(1024 * 64)
-  rescue Errno::EAGAIN, Errno::EIO
+    @server_io.read_nonblock(READ_CHUNK)
+  rescue Errno::EAGAIN, Errno::EIO #, Errno::ECONNRESET
     ''
   end
 
   def execute_command(command_line, pattern = nil)
     start_time = Time.now
 
-    @server_io.puts(command_line)
+    begin
+      @server_io.puts(command_line)
+    rescue Errno::EPIPE => e
+      #e.inspect, :oops
+      exit 1
+    end
 
     if async
-      read_nonblock
+      #read_nonblock
     else
       command_result = ""
       blank = 0

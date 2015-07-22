@@ -1,13 +1,16 @@
+require 'zlib'
 require 'open3'
 require 'socket'
 require 'fcntl'
 require 'strscan'
 require 'logger'
 
-READ_CHUNKS = 1024 * 1024 * 1024
+READ_CHUNKS = 1024 * 8 * 8
+COMMANDS_PER_SWEEP = 16
+COMMANDS_PER_MOD = 4
 
 class Wrapper
-  class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner)
+  class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner, :gzip_pump, :gzip_sink)
   end
 
   attr_accessor :running, :uid,
@@ -21,6 +24,8 @@ class Wrapper
                 :logger
 
   def initialize(logger, descriptors, argv)
+    @count = 0
+
     self.logger = logger
     self.full_commands_waiting_to_be_written_to_minecraft = []
     self.install_trap
@@ -29,9 +34,9 @@ class Wrapper
     self.uid = 0
     self.clients = Hash.new
 
-    self.stdin = $stdin
+    #self.stdin = $stdin
     #self.stdout = $stdout
-    self.stderr = $stderr
+    #self.stderr = $stderr
 
     self.command = argv[0]
     self.options = argv[1..-1]
@@ -71,7 +76,7 @@ class Wrapper
     if self.command
       self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.minecraft_thread = Open3.popen3(self.command, *self.options)
     else
-      raise "command required for wrapper, sleep works"
+      raise "command required for wrapper"
     end
   end
 
@@ -97,15 +102,15 @@ class Wrapper
   end
 
   def descriptors
-    [self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.server_io] + (self.clients.keys - [self.stdin])
+    [self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.server_io] + (self.clients.keys)
   end
 
   def selectable_descriptors
-    [self.stdin, self.minecraft_stdout, self.server_io] + self.clients.keys
+    [self.minecraft_stdout, self.server_io] + self.clients.keys
   end
 
   def writable_descriptors
-    [self.minecraft_stdin] + (self.clients.keys - [self.stdin])
+    [self.minecraft_stdin] + (self.clients.keys)
   end
 
   def accept_server_io_connection
@@ -113,17 +118,29 @@ class Wrapper
   end
 
   def install_client(client_io, authentic = nil)
-    self.clients[client_io] = Client.new(self.uid, authentic)
+    self.clients[client_io] = Client.new(self.uid, authentic, true)
     self.clients[client_io].broadcast_scanner = StringScanner.new("")
     self.uid += 1
   end
 
   def handle_minecraft_stdout
-    self.running = (!self.minecraft_stdin.closed? && !self.minecraft_stdout.eof?)
+    self.running = (!self.minecraft_stdin.closed?) # && !self.minecraft_stdout.eof?)
     if self.running
-      broadcast_bytes = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+      broadcast_bytes = nil
+
+      begin
+        broadcast_bytes = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+      rescue IO::EAGAINWaitReadable, Errno::EAGAIN => e
+        puts "ok #{e}"
+      rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
+        puts "wtf #{e}"
+        exit 1
+      end
 
       if broadcast_bytes
+        broadcast_bytes.gsub!("\b", "")
+        broadcast_bytes.squeeze!(" ")
+
         if broadcast_bytes.length == 0
           return
         else
@@ -167,9 +184,10 @@ class Wrapper
   def handle_minecraft_stdin
     self.input_waiting_to_be_written_to_minecraft.each do |io, byte_scanner|
       client = self.clients[io]
-
       while client && has_eol = byte_scanner.check_until(/\n/)
         full_command_line = byte_scanner.scan_until(/\n/)
+
+        #puts(full_command_line)
 
         if client.authentic
           if full_command_line.strip == "exit"
@@ -179,7 +197,7 @@ class Wrapper
           else
             if full_command_line.strip == "save-all"
               self.full_commands_waiting_to_be_written_to_minecraft.unshift(full_command_line)
-              close_client(io, Exception.new("saved: #{full_command_line}"))
+              close_client(io, Exception.new("saved: #{full_command_line}")) unless client.async
             else
               self.full_commands_waiting_to_be_written_to_minecraft << full_command_line
             end
@@ -194,9 +212,15 @@ class Wrapper
     end
 
     commands_run = 0
-    while commands_run < 64 && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
+    while commands_run < COMMANDS_PER_SWEEP && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
       write_minecraft_command(full_command_line)
       commands_run += 1
+      #sleep 0.0000001
+
+      #if (commands_run % COMMANDS_PER_MOD) == 0
+      #  sleep 0.001 # to prevent cpu burn
+      #  handle_minecraft_stdout
+      #end
     end
   end
 
@@ -207,7 +231,11 @@ class Wrapper
       while has_eol = client.broadcast_scanner.check_until(/\n/)
         broadcast_line = client.broadcast_scanner.scan_until(/\n/)
         begin
-          writable_io.write(broadcast_line) unless client.async
+          if client.async
+          else
+            #puts "response >> #{broadcast_line}"
+            writable_io.write(broadcast_line) unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
+          end
         rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
           # Broken pipe (Errno::EPIPE)
           close_client(writable_io, e)
@@ -217,22 +245,49 @@ class Wrapper
   end
 
   def enqueue_input_for_minecraft(io, bytes)
+
     self.input_waiting_to_be_written_to_minecraft[io] ||= StringScanner.new("")
+
+    client = self.clients[io]
+
+    #puts client.async.inspect
+
+    if client.async
+      if client.gzip_pump == nil
+        #rp, wp = IO.pipe
+        #client.gzip_pump = Zlib::Inflate.new
+      else
+        #self.clients[client_io].gzip_sink = wp
+        #client.gzip_sink.write(bytes)
+        #bytes = client.gzip_pump.read_partial(1024)
+
+        bytes = client.gzip_pump.inflate(bytes)
+
+        if bytes == nil
+          puts "!@#!@#!@#!@#!@#"
+        end
+      end
+    end
+
+    #$stdout.write(bytes.inspect)
+
     self.input_waiting_to_be_written_to_minecraft[io] << bytes
   end
 
   def close_client(readable_io, exception = nil)
     puts("closed #{readable_io} #{exception}")
-    unless (readable_io == self.stdin)
+    #unless (readable_io == self.stdin)
       self.clients.delete(readable_io)
       readable_io.close unless readable_io.closed?
-    end
+    #end
   end
 
   def write_minecraft_command(actual_command_line)
+    @count += 1
     filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
     if (filtered_sent_line && filtered_sent_line.length > 0)
       begin
+        puts filtered_sent_line if ((@count % 1024) == 0)
         self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
       rescue Errno::EPIPE => e
         puts "minecraft exited"

@@ -1,0 +1,80 @@
+{
+  "sdfVersion": 5,
+  "name": "TowerScene",
+  "width": 320,
+  "height": 240,
+  "exposure": 1.0,
+  "postprocess": 1,
+  "renderTime": 0,
+  "spp": 0,
+  "sppTarget": 64,
+  "rayDepth": 32,
+  "pathTrace": true,
+  "dumpFrequency": 100,
+  "saveSnapshots": true,
+  "emittersEnabled": true,
+  "emitterIntensity": 8.0,
+  "sunEnabled": true,
+  "stillWater": false,
+  "waterOpacity": 0.42,
+  "waterVisibility": 6.0,
+  "useCustomWaterColor": false,
+  "fogColor": {
+    "red": 0.42814502293337064,
+    "green": 0.5858024691358026,
+    "blue": 1.0
+  },
+  "fastFog": true,
+  "biomeColorsEnabled": true,
+  "transparentSky": false,
+  "fogDensity": 0.0001,
+  "waterHeight": 0,
+  "world": {
+    "path": "/home/mavencraft/world",
+    "dimension": 0
+  },
+  "camera": {
+    "position": {
+      "x": -56.0,
+      "y": 120.0,
+      "z": 56.0
+    },
+    "orientation": {
+      "roll": 0.0,
+      "pitch": -0.995,
+      "yaw": -2.2
+    },
+    "projectionMode": "PINHOLE",
+    "fov": 65.0,
+    "dof": 128.0,
+    "focalOffset": 32.00
+  },
+  "sun": {
+    "altitude": 0.7,
+    "azimuth": 4.711986642890533,
+    "intensity": 0.6,
+    "color": {
+      "red": 1.0,
+      "green": 0.9,
+      "blue": 0.9
+    }
+  },
+  "sky": {
+    "skyMirrored": false,
+    "skyYaw": 0.0,
+    "skyMirrored": true,
+    "skyLight": 0.1,
+    "horizonOffset": 0.1,
+    "cloudsEnabled": false,
+    "cloudSize": 64.0,
+    "cloudOffset": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    }
+  },
+  "cameraPresets": {
+    
+  },
+  "chunkList": []
+}

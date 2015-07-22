@@ -66,6 +66,7 @@
 - name: clone mavencraft
   git: update=true repo=git@github.com:mavenlink/mavencraft.git dest=/home/mavencraft/mavencraft version=master
 
+
 - name: faster sync
   sudo: true
   synchronize: mode=push src="{{ item }}" dest="/home/mavencraft"
@@ -92,14 +93,37 @@
   sudo: true
   shell: chown -Rv mavencraft:users /usr/share/nginx/html
 
+- name: fix existing
+  sudo: true
+  shell: chown -Rv mavencraft:users /home/mavencraft
+
+- name: fix existing
+  sudo: true
+  shell: chown -Rv ubuntu:users /home/mavencraft/mavencraft
+
 - name: symlink start script
   sudo: true
   shell: rm -Rf /etc/xinetd.d/* && ln -sf /home/mavencraft/xinetd /etc/xinetd.d/mavencraft && /etc/init.d/xinetd restart
 
-- name: install minecraft.sh
+- name: install minecraft shell scripts
   sudo: true
-  copy: src=minecraft.sh dest=/usr/bin/minecraft.sh mode=777
+  copy: src={{ item }} dest=/usr/bin/{{ item }} mode=777
+  with_items:
+    - minecraft.sh
+    - minecraft-status.sh
+    - minecraft-repair.sh
 
 - name: install minecraft backup
   sudo: true
   file: dest=/home/mavencraft/backup state=directory
+
+- name: fetch chunky
+  get_url: url="http://chunkyupdate.llbit.se/ChunkyLauncher.jar" dest=~/
+
+- name: update chunky
+  shell: "java -jar ChunkyLauncher.jar --update"
+
+- shell: "java -jar ChunkyLauncher.jar -download-mc 1.7.10"
+
+#- shell: ~/.chunky/scenes
+#- shell: "java -jar ~/ChunkyLauncher.jar -render SceneName"
