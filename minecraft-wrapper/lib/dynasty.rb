@@ -107,7 +107,7 @@ class Dynasty
   end
 
   def handle_descriptors_requiring_reading(readable, descriptors)
-    if readable.include?(self.socket_descriptor)
+    if readable && readable.include?(self.socket_descriptor)
       return Dynasty.running(self.socket_descriptor, descriptors)
     end
 
