@@ -19,7 +19,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
   # Install your main server runloop
   while wrapper.running
-    sleep 0.001
+    sleep 0.01
 
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
