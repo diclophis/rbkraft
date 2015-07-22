@@ -26,7 +26,7 @@ do
     time overviewer.py -p $1 --simple-output --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py 2>&1 | logger -t ov-py
     echo 'authentic\nsay charted' | nc -w 1 localhost 25566 2>&1 > /dev/null
   else
-    echo 'authentic\nsetworldspawn 0 0 0\nsave-on\nsave-all' | nc -w 10 localhost 25566 2>&1 > /dev/null
+    echo 'authentic\nsetworldspawn 0 65 0\nsave-on\nsave-all\nvp hideMessages' | nc -w 10 localhost 25566 2>&1 > /dev/null
     echo overviewer-saved | logger
   fi
   echo overviewer-end | logger

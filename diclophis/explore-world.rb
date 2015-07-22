@@ -15,7 +15,7 @@ s = 256
 global_painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
 
-puts global_painter.execute("setworldspawn 0 65 0")
+#puts global_painter.execute("setworldspawn 0 65 0")
 
 global_painter.async do
   (-s..s).each { |ttx|
