@@ -1,10 +1,13 @@
 require 'zlib'
 require 'open3'
+require 'pty'
+require 'io/console'
 require 'socket'
 require 'fcntl'
 require 'strscan'
 require 'logger'
 
+USE_POPEN3 = true
 READ_CHUNKS = 1024 * 8 * 8
 COMMANDS_PER_SWEEP = 16
 COMMANDS_PER_MOD = 4
@@ -49,7 +52,6 @@ class Wrapper
 
     self.minecraft_stdin.autoclose = false
     self.minecraft_stdout.autoclose = false
-    self.minecraft_stderr.autoclose = false
     self.prefetched_broadcast = ""
     self.input_waiting_to_be_written_to_minecraft = {}
 
@@ -74,7 +76,14 @@ class Wrapper
 
   def create_minecraft_io
     if self.command
-      self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.minecraft_thread = Open3.popen3(self.command, *self.options)
+      if USE_POPEN3
+        self.minecraft_stdin, self.minecraft_stdout, self.minecraft_stderr, self.minecraft_thread = Open3.popen3(self.command, *self.options)
+      else
+        combined = [self.command, *self.options]
+        self.minecraft_stdout, self.minecraft_stdin, self.minecraft_thread = PTY.spawn(*combined)
+        self.minecraft_stdin.echo = false
+        self.minecraft_stderr = nil
+      end
     else
       raise "command required for wrapper"
     end

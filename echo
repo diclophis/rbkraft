@@ -2,5 +2,5 @@
 
 while read line
 do
-  echo echo "$line"
+  echo echoing "$line"
 done < "${1:-/dev/stdin}"

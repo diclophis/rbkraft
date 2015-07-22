@@ -10,6 +10,7 @@ require 'syslog'
 # Start a hot-reloadable server on desired socket
 Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"]) do |dynasty|
   # log to the system log
+  #logger = Syslog.open("mavencraft", nil, Syslog::LOG_DAEMON) #Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
   logger = Syslog.open("mavencraft", Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
 
   # In your server, consume any ancestored descriptors, order is important
@@ -19,7 +20,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"])
 
   # Install your main server runloop
   while wrapper.running
-    sleep 0.01
+    #sleep 0.1
 
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
