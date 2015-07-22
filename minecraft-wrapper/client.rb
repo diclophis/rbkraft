@@ -53,7 +53,7 @@ class MinecraftClient
       signal = Time.now.to_f.to_s
       while true
         @server_io.puts("say the signal is #{signal}")
-        sleep 0.1
+        sleep 0.01
         begin
           break if read_nonblock.include?(signal)
         rescue Errno::EAGAIN, Errno::EIO
@@ -66,7 +66,6 @@ class MinecraftClient
       disconnect
 
       connect
-      $stdout.write "foop"
     end
   end
 
