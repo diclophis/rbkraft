@@ -1,14 +1,23 @@
 world:
 	ansible-playbook -c ssh -l mavencraft -i ansible/mavencraft.inventory ansible/provision.yml
 
-light:
+overviewer:
+	echo | nc -w 1 mavencraft.net 10020
+
+mavencraft:
 	echo | nc -w 1 mavencraft.net 20020
+
+light:
+	echo | nc -w 1 mavencraft.net 30020
 
 status:
 	echo | nc -w 1 mavencraft.net 20021
 
 clean:
 	echo kill | nc -w 1 mavencraft.net 20022
+
+destroy:
+	echo destroy | nc -w 1 mavencraft.net 20022
 
 towers:
 	time ruby diclophis/big_pyramid.rb draw

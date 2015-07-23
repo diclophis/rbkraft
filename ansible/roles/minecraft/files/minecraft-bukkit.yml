@@ -25,6 +25,7 @@ settings:
   query-plugins: true
   deprecated-verbose: default
   shutdown-message: Server closed
+  world-container: /home/mavencraft/world
 spawn-limits:
   monsters: 70
   animals: 15
@@ -32,11 +33,11 @@ spawn-limits:
   ambient: 15
 chunk-gc:
   period-in-ticks: 600
-  load-threshold: 0
+  load-threshold: 1
 ticks-per:
   animal-spawns: 400
   monster-spawns: 1
-  autosave: 6000
+  autosave: 500
 auto-updater:
   enabled: true
   on-broken:
@@ -54,4 +55,4 @@ database:
   isolation: SERIALIZABLE
   driver: org.sqlite.JDBC
   password: walrus
-  url: jdbc:sqlite:{DIR}{NAME}.db
+  url: jdbc:sqlite:{DIR}{NAME}-minecraft.db

@@ -1,6 +1,7 @@
 import os
 
-worlds["Mavencraft"] = os.environ['FULL_BACKUP']
+worlds["Minecraft"] = os.environ['FULL_BACKUP']
+worlds["Mavencraft"] = os.environ['FULL_BACKUP2']
 
 world = "Mavencraft"
 

@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#nc -l 0.0.0.0 20023
-
 echo minecraft-repair
 
 echo "mode?"
@@ -27,7 +25,9 @@ then
   pkill -9 -f java || true
   pkill -9 -f ruby || true
 
-  rm -Rf /home/mavencraft/running
+  rm -Rf /home/mavencraft/running-mavencraft
+  rm -Rf /home/mavencraft/running-minecraft
+  rm -Rf /home/mavencraft/running-overviewer
 fi;
 
 sleep 1

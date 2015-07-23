@@ -277,7 +277,8 @@ class WorldPainter
       puts cmd
     else
       puts cmd if debug?
-      output = @client.execute_command("vdc faker " + cmd, pattern)
+      faked_command = ("vdc faker " + cmd)
+      output = @client.execute_command(faked_command, pattern)
       puts output if debug?
       output
     end

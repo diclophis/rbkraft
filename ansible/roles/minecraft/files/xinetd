@@ -1,13 +1,13 @@
-service mavencraft
+service overviewer
 {
    type                = UNLISTED
    socket_type         = stream
    protocol            = tcp
    wait                = no
    user                = mavencraft
-   server              = /usr/bin/minecraft.sh
-   server_args         = 10000M 2
-   port                = 20020
+   server              = /home/mavencraft/mavencraft/scripts/overviewer.sh
+   server_args         = 6
+   port                = 10020
    instances           = 1
 }
 
@@ -32,5 +32,31 @@ service minecraft-repair
    user                = mavencraft
    server              = /usr/bin/minecraft-repair.sh
    port                = 20022
+   instances           = 1
+}
+
+service mavencraft
+{
+   type                = UNLISTED
+   socket_type         = stream
+   protocol            = tcp
+   wait                = no
+   user                = mavencraft
+   server              = /usr/bin/minecraft.sh
+   server_args         = 10000M mavencraft 25564 25566
+   port                = 20020
+   instances           = 1
+}
+
+service minecraft
+{
+   type                = UNLISTED
+   socket_type         = stream
+   protocol            = tcp
+   wait                = no
+   user                = mavencraft
+   server              = /usr/bin/minecraft.sh
+   server_args         = 4000M minecraft 25565 25567
+   port                = 30020
    instances           = 1
 }
