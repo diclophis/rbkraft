@@ -11,8 +11,8 @@ oox = 0
 ooy = 0
 ooz = 0
 
-#painter = DiclophisWorldPainter.new(oox, ooy, ooz)
-#puts "connected"
+painter = DiclophisWorldPainter.new(oox, ooy, ooz)
+puts "connected"
 
 #painter.async do
 #  4.times do |i|
@@ -41,19 +41,28 @@ def circle(uv, pos, rad)
   t = clamp(d, 0.0, 1.0)
 end
 
-iResolution = Vector.new(25.0, 25.0, 0.0)
+s = 32
+v = 16
 
-center = iResolution * 0.5
+iResolution = Vector.new((s * v).to_f, (s * v).to_f, 0.0)
+
+center = (iResolution * 0.0) # + Vector.new(0.5, 0.5, 0.0)
 radius = 0.2 * iResolution.y
 
-(0..iResolution.y.to_i).each do |y|
-  (0..iResolution.x.to_i).each do |x|
-    uv = Vector.new(x.to_f, y.to_f, 0.0)
-    #puts [iResolution, uv, center, radius].inspect
-    inner = circle(uv, center, radius)
-    outer = circle(uv, center, radius + (0.25 * iResolution.y))
-    sum = clamp((outer - inner).abs, 0.0, 1.0)
-    $stdout.write(sum.to_i.to_s)
+painter.async do
+  (-(iResolution.y*0.5).to_i..(iResolution.y*0.5).to_i).each do |y|
+    (-(iResolution.x*0.5).to_i..(iResolution.x*0.5).to_i).each do |x|
+      uv = Vector.new(x.to_f, y.to_f, 0.0)
+      inner = circle(uv, center, radius)
+      outer = circle(uv, center, radius + (0.25 * iResolution.y))
+      sum = clamp((outer - inner).abs, 0.0, 1.0)
+      if sum.to_i == 1
+        #$stdout.write(sum.to_i.to_s)
+        256.times do |i|
+          painter.place(x, i, y, painter.air_type)
+        end
+        $stdout.write(".")
+      end
+    end
   end
-  $stdout.write("\n")
 end
