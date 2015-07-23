@@ -25,7 +25,7 @@ settings:
   query-plugins: true
   deprecated-verbose: default
   shutdown-message: Server closed
-  world-container: /home/mavencraft/world2
+  world-container: /home/mavencraft/mavencraft-world
 spawn-limits:
   monsters: 70
   animals: 15

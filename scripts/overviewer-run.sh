@@ -8,8 +8,8 @@
 while true;
 do
   echo overviewer-start | logger
-  FULL_BACKUP=/home/mavencraft/world
-  FULL_BACKUP2=/home/mavencraft/world2
+  FULL_BACKUP=/home/mavencraft/minecraft-world/world
+  FULL_BACKUP2=/home/mavencraft/mavencraft-world/world
 
   MAP_BASE=/usr/share/nginx
   LAST_MAP=html
@@ -20,7 +20,7 @@ do
   export FULL_BACKUP2
   export FULL_MAP
 
-  if [ -e /home/mavencraft/world/level.dat -a -e /home/mavencraft/world2/level.dat ];
+  if [ -e /home/mavencraft/minecraft-world/world/level.dat -a -e /home/mavencraft/mavencraft-world/world/level.dat ];
   then
     echo overview-chart | logger
     sleep 1
@@ -31,8 +31,8 @@ do
   else
     echo overview-wait | logger
     sleep 30
-    echo 'authentic\nsetworldspawn 0 65 0\nsave-on\nsave-all\n' | nc -w 10 localhost 25566 2>&1 > /dev/null
-    echo 'authentic\nsetworldspawn 0 65 0\nsave-on\nsave-all\n' | nc -w 10 localhost 25567 2>&1 > /dev/null
+    echo -e 'authentic\nsetworldspawn 0 65 0\nsave-on\nsave-all\n' | nc -w 10 localhost 25566 2>&1 > /dev/null
+    echo -e 'authentic\nsetworldspawn 0 65 0\nsave-on\nsave-all\n' | nc -w 10 localhost 25567 2>&1 > /dev/null
     echo overviewer-saved | logger
   fi
   echo overviewer-end | logger
