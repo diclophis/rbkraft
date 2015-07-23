@@ -20,7 +20,7 @@ do
   export FULL_BACKUP2
   export FULL_MAP
 
-  if [ -e /home/mavencraft/world/level.dat ];
+  if [ -e /home/mavencraft/world/level.dat -a -e /home/mavencraft/world2/level.dat ];
   then
     echo overview-chart | logger
     sleep 1
