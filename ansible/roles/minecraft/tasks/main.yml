@@ -73,7 +73,8 @@
   with_items:
     - banned-ips.json
     - banned-players.json
-    - bukkit.yml
+    - mavencraft-bukkit.yml
+    - minecraft-bukkit.yml
     - commands.yml
     - help.yml
     - ops.json
