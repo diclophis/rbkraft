@@ -13,7 +13,7 @@ fi
 
 touch /home/mavencraft/running-overviewer
 
-/home/mavencraft/mavencraft/scripts/overviewer-run.sh &
+/home/mavencraft/mavencraft/scripts/overviewer-run.sh $1 &
 
 sleep 1
 
