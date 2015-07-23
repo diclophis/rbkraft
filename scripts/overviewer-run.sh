@@ -17,6 +17,7 @@ do
   FULL_MAP=$MAP_BASE/$LAST_MAP
 
   export FULL_BACKUP
+  export FULL_BACKUP2
   export FULL_MAP
 
   if [ -e /home/mavencraft/world/level.dat ];
