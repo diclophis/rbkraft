@@ -11,7 +11,7 @@ class MinecraftClient
 
   READ_CHUNK = 8 * 8 * 1024
 
-  def initialize(async = true)
+  def initialize(async = false)
     self.async = async
     rp, wp = IO.pipe
 
@@ -20,7 +20,7 @@ class MinecraftClient
   end
 
   def connect
-    @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "mavencraft.net", 25566)
+    @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "mavencraft.net", ENV["MAVENCRAFT_PORT"] || 25566)
     @server_io.sync = true
     if async
       @server_io.puts("authentic")
@@ -55,7 +55,9 @@ class MinecraftClient
         @server_io.puts("say the signal is #{signal}")
         sleep 0.01
         begin
-          break if read_nonblock.include?(signal)
+          stuff = read_nonblock
+          $stderr.write(stuff + "\n")
+          break if stuff.include?(signal)
         rescue Errno::EAGAIN, Errno::EIO
           false
         end

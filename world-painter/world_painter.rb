@@ -160,14 +160,14 @@ class WorldPainter
 
     @dry_run = options[:dry_run]
     @debug = options[:debug]
-    @async = options[:async_client] || true
+    @async = options[:async_client] || false
     @client = MinecraftClient.new(@async)
     #@client.execute_command("spawn")
   end
 
   def async
     original_async = @async
-    set_async true
+    set_async true unless original_async
     yield
     flush_async
     set_async original_async
@@ -354,6 +354,7 @@ class WorldPainter
 
   def player_position(player_name)
     position = []
+
     execute("getpos #{player_name}")
     while line = client.gets
       [:x, :y, :z].each do |c|
