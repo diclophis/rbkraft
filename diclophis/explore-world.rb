@@ -10,7 +10,7 @@ srand
 oox = 0
 ooy = 0
 ooz = 0
-s = 32
+s = 128
 
 global_painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"

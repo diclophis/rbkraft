@@ -57,12 +57,12 @@ painter.async do
       outer = circle(uv, center, radius + (0.25 * iResolution.y))
       sum = clamp((outer - inner).abs, 0.0, 1.0)
       if sum.to_i == 1
-        #$stdout.write(sum.to_i.to_s)
-        256.times do |i|
+        (256..0).each do |i|
           painter.place(x, i, y, painter.air_type)
         end
-        $stdout.write(".")
+        sleep 0.05
       end
     end
+    $stdout.write(".") if ((y % 100) == 0)
   end
 end
