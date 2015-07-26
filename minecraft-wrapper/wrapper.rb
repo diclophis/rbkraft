@@ -11,6 +11,7 @@ USE_POPEN3 = true
 READ_CHUNKS = 1024 * 8 * 8
 COMMANDS_PER_SWEEP = 256
 COMMANDS_PER_MOD = 128
+CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
   class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner, :gzip_pump, :gzip_sink)
@@ -127,7 +128,7 @@ class Wrapper
   end
 
   def install_client(client_io, authentic = nil)
-    self.clients[client_io] = Client.new(self.uid, authentic, true)
+    self.clients[client_io] = Client.new(self.uid, authentic, CLIENTS_DEFAULT_ASYNC)
     self.clients[client_io].broadcast_scanner = StringScanner.new("")
     self.uid += 1
   end
@@ -205,7 +206,7 @@ class Wrapper
             if stripped_command == "exit"
               close_client(io, Exception.new("exit"))
             elsif stripped_command == "async" #NOTE: this doesnt do much now
-              client.async = !client.async
+              #client.async = !client.async
             else
               if stripped_command == "save-all"
                 self.full_commands_waiting_to_be_written_to_minecraft.unshift(full_command_line)
@@ -245,8 +246,9 @@ class Wrapper
         begin
           if client.async
           else
-            #puts "response >> #{broadcast_line}"
-            writable_io.write(broadcast_line) #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
+            puts "response >> #{broadcast_line}"
+            #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
+            writable_io.write(broadcast_line)
           end
         rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
           # Broken pipe (Errno::EPIPE)

@@ -13,8 +13,12 @@ SELECT_SLEEP = 0.1
 # Start a hot-reloadable server on desired socket
 Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"]) do |dynasty|
   # log to the system log
-  #logger = Syslog.open("mavencraft", nil, Syslog::LOG_DAEMON) #Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
-  logger = Syslog.open("mavencraft", Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
+  logger = nil
+  if RUBY_PLATFORM.include?("darwin")
+    logger = Syslog.open("mavencraft", Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
+  else
+    logger = Syslog.open("mavencraft", nil, Syslog::LOG_DAEMON)
+  end
 
   # In your server, consume any ancestored descriptors, order is important
   # this case, the first 3 sockets are the stdin,stdout,stderr of the wrapped
