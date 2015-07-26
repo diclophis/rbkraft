@@ -14,6 +14,11 @@ ooz = 0
 painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
 
+center = painter.player_position("diclophis")
+puts center
+
 painter.async do
-  painter.place(oox, ooy, ooz, painter.type)
+  256.times do
+    painter.place(oox, ooy, ooz, painter.type)
+  end
 end

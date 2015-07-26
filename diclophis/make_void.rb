@@ -49,7 +49,6 @@ iResolution = Vector.new((s * v).to_f, (s * v).to_f, 0.0)
 center = (iResolution * 0.0) # + Vector.new(0.5, 0.5, 0.0)
 radius = 0.2 * iResolution.y
 
-painter.async do
   (-(iResolution.y*0.5).to_i..(iResolution.y*0.5).to_i).each do |y|
     (-(iResolution.x*0.5).to_i..(iResolution.x*0.5).to_i).each do |x|
       uv = Vector.new(x.to_f, y.to_f, 0.0)
@@ -57,12 +56,13 @@ painter.async do
       outer = circle(uv, center, radius + (0.25 * iResolution.y))
       sum = clamp((outer - inner).abs, 0.0, 1.0)
       if sum.to_i == 1
-        (256..0).each do |i|
-          painter.place(x, i, y, painter.air_type)
+painter.async do
+        (0..255).each do |i|
+          painter.place(x, 256 - i, y, painter.bedrock_type)
         end
+end
+$stdout.write(".")
         sleep 0.05
       end
     end
-    $stdout.write(".") if ((y % 100) == 0)
   end
-end
