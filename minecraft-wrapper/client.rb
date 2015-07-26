@@ -72,6 +72,8 @@ class MinecraftClient
   end
 
   def puts(line)
+    $stdout.puts line
+
     if async
       self.gzip_buffer_sink.write(line)
       gzd = self.gzip_buffer_pump.readpartial(READ_CHUNK)
@@ -89,6 +91,8 @@ class MinecraftClient
 
   def execute_command(command_line, pattern = nil)
     start_time = Time.now
+
+    $stdout.puts command_line
 
     begin
       @server_io.puts(command_line)

@@ -248,7 +248,10 @@ class Wrapper
           else
             puts "response >> #{broadcast_line}"
             #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
-            writable_io.write(broadcast_line)
+            if ((broadcast_line.include?("[Server]") && !broadcast_line.include?("[faker]")) ||
+              (broadcast_line.include?("gettingMessage") && !broadcast_line.include?("signal")))
+              writable_io.write(broadcast_line)
+            end
           end
         rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
           # Broken pipe (Errno::EPIPE)
