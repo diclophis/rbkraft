@@ -9,8 +9,8 @@ require 'logger'
 
 USE_POPEN3 = true
 READ_CHUNKS = 1024 * 8 * 8
-COMMANDS_PER_SWEEP = 16
-COMMANDS_PER_MOD = 4
+COMMANDS_PER_SWEEP = 256
+COMMANDS_PER_MOD = 128
 
 class Wrapper
   class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner, :gzip_pump, :gzip_sink)
@@ -228,12 +228,11 @@ class Wrapper
     while commands_run < COMMANDS_PER_SWEEP && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
       write_minecraft_command(full_command_line)
       commands_run += 1
-      #sleep 0.0000001
 
-      #if (commands_run % COMMANDS_PER_MOD) == 0
-      #  sleep 0.001 # to prevent cpu burn
-      #  handle_minecraft_stdout
-      #end
+      if COMMANDS_PER_MOD > 0 && (commands_run % COMMANDS_PER_MOD) == 0
+        sleep 0.01 # to prevent cpu burn
+        handle_minecraft_stdout
+      end
     end
   end
 
@@ -247,7 +246,7 @@ class Wrapper
           if client.async
           else
             #puts "response >> #{broadcast_line}"
-            writable_io.write(broadcast_line) unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
+            writable_io.write(broadcast_line) #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
           end
         rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
           # Broken pipe (Errno::EPIPE)

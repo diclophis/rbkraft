@@ -3,9 +3,15 @@ import os
 worlds["Minecraft"] = os.environ['FULL_BACKUP']
 worlds["Mavencraft"] = os.environ['FULL_BACKUP2']
 
-world = "Mavencraft"
+renders["Mavencraft"] = {
+  "world": "Mavencraft",
+  "title": "Normal",
+  "dimension": "overworld",
+  "rendermode": "smooth_lighting"
+}
 
-renders["normal"] = {
+renders["Minecraft"] = {
+  "world": "Minecraft",
   "title": "Normal",
   "dimension": "overworld",
   "rendermode": "smooth_lighting"
