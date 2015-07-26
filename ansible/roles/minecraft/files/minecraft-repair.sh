@@ -21,9 +21,11 @@ then
   echo killing
 
   pkill -9 -f overviewer || true
-  pkill -9 -f java || true
-  pkill -9 -f java || true
-  pkill -9 -f ruby || true
+  #pkill -9 -f java || true
+  #pkill -9 -f java || true
+  #pkill -9 -f ruby || true
+  pkill -9 -f 'java(.*)mavencraft-' || true
+  pkill -9 -f 'server2(.*)mavencraft-' || true
 
   rm -Rf /home/mavencraft/running-mavencraft
   rm -Rf /home/mavencraft/running-minecraft
