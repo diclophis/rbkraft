@@ -34,6 +34,7 @@ class MinecraftClient
     if async
       execute_command("async")
 
+=begin
       begin
         self.gzip_buffer_sink.close
       rescue Zlib::GzipFile::Error => e
@@ -49,14 +50,15 @@ class MinecraftClient
           break
         end
       end
+=end
 
       signal = Time.now.to_f.to_s
       while true
         @server_io.puts("say the signal is #{signal}")
-        sleep 0.01
+        sleep 0.05
         begin
           stuff = read_nonblock
-          $stderr.write(stuff + "\n")
+          #$stderr.write("stuff: " + stuff + "\n")
           break if stuff.include?(signal)
         rescue Errno::EAGAIN, Errno::EIO
           false
@@ -72,8 +74,6 @@ class MinecraftClient
   end
 
   def puts(line)
-    $stdout.puts line
-
     if async
       self.gzip_buffer_sink.write(line)
       gzd = self.gzip_buffer_pump.readpartial(READ_CHUNK)
@@ -92,7 +92,7 @@ class MinecraftClient
   def execute_command(command_line, pattern = nil)
     start_time = Time.now
 
-    $stdout.puts command_line
+    #$stdout.puts command_line
 
     begin
       @server_io.puts(command_line)

@@ -273,7 +273,7 @@ class WorldPainter
 
   def execute(cmd, pattern = nil)
 
-  $stdout.puts cmd
+  #$stdout.puts cmd
 
     sleep 0.0001
     if dry_run?
