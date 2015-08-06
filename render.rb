@@ -2,6 +2,10 @@
 
 require 'json'
 
+WWW = 5
+
 orig = JSON.parse($stdin.read)
-orig["chunkList"] = (-30...30).to_a.product((-30..30).to_a)
+puts orig.inspect
+exit 1
+orig["chunkList"] = (-WWW...WWW).to_a.product((-WWW..WWW).to_a).collect { |a| [a[0] + 2, a[1] + 2] }
 puts orig.to_json

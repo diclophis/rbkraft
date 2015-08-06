@@ -14,8 +14,8 @@ ooz = 0
 painter = DiclophisWorldPainter.new(oox, ooy, ooz)
 puts "connected"
 
-center = painter.player_position("diclophis")
-puts center
+center = painter.player_position("faker")
+puts center.inspect
 
 painter.async do
   256.times do

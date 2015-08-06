@@ -1,19 +1,19 @@
 {
   "sdfVersion": 5,
   "name": "TowerScene",
-  "width": 1300,
-  "height": 500,
+  "width": 140,
+  "height": 70,
   "exposure": 1.0,
   "postprocess": 1,
   "renderTime": 0,
   "spp": 0,
-  "sppTarget": 8,
-  "rayDepth": 128,
+  "sppTarget": 512,
+  "rayDepth": 256,
   "pathTrace": true,
-  "dumpFrequency": 4,
+  "dumpFrequency": 64,
   "saveSnapshots": true,
   "emittersEnabled": true,
-  "emitterIntensity": 8.0,
+  "emitterIntensity": 0.75,
   "sunEnabled": true,
   "stillWater": false,
   "waterOpacity": 0.42,
@@ -30,27 +30,27 @@
   "fogDensity": 0.0001,
   "waterHeight": 0,
   "world": {
-    "path": "/home/mavencraft/world",
+    "path": "/home/mavencraft/minecraft-world/world",
     "dimension": 0
   },
   "camera": {
     "position": {
-      "x": -56.0,
+      "x": 0.0,
       "y": 120.0,
-      "z": 56.0
+      "z": 0.0
     },
     "orientation": {
       "roll": 0.0,
-      "pitch": -0.995,
-      "yaw": -2.2
+      "pitch": -1.1112,
+      "yaw": -2.35
     },
     "projectionMode": "PINHOLE",
-    "fov": 55.0
+    "fov": 65.0
   },
   "sun": {
-    "altitude": 0.001,
-    "azimuth": 4.711986642890533,
-    "intensity": 0.001,
+    "altitude": 1.0471975511965976,
+    "azimuth": 5.711986642890533,
+    "intensity": 1.5,
     "color": {
       "red": 1.0,
       "green": 0.9,
