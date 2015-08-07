@@ -9,7 +9,7 @@ WWW=75
 
 orig = JSON.parse($stdin.read)
 
-x = orig["camera"]["position"]["x"].to_i + (TIME * 1) #/ 100.to_f).to_i
+x = orig["camera"]["position"]["x"].to_i # + (TIME * 1) #/ 100.to_f).to_i
 y = orig["camera"]["position"]["z"].to_i
 
 ox = 32 * 3

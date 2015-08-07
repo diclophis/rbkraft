@@ -26,7 +26,7 @@ sudo chown  www-data:ubuntu $SCREENSHOT_BASE
 sudo chmod g+w $SCREENSHOT_BASE
 
 
-for I in $(seq 1 32)
+for I in $(seq 1 10240)
 do
 
 rm -f /usr/share/nginx/html/scenes/*.dump*

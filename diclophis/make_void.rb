@@ -51,7 +51,7 @@ radius = 0.2 * iResolution.y
 xxx = 0
 painter.async do
   (-(iResolution.y*0.5).to_i..(iResolution.y*0.5).to_i).each do |y|
-    if xxx > 514
+    if xxx > 450
       (-(iResolution.x*0.5).to_i..(iResolution.x*0.5).to_i).each do |x|
         uv = Vector.new(x.to_f, y.to_f, 0.0)
         inner = circle(uv, center, radius)

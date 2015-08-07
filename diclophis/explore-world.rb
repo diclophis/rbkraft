@@ -21,8 +21,10 @@ global_painter.async do
       v = 16
       global_painter.place(ttx * v, 1, tty * v, global_painter.bedrock_type)
       global_painter.place((ttx * v) + 8, 1, (tty * v) + 8, global_painter.bedrock_type)
+      global_painter.place(ttx * v, 1, tty * v, global_painter.air_type)
+      global_painter.place((ttx * v) + 8, 1, (tty * v) + 8, global_painter.air_type)
       $stdout.write(".")
-      sleep 0.005
+      sleep 0.01
     }
   }
 end
