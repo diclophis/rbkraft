@@ -29,4 +29,4 @@ render:
 	scp TowerScene.json ubuntu@mavencraft.net:/tmp/TowerScene-raw.json
 	scp render.sh ubuntu@mavencraft.net:/tmp/render.sh
 	scp render.rb ubuntu@mavencraft.net:/tmp/render.rb
-	ssh ubuntu@mavencraft.net sh /tmp/render.sh
+	echo ssh ubuntu@mavencraft.net sh /tmp/render.sh

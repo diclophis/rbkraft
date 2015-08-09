@@ -41,17 +41,17 @@ def circle(uv, pos, rad)
   t = clamp(d, 0.0, 1.0)
 end
 
-s = 32
-v = 16
+s = 128
+v = 2
 
 iResolution = Vector.new((s * v).to_f, (s * v).to_f, 0.0)
 
 center = (iResolution * 0.0) # + Vector.new(0.5, 0.5, 0.0)
-radius = 0.2 * iResolution.y
+radius = 0.0 * iResolution.y
 xxx = 0
 painter.async do
   (-(iResolution.y*0.5).to_i..(iResolution.y*0.5).to_i).each do |y|
-    if xxx > 450
+    if true || xxx > 256
       (-(iResolution.x*0.5).to_i..(iResolution.x*0.5).to_i).each do |x|
         uv = Vector.new(x.to_f, y.to_f, 0.0)
         inner = circle(uv, center, radius)
@@ -59,13 +59,19 @@ painter.async do
         sum = clamp((outer - inner).abs, 0.0, 1.0)
         if sum.to_i == 1
           (0..255).each do |i|
-            painter.place(x, 256 - i, y, painter.air_type)
+          #(0..80).each do |i|
+          #(0..128).each do |i|
+            #painter.place(x, 256 - i, y, painter.type)
+            #painter.place(x, 128 - i, y, painter.air_type)
+            painter.place(x, i, y, painter.air_type)
           end
+          $stdout.write(".")
+          sleep 0.0001
         end
       end
     end
-    $stdout.write(".")
     xxx += 1
-    sleep 0.075
+    #puts xxx
+    #sleep 0.075
   end
 end

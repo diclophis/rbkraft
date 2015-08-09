@@ -1,8 +1,11 @@
 #!/bin/sh
 
 set -x
+set -e
 
-SPP=8
+WIDTH=1280
+HEIGHT=720
+SPP=10000
 
 sudo mkdir -p /usr/share/nginx/html/scenes
 sudo chown  www-data:ubuntu /usr/share/nginx/html/scenes
@@ -25,34 +28,40 @@ sudo mkdir -p $SCREENSHOT_BASE
 sudo chown  www-data:ubuntu $SCREENSHOT_BASE
 sudo chmod g+w $SCREENSHOT_BASE
 
-
-for I in $(seq 1 10240)
-do
-
 rm -f /usr/share/nginx/html/scenes/*.dump*
 rm -f /usr/share/nginx/html/scenes/*.octree*
+
+for I in $(seq 1 128)
+do
+
+cat /home/mavencraft/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
+cat /home/mavencraft/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null
+sleep 1
+
+rm -f /usr/share/nginx/html/scenes/*.dump*
+#rm -f /usr/share/nginx/html/scenes/*.octree*
 
 #sudo rm -Rf /usr/share/nginx/html/scenes
 #rm -f ~/.chunky/scenes/*.octree*
 #rm -f ~/.chunky/scenes/*.grass*
 #rm -f ~/.chunky/scenes/*.foilage*
 #rm -f ~/.chunky/scenes/flowers*
-rm -f /usr/share/nginx/html/scenes/*.grass*
-rm -f /usr/share/nginx/html/scenes/*.foliage*
-rm -f /usr/share/nginx/html/scenes/*.png
+#rm -f /usr/share/nginx/html/scenes/*.grass*
+#rm -f /usr/share/nginx/html/scenes/*.foliage*
+#rm -f /usr/share/nginx/html/scenes/*.png
 ##java -jar ~/ChunkyLauncher.jar -reset flowers TowerScene
 
-	cat /tmp/TowerScene-raw.json | ruby /tmp/render.rb $I $SPP > /tmp/TowerScene.json
+	cat /tmp/TowerScene-raw.json | ruby /tmp/render.rb $I $SPP $WIDTH $HEIGHT > /tmp/TowerScene.json
 	mv /tmp/TowerScene.json /usr/share/nginx/html/scenes/TowerScene.json
 
-  java -jar ~/ChunkyLauncher.jar -threads 10 -scene-dir /usr/share/nginx/html/scenes -render TowerScene
+  java -jar ~/ChunkyLauncher.jar -scene-dir /usr/share/nginx/html/scenes -render TowerScene
 
   mv /usr/share/nginx/html/scenes/TowerScene-$SPP.png $SCREENSHOT_BASE/latest-$I.png
 
   FRAMES="-i $SCREENSHOT_BASE/latest-$I.png"
 
   BITRATE_OPTION="-vb 4096k"
-  SIZE=640x480
+  SIZE="${WIDTH}x${HEIGHT}"
 
   avconv -y $FRAMES $BITRATE_OPTION $SCREENSHOT_BASE/current.avi
 

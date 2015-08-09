@@ -6,7 +6,7 @@ class DiclophisWorldPainter < WorldPainter
   attr_accessor :type, :air_type, :debug_type,
   :alt_type, :corner_type, :slab, :glass_type, :glow_type,
   :sand_type, :sandstone_type, :water_type, :tnt_type, :lava_type,
-  :iron_bars_type, :bedrock_type
+  :iron_bars_type, :bedrock_type, :quartz_type
 
   def initialize(*args)
     super(*args)
@@ -26,6 +26,7 @@ class DiclophisWorldPainter < WorldPainter
     @lava_type = air_type
     @iron_bars_type = air_type
     @bedrock_type = air_type
+    @quartz_type = air_type
 
     if ARGV[0] == "draw"
       @type = "stone"
@@ -42,6 +43,7 @@ class DiclophisWorldPainter < WorldPainter
       @lava_type = "lava"
       @iron_bars_type = "iron_bars"
       @bedrock_type = "bedrock"
+      @quartz_type = "quartz_block"
     end
   end
 end

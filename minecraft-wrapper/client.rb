@@ -55,7 +55,7 @@ class MinecraftClient
       signal = Time.now.to_f.to_s
       while true
         @server_io.puts("say the signal is #{signal}")
-        sleep 0.05
+        sleep 0.1
         begin
           stuff = read_nonblock
           #$stderr.write("stuff: " + stuff + "\n")

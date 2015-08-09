@@ -8,13 +8,13 @@
   "renderTime": 0,
   "spp": 0,
   "sppTarget": 32,
-  "rayDepth": 128,
+  "rayDepth": 8,
   "pathTrace": true,
   "dumpFrequency": 1024,
   "saveSnapshots": true,
   "emittersEnabled": true,
-  "emitterIntensity": 0.75,
-  "sunEnabled": true,
+  "emitterIntensity": 13.0,
+  "sunEnabled": false,
   "stillWater": false,
   "waterOpacity": 0.42,
   "waterVisibility": 6.0,
@@ -35,9 +35,9 @@
   },
   "camera": {
     "position": {
-      "x": -50.0,
+      "x": -70.0,
       "y": 120.0,
-      "z": 40.0
+      "z": 50.0
     },
     "orientation": {
       "roll": 0.0,
@@ -48,9 +48,9 @@
     "fov": 65.0
   },
   "sun": {
-    "altitude": 1.0471975511965976,
+    "altitude": 0.001,
     "azimuth": 5.711986642890533,
-    "intensity": 1.5,
+    "intensity": 0.2,
     "color": {
       "red": 1.0,
       "green": 0.9,
@@ -61,7 +61,7 @@
     "skyMirrored": false,
     "skyYaw": 0.0,
     "skyMirrored": true,
-    "skyLight": 0.001,
+    "skyLight": 0.00000,
     "horizonOffset": 0.1,
     "cloudsEnabled": false,
     "cloudSize": 64.0,
