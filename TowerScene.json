@@ -8,13 +8,13 @@
   "renderTime": 0,
   "spp": 0,
   "sppTarget": 32,
-  "rayDepth": 8,
+  "rayDepth": 128,
   "pathTrace": true,
   "dumpFrequency": 1024,
   "saveSnapshots": true,
   "emittersEnabled": true,
-  "emitterIntensity": 13.0,
-  "sunEnabled": false,
+  "emitterIntensity": 15.0,
+  "sunEnabled": true,
   "stillWater": false,
   "waterOpacity": 0.42,
   "waterVisibility": 6.0,
@@ -30,27 +30,27 @@
   "fogDensity": 0.0001,
   "waterHeight": 0,
   "world": {
-    "path": "/home/mavencraft/minecraft-world/world",
+    "path": "/home/mavencraft/mavencraft-world/world",
     "dimension": 0
   },
   "camera": {
     "position": {
-      "x": -70.0,
-      "y": 120.0,
-      "z": 50.0
+      "x": 30.0,
+      "y": 110.0,
+      "z": 90.0
     },
     "orientation": {
       "roll": 0.0,
-      "pitch": -1.1112,
+      "pitch": -3.0,
       "yaw": -2.35
     },
     "projectionMode": "PINHOLE",
     "fov": 65.0
   },
   "sun": {
-    "altitude": 0.001,
+    "altitude": 0.1,
     "azimuth": 5.711986642890533,
-    "intensity": 0.2,
+    "intensity": 1.0,
     "color": {
       "red": 1.0,
       "green": 0.9,

@@ -13,11 +13,12 @@ orig = JSON.parse($stdin.read)
 
 x = orig["camera"]["position"]["x"].to_i + (TIME / 10) #/ 100.to_f).to_i
 y = orig["camera"]["position"]["z"].to_i
-fov = orig["camera"]["fov"] - (TIME.to_f * 2.0)
+#fov = orig["camera"]["fov"] - (TIME.to_f * 3.5)
+pitch = orig["camera"]["orientation"]["pitch"] + (TIME.to_f * 0.01) 
 
-if fov < 35.0
-  fov = 35.0
-end
+#if fov < 35.0
+#  fov = 35.0
+#end
 
 ox = 32 * 3
 oy = -32 * 3
@@ -29,7 +30,8 @@ orig["chunkList"] = (-WWW...WWW).to_a.product((-WWW..WWW).to_a).collect { |a| [(
 
 orig["camera"]["position"]["x"] = x.to_f
 orig["sppTarget"] = SPP
-orig["camera"]["fov"] = fov
+#orig["camera"]["fov"] = fov
+orig["camera"]["orientation"]["pitch"] = pitch
 orig["width"] = WIDTH
 orig["height"] = HEIGHT
 
