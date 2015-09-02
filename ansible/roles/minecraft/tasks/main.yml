@@ -1,4 +1,7 @@
 ---
+- name: setup hostname according to inventory
+  sudo: true
+  hostname: name=mavencraft.net
 
 - name: update and upgrade apt-get
   sudo: true
@@ -18,6 +21,8 @@
   sudo: true
   apt: pkg=apt-transport-https state=present
 
+- shell: sudo apt-get remove ruby1.8 ruby1.8-dev unzip libreadline5 zip libruby1.8
+
 - name: install main system packages
   apt: pkg={{ item }} state=latest
   sudo: true
@@ -31,14 +36,16 @@
     - openjdk-7-jre
     - python-imaging
     - python-numpy
-    - python-pil
-    - liblapack3
-    - libgfortran3
-    - libwebp5
-    - libwebpmux1
+    #- python-pil
+    #- liblapack3
+    #- libgfortran3
+    #- libwebp5
+    #- libwebpmux1
+    - ruby1.9.3
     - nginx
     - htop
     - xinetd
+
 
 - name: fetch overviewer
   sudo: true
