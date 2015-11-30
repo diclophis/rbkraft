@@ -36,24 +36,25 @@
     - openjdk-7-jre
     - python-imaging
     - python-numpy
-    #- python-pil
-    #- liblapack3
-    #- libgfortran3
-    #- libwebp5
-    #- libwebpmux1
     - ruby1.9.3
     - nginx
     - htop
     - xinetd
 
+#- python-pil
+#- liblapack3
+#- libgfortran3
+#- libwebp5
+#- libwebpmux1
+
 
 - name: fetch overviewer
   sudo: true
-  get_url: url="http://overviewer.org/builds/deb64/2/overviewer-0.12.70.deb" dest=/var/tmp/ mode=0440 #sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
+  get_url: url="http://overviewer.org/builds/deb64/11/overviewer-0.12.81.deb" dest=/var/tmp/ mode=0440 #sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
 
 - name: install overviewer
   sudo: true
-  shell: dpkg -i /var/tmp/overviewer-0.12.70.deb
+  shell: dpkg -i /var/tmp/overviewer-0.12.81.deb
 
 - name: add mavencraft group
   sudo: true
@@ -73,6 +74,11 @@
 - name: clone mavencraft
   git: update=true repo=git@github.com:mavenlink/mavencraft.git dest=/home/mavencraft/mavencraft version=master
 
+- name: clone voxelizer
+  git: update=true repo=git@github.com:diclophis/voxelizer.git dest=/home/mavencraft/voxelizer version=master
+
+- name: clone voxelize-stl-xinetd
+  git: update=true repo=git@github.com:mavenlink/mavencraft.git dest=/home/mavencraft/voxelize-stl-xinetd version=master
 
 - name: faster sync
   sudo: true
@@ -89,9 +95,11 @@
     - server.properties
     - whitelist.json
     - xinetd
-    - minecraft.jar
-    - textures
-    - plugins
+    - eula.txt
+
+#- minecraft.jar
+#- textures
+#- plugins
 
 - name: dir
   sudo: true
@@ -131,7 +139,7 @@
 - name: update chunky
   shell: "java -jar ChunkyLauncher.jar --update"
 
-- shell: "java -jar ChunkyLauncher.jar -download-mc 1.7.10"
+- shell: "java -jar ChunkyLauncher.jar -download-mc 1.8.8"
 
 #- shell: ~/.chunky/scenes
 #- shell: "java -jar ~/ChunkyLauncher.jar -render SceneName"
