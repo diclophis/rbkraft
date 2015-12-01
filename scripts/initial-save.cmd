@@ -1,5 +1,5 @@
 authentic
-setworldspawn 0 65 0
+setworldspawn 0 120 0
 save-on
 save-all
 

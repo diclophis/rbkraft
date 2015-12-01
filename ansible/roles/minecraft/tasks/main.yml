@@ -21,7 +21,7 @@
   sudo: true
   apt: pkg=apt-transport-https state=present
 
-- shell: sudo apt-get remove ruby1.8 ruby1.8-dev unzip libreadline5 zip libruby1.8
+#- shell: sudo apt-get remove ruby1.8 ruby1.8-dev unzip libreadline5 zip libruby1.8
 
 - name: install main system packages
   apt: pkg={{ item }} state=latest
@@ -31,29 +31,40 @@
     - vim
     - git
     - screen
-    - ruby1.9.3
+    - ruby2.2
     - rake
     - openjdk-7-jre
     - python-imaging
     - python-numpy
-    #- python-pil
-    #- liblapack3
-    #- libgfortran3
-    #- libwebp5
-    #- libwebpmux1
-    - ruby1.9.3
     - nginx
     - htop
     - xinetd
+    - cmake
+    - libassimp-dev
+    - m4
+    - autoconf
+    - libtool
+    - libboost-dev
+    - libboost-all-dev
+    - libboost-thread-dev
+    - libboost-filesystem-dev
+    - libboost-test-dev
+
+
+#- python-pil
+#- liblapack3
+#- libgfortran3
+#- libwebp5
+#- libwebpmux1
 
 
 - name: fetch overviewer
   sudo: true
-  get_url: url="http://overviewer.org/builds/deb64/2/overviewer-0.12.70.deb" dest=/var/tmp/ mode=0440 #sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
+  get_url: url="http://overviewer.org/builds/deb64/11/overviewer-0.12.81.deb" dest=/var/tmp/ mode=0440 #sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
 
 - name: install overviewer
   sudo: true
-  shell: dpkg -i /var/tmp/overviewer-0.12.70.deb
+  shell: dpkg -i /var/tmp/overviewer-0.12.81.deb
 
 - name: add mavencraft group
   sudo: true
@@ -70,9 +81,37 @@
   sudo: true
   file: dest=/home/mavencraft state=directory mode=777
 
-- name: clone mavencraft
-  git: update=true repo=git@github.com:mavenlink/mavencraft.git dest=/home/mavencraft/mavencraft version=master
+- name: fix perms
+  sudo: true
+  shell: chown -Rv ubuntu:ubuntu /home/mavencraft/{{ item.dest }}
+  with_items:
+    - dest: mavencraft
+    - dest: voxelizer
+    - dest: voxelize-stl-xinetd
+    - dest: fcl 
+    - dest: libccd 
 
+- name: required git repos for full mavencrafting
+  git: update=true repo={{ item.repo }} dest=/home/mavencraft/{{ item.dest }}
+  with_items:
+    - dest: mavencraft
+      repo:  git@github.com:mavenlink/mavencraft.git
+    - dest: voxelizer
+      repo:  git@github.com:diclophis/voxelizer.git
+    - dest: voxelize-stl-xinetd
+      repo:  git@github.com:diclophis/voxelize-stl-xinetd.git
+    - dest: fcl 
+      repo:  git@github.com:flexible-collision-library/fcl.git
+    - dest: libccd 
+      repo:  git@github.com:danfis/libccd.git
+
+- name: build deps
+  sudo: true
+  shell: "{{ item }}"
+  with_items:
+    - "cd /home/mavencraft/libccd && /home/mavencraft/libccd/bootstrap && mkdir -p /home/mavencraft/libccd/build && cd /home/mavencraft/libccd/build && /home/mavencraft/libccd/configure --prefix=/usr && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/libccd && make -j 6 && make install"
+    - "cd /home/mavencraft/fcl && mkdir -p /home/mavencraft/fcl/build && cd /home/mavencraft/fcl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/fcl && make -j 6 && make install"
+    - "cd /home/mavencraft/voxelizer && mkdir -p /home/mavencraft/voxelizer/build && cd /home/mavencraft/voxelizer/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/voxelizer && make -j 6"
 
 - name: faster sync
   sudo: true
@@ -89,9 +128,11 @@
     - server.properties
     - whitelist.json
     - xinetd
-    - minecraft.jar
-    - textures
-    - plugins
+    - eula.txt
+
+#- minecraft.jar
+#- textures
+#- plugins
 
 - name: dir
   sudo: true
@@ -131,7 +172,7 @@
 - name: update chunky
   shell: "java -jar ChunkyLauncher.jar --update"
 
-- shell: "java -jar ChunkyLauncher.jar -download-mc 1.7.10"
+- shell: "java -jar ChunkyLauncher.jar -download-mc 1.8.8"
 
 #- shell: ~/.chunky/scenes
 #- shell: "java -jar ~/ChunkyLauncher.jar -render SceneName"

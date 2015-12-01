@@ -29,7 +29,7 @@ echo starting "$line"
 
 echo starting-minecraft-wrapper
 rm -f $DYNASTY_SOCK
-ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=8 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar --bukkit-settings $WORLD-bukkit.yml --port $MINECRAFT_PORT nogui &
+ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSIncrementalPacing -XX:ParallelGCThreads=2 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar --bukkit-settings $WORLD-bukkit.yml --port $MINECRAFT_PORT nogui &
 
 sleep 1
 
