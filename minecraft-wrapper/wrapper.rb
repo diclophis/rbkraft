@@ -8,9 +8,9 @@ require 'strscan'
 require 'logger'
 
 USE_POPEN3 = true
-READ_CHUNKS = 1024 * 8 * 8
-COMMANDS_PER_SWEEP = 256
-COMMANDS_PER_MOD = 128
+READ_CHUNKS = 1024 * 8 * 8 * 8
+COMMANDS_PER_SWEEP = 256 * 4
+COMMANDS_PER_MOD = 128 * 4
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -231,7 +231,7 @@ class Wrapper
       commands_run += 1
 
       if COMMANDS_PER_MOD > 0 && (commands_run % COMMANDS_PER_MOD) == 0
-        sleep 0.01 # to prevent cpu burn
+        #sleep 0.0001 # to prevent cpu burn
         handle_minecraft_stdout
       end
     end

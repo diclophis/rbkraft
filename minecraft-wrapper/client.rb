@@ -94,7 +94,7 @@ class MinecraftClient
 
     #$stdout.puts command_line
 
-    sleep 0.0025
+    sleep 0.0005
 
     begin
       @server_io.puts(command_line)
