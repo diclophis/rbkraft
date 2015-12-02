@@ -6,7 +6,7 @@ service overviewer
    wait                = no
    user                = mavencraft
    server              = /home/mavencraft/mavencraft/scripts/overviewer.sh
-   server_args         = 8
+   server_args         = 10
    port                = 10020
    instances           = 1
 }
@@ -43,7 +43,7 @@ service mavencraft
    wait                = no
    user                = mavencraft
    server              = /usr/bin/minecraft.sh
-   server_args         = 12768M mavencraft 25564 25566
+   server_args         = 15768M mavencraft 25564 25566
    port                = 20020
    instances           = 1
 }
@@ -56,7 +56,20 @@ service minecraft
    wait                = no
    user                = mavencraft
    server              = /usr/bin/minecraft.sh
-   server_args         = 12768M minecraft 25565 25567
+   server_args         = 15768M minecraft 25565 25567
    port                = 30020
    instances           = 1
+}
+
+service voxelizer
+{
+   type                = UNLISTED
+   socket_type         = stream
+   protocol            = tcp
+   wait                = no
+   user                = mavencraft
+   server              = /usr/bin/ruby
+   server_args         = /home/mavencraft/voxelize-stl-xinetd/accept-std-to-tempfile.rb
+   port                = 33333
+   instances           = 2
 }
