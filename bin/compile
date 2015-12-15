@@ -18,6 +18,7 @@ find $BUILD_DIR -name "*ansible*"
 ls -l /tmp/build/.heroku/python/bin/ansible
 echo "wtf"
 #$PYPATH/ansible --version
+PYTHONPATH=$BUILD_DIR/.heroku/python
 python $PYPATH/ansible-playbook -vvvv $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
 #du -h
 
