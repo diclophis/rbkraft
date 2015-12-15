@@ -111,10 +111,10 @@
   sudo: true
   shell: "{{ item }}"
   with_items:
-    - "cd /home/mavencraft/libccd && /home/mavencraft/libccd/bootstrap && mkdir -p /home/mavencraft/libccd/build && cd /home/mavencraft/libccd/build && /home/mavencraft/libccd/configure --prefix=/usr && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/libccd && make -j 6 && make install"
-    - "cd /home/mavencraft/fcl && mkdir -p /home/mavencraft/fcl/build && cd /home/mavencraft/fcl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/fcl && make -j 6 && make install"
-    - "cd /home/mavencraft/voxelizer && mkdir -p /home/mavencraft/voxelizer/build && cd /home/mavencraft/voxelizer/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/voxelizer && make -j 6"
-    - "cd /home/mavencraft/mapcrafter && mkdir -p /home/mavencraft/mapcrafter/build && cd /home/mavencraft/mapcrafter/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/mapcrafter && make -j 6"
+    - "cd /home/mavencraft/libccd && /home/mavencraft/libccd/bootstrap && mkdir -p /home/mavencraft/libccd/build && cd /home/mavencraft/libccd/build && /home/mavencraft/libccd/configure --prefix=/usr && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/libccd && make -j 2 && make install"
+    - "cd /home/mavencraft/fcl && mkdir -p /home/mavencraft/fcl/build && cd /home/mavencraft/fcl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/fcl && make -j 2 && make install"
+    - "cd /home/mavencraft/voxelizer && mkdir -p /home/mavencraft/voxelizer/build && cd /home/mavencraft/voxelizer/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/voxelizer && make -j 2"
+    - "cd /home/mavencraft/mapcrafter && mkdir -p /home/mavencraft/mapcrafter/build && cd /home/mavencraft/mapcrafter/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/mapcrafter && make -j 2"
 
 - name: faster sync
   sudo: true
