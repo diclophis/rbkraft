@@ -176,3 +176,11 @@
 
 #- shell: ~/.chunky/scenes
 #- shell: "java -jar ~/ChunkyLauncher.jar -render SceneName"
+
+- name: install voxelize stl daemon
+  sudo: true
+  copy: src=voxelizer.conf dest=/etc/init/voxelizer.conf
+
+- name: restart voxelizer
+  sudo: true
+  service: name=voxelizer state=started enabled=true
