@@ -20,7 +20,7 @@ ls -l /tmp/build/.heroku/python/bin/ansible
 echo "wtf"
 #$PYPATH/ansible --version
 PYTHONPATH=$BUILD_DIR/.heroku/python/lib/python2.7/site-packages
-$BUILD_DIR/.heroku/python/bin/python $PYPATH/ansible-playbook -vvvv $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
+$BUILD_DIR/.heroku/python/bin/python $PYPATH/ansible-playbook -vvvv -i $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
 #du -h
 
 echo $BUILD_DIR $CACHE_DIR $ENV_DIR
