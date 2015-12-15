@@ -13,7 +13,7 @@ env
 #ls -l ansible
 #ls -l ../ansible
 find $BUILD_DIR -name "*ansible*"
-export PATH=$PATH:$BUILD_DIR/python/bin
+export PATH=$PATH:$BUILD_DIR/.heroku/python/bin
 ansible --version
 ansible-playbook -vvvv $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
 #du -h
