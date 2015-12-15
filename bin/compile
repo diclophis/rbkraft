@@ -1,0 +1,18 @@
+#!/bin/sh
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+env
+uname -a
+ps aux
+dpkg -l
+ls -l ansible
+ls -l ../ansible
+ansible-playbook -i ansible/local.ini ansible/local.yml
+df -h
+
+echo $BUILD_DIR $CACHE_DIR $ENV_DIR
+
+exit 0
