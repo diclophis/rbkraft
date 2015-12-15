@@ -14,7 +14,10 @@ ENV_DIR=$3
 #ls -l ../ansible
 
 PYPATH=$BUILD_DIR/.heroku/python/bin
-#find $BUILD_DIR -name "*ansible*"
+find $BUILD_DIR -name "*ansible*"
+ls -l /tmp/build/.heroku/python/bin/ansible
+echo "wtf"
+
 $PYPATH/ansible --version
 $PYPATH/ansible-playbook -vvvv $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
 #du -h
