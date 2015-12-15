@@ -15,6 +15,7 @@ ENV_DIR=$3
 
 PYPATH=$BUILD_DIR/.heroku/python/bin
 find $BUILD_DIR -name "*ansible*"
+find $BUILD_DIR -name "*site-packages*"
 ls -l /tmp/build/.heroku/python/bin/ansible
 echo "wtf"
 #$PYPATH/ansible --version
