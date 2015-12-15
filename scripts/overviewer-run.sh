@@ -11,7 +11,9 @@ FULL_BACKUP2=/home/mavencraft/mavencraft-world/world
 MAP_BASE=/usr/share/nginx
 LAST_MAP=html
 FULL_MAP=$MAP_BASE/$LAST_MAP
-mv $FULL_MAP/* /dev/null
+rm -Rf /tmp/dump
+mkdir /tmp/dump
+mv -f $FULL_MAP/* /tmp/dump
 mkdir -p $FULL_MAP
 
 export FULL_BACKUP
@@ -30,7 +32,7 @@ do
     cat /home/mavencraft/mavencraft/scripts/normal-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null
     inotifywait -t 6 -e CLOSE /home/mavencraft/mavencraft-world/world/session.lock
     #overviewer.py -p $1 --simple-output --config /home/mavencraft/mavencraft/scripts/overviewerConfig.py 2>&1 | logger -t ov-py
-    /home/ubuntu/mapcrafter/build/src/mapcrafter -b --logging-config /home/ubuntu/mapcrafter/build/mapcrafter-log.conf -c /home/ubuntu/mapcrafter/build/mapcrafter.conf -j 14 2>&1 >/dev/null | logger -t mapcrafter
+    /home/mavencraft/mavencraft/scripts/mapper.sh    
     #echo overview-charted | logger
   else
     #echo overview-wait | logger

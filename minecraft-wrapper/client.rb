@@ -67,15 +67,15 @@ class MinecraftClient
       @server_io.puts("exit")
       @server_io.flush
 
-      loop do
-        begin
-          stuff = read_nonblock
-      #    #$stderr.write("stuff: " + stuff + "\n")
-      #    break if stuff.include?(signal)
-        rescue EOFError, Errno::EAGAIN, Errno::EIO
-          break
-        end
-      end
+#      loop do
+#        begin
+#          stuff = read_nonblock
+#      #    #$stderr.write("stuff: " + stuff + "\n")
+#      #    break if stuff.include?(signal)
+#        rescue EOFError, Errno::EAGAIN, Errno::EIO
+#          break
+#        end
+#      end
       disconnect
 
       connect

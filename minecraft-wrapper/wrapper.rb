@@ -8,9 +8,9 @@ require 'strscan'
 require 'logger'
 
 USE_POPEN3 = true
-READ_CHUNKS = 1 #1024 * 8 * 8 * 8 * 8
-COMMANDS_PER_SWEEP = 4 #32 * 32 #256 * 4 * 2
-COMMANDS_PER_MOD = 2 #128 * 4
+READ_CHUNKS = 1
+COMMANDS_PER_SWEEP = 8 #32 * 32 #256 * 4 * 2
+COMMANDS_PER_MOD = COMMANDS_PER_SWEEP / 4 #128 * 4
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -292,7 +292,7 @@ class Wrapper
   end
 
   def close_client(readable_io, exception = nil)
-    puts("closed #{readable_io} #{exception}")
+    #puts("closed #{readable_io} #{exception}")
     #unless (readable_io == self.stdin)
       self.clients.delete(readable_io)
       readable_io.close unless readable_io.closed?
