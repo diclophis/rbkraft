@@ -6,19 +6,17 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-env
+#env
 #uname -a
 #ps aux
 #ls -l $BUILD_DIR
 #ls -l ansible
 #ls -l ../ansible
 
-PATH=$PATH:$BUILD_DIR/.heroku/python/bin
-which ansible
-which ansible-playbook
-find $BUILD_DIR -name "*ansible*"
-ansible --version
-ansible-playbook -vvvv $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
+PYPATH=$BUILD_DIR/.heroku/python/bin
+#find $BUILD_DIR -name "*ansible*"
+$PYPATH/ansible --version
+$PYPATH/ansible-playbook -vvvv $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
 #du -h
 
 echo $BUILD_DIR $CACHE_DIR $ENV_DIR
