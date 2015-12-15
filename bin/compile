@@ -12,6 +12,7 @@ env
 #ls -l $BUILD_DIR
 #ls -l ansible
 #ls -l ../ansible
+find $BUILD_DIR -name "*ansible*"
 ansible --version
 ansible-playbook -vvvv $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
 #du -h
