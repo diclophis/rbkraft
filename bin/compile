@@ -19,12 +19,11 @@ find $BUILD_DIR -name "*site-packages*"
 ls -l /tmp/build/.heroku/python/bin/ansible
 echo "wtf"
 #$PYPATH/ansible --version
-su root chown root:root $(which sudo)
+chown root:root $(which sudo)
 #pkexec chmod a=rx,u+ws
-#su root chmod 4755 $(which sudo)
-which su
-
-echo "import pty; pty.spawn('/bin/su root chown root:root $(which sudo)')" > /tmp/asdf.py
+chmod 4755 $(which sudo)
+#which su
+#echo "import pty; pty.spawn('/bin/su root chown root:root $(which sudo)')" > /tmp/asdf.py
 $BUILD_DIR/.heroku/python/bin/python /tmp/asdf.py
 ls -l $(which sudo)
 
