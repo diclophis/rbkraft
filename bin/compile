@@ -22,8 +22,9 @@ echo "wtf"
 su root chown root:root $(which sudo)
 #pkexec chmod a=rx,u+ws
 #su root chmod 4755 $(which sudo)
+which su
 
-echo "import pty; pty.spawn('su root chown root:root $(which sudo)')" > /tmp/asdf.py
+echo "import pty; pty.spawn('/bin/su root chown root:root $(which sudo)')" > /tmp/asdf.py
 $BUILD_DIR/.heroku/python/bin/python /tmp/asdf.py
 ls -l $(which sudo)
 
