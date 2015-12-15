@@ -5,13 +5,13 @@ CACHE_DIR=$2
 ENV_DIR=$3
 
 env
-uname -a
-ps aux
-ls -l $BUILD_DIR
-ls -l ansible
-ls -l ../ansible
-ansible-playbook $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
-du -h
+#uname -a
+#ps aux
+#ls -l $BUILD_DIR
+#ls -l ansible
+#ls -l ../ansible
+ansible-playbook -vvvv $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
+#du -h
 
 echo $BUILD_DIR $CACHE_DIR $ENV_DIR
 
