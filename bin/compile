@@ -10,7 +10,7 @@ ps aux
 ls -l $BUILD_DIR
 ls -l ansible
 ls -l ../ansible
-ansible-playbook -i ansible/local.ini ansible/local.yml
+ansible-playbook $BUILD_DIR/ansible/local.ini $BUILD_DIR/ansible/local.yml
 du -h
 
 echo $BUILD_DIR $CACHE_DIR $ENV_DIR
