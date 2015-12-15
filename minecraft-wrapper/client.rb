@@ -13,9 +13,8 @@ class MinecraftClient
 
   def initialize(async = false)
     self.async = async
-    rp, wp = IO.pipe
-
-    self.gzip_buffer_pump, self.gzip_buffer_sink = rp, Zlib::GzipWriter.new(wp)
+    #rp, wp = IO.pipe
+    #self.gzip_buffer_pump, self.gzip_buffer_sink = rp, Zlib::GzipWriter.new(wp)
     connect
   end
 
@@ -52,21 +51,31 @@ class MinecraftClient
       end
 =end
 
-      signal = Time.now.to_f.to_s
-      while true
-        @server_io.puts("say the signal is #{signal}")
-        sleep 0.1
-        begin
-          stuff = read_nonblock
-          #$stderr.write("stuff: " + stuff + "\n")
-          break if stuff.include?(signal)
-        rescue Errno::EAGAIN, Errno::EIO
-          false
-        end
-      end
+      #signal = Time.now.to_f.to_s
+      #while true
+      #  @server_io.puts("say the signal is #{signal}")
+      #  sleep 0.1
+      #  begin
+      #    stuff = read_nonblock
+      #    #$stderr.write("stuff: " + stuff + "\n")
+      #    break if stuff.include?(signal)
+      #  rescue Errno::EAGAIN, Errno::EIO
+      #    false
+      #  end
+      #end
 
       @server_io.puts("exit")
       @server_io.flush
+
+#      loop do
+#        begin
+#          stuff = read_nonblock
+#      #    #$stderr.write("stuff: " + stuff + "\n")
+#      #    break if stuff.include?(signal)
+#        rescue EOFError, Errno::EAGAIN, Errno::EIO
+#          break
+#        end
+#      end
       disconnect
 
       connect
@@ -75,9 +84,10 @@ class MinecraftClient
 
   def puts(line)
     if async
-      self.gzip_buffer_sink.write(line)
-      gzd = self.gzip_buffer_pump.readpartial(READ_CHUNK)
-      @server_io.write(gzd)
+      #self.gzip_buffer_sink.write(line)
+      #gzd = self.gzip_buffer_pump.readpartial(READ_CHUNK)
+      #@server_io.write(gzd)
+      @server_io.write(line)
     else
       @server_io.puts(line)
     end
@@ -94,7 +104,7 @@ class MinecraftClient
 
     #$stdout.puts command_line
 
-    sleep 0.0025
+    sleep 0.0005
 
     begin
       @server_io.puts(command_line)

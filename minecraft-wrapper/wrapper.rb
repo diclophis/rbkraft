@@ -8,9 +8,9 @@ require 'strscan'
 require 'logger'
 
 USE_POPEN3 = true
-READ_CHUNKS = 1024 * 8 * 8
-COMMANDS_PER_SWEEP = 256
-COMMANDS_PER_MOD = 128
+READ_CHUNKS = 1
+COMMANDS_PER_SWEEP = 8 #32 * 32 #256 * 4 * 2
+COMMANDS_PER_MOD = COMMANDS_PER_SWEEP / 4 #128 * 4
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -139,7 +139,7 @@ class Wrapper
       broadcast_bytes = nil
 
       begin
-        broadcast_bytes = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+        broadcast_bytes = self.minecraft_stdout.read_nonblock(READ_CHUNKS * 2)
       rescue IO::EAGAINWaitReadable, Errno::EAGAIN => e
         puts "ok #{e}"
       rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
@@ -231,7 +231,7 @@ class Wrapper
       commands_run += 1
 
       if COMMANDS_PER_MOD > 0 && (commands_run % COMMANDS_PER_MOD) == 0
-        sleep 0.01 # to prevent cpu burn
+        #sleep 0.0001 # to prevent cpu burn
         handle_minecraft_stdout
       end
     end
@@ -278,7 +278,7 @@ class Wrapper
         #client.gzip_sink.write(bytes)
         #bytes = client.gzip_pump.read_partial(1024)
 
-        bytes = client.gzip_pump.inflate(bytes)
+        #bytes = client.gzip_pump.inflate(bytes)
 
         if bytes == nil
           puts "!@#!@#!@#!@#!@#"
@@ -292,7 +292,7 @@ class Wrapper
   end
 
   def close_client(readable_io, exception = nil)
-    puts("closed #{readable_io} #{exception}")
+    #puts("closed #{readable_io} #{exception}")
     #unless (readable_io == self.stdin)
       self.clients.delete(readable_io)
       readable_io.close unless readable_io.closed?
@@ -304,7 +304,7 @@ class Wrapper
     filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
     if (filtered_sent_line && filtered_sent_line.length > 0)
       begin
-        puts filtered_sent_line if ((@count % 1024) == 0)
+        puts filtered_sent_line if ((@count % 1024 * 4) == 0)
         self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
       rescue Errno::EPIPE => e
         puts "minecraft exited"
