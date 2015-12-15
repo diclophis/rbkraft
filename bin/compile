@@ -7,7 +7,6 @@ ENV_DIR=$3
 env
 uname -a
 ps aux
-dpkg -l
 ls -l ansible
 ls -l ../ansible
 ansible-playbook -i ansible/local.ini ansible/local.yml
