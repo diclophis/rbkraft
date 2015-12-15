@@ -92,18 +92,20 @@
     - dest: libccd 
 
 - name: required git repos for full mavencrafting
-  git: update=true repo={{ item.repo }} dest=/home/mavencraft/{{ item.dest }}
+  git: update=true repo={{ item.repo }} dest=/home/mavencraft/{{ item.dest }} force=true
   with_items:
     - dest: mavencraft
-      repo:  git@github.com:mavenlink/mavencraft.git
+      repo: git@github.com:mavenlink/mavencraft.git
     - dest: voxelizer
-      repo:  git@github.com:diclophis/voxelizer.git
+      repo: git@github.com:diclophis/voxelizer.git
     - dest: voxelize-stl-xinetd
-      repo:  git@github.com:diclophis/voxelize-stl-xinetd.git
-    - dest: fcl 
-      repo:  git@github.com:flexible-collision-library/fcl.git
+      repo: git@github.com:diclophis/voxelize-stl-xinetd.git
+    - dest: fcl
+      repo: git@github.com:flexible-collision-library/fcl.git
     - dest: libccd 
-      repo:  git@github.com:danfis/libccd.git
+      repo: git@github.com:danfis/libccd.git
+    - dest: mapcrafter
+      repo: git@github.com:mapcrafter/mapcrafter.git
 
 - name: build deps
   sudo: true
@@ -112,6 +114,7 @@
     - "cd /home/mavencraft/libccd && /home/mavencraft/libccd/bootstrap && mkdir -p /home/mavencraft/libccd/build && cd /home/mavencraft/libccd/build && /home/mavencraft/libccd/configure --prefix=/usr && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/libccd && make -j 6 && make install"
     - "cd /home/mavencraft/fcl && mkdir -p /home/mavencraft/fcl/build && cd /home/mavencraft/fcl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/fcl && make -j 6 && make install"
     - "cd /home/mavencraft/voxelizer && mkdir -p /home/mavencraft/voxelizer/build && cd /home/mavencraft/voxelizer/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/voxelizer && make -j 6"
+    - "cd /home/mavencraft/mapcrafter && mkdir -p /home/mavencraft/mapcrafter/build && cd /home/mavencraft/mapcrafter/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/mapcrafter && make -j 6"
 
 - name: faster sync
   sudo: true
@@ -129,6 +132,8 @@
     - whitelist.json
     - xinetd
     - eula.txt
+    - mapcrafter.conf
+    - mapcrafter-log.conf
 
 #- minecraft.jar
 #- textures
