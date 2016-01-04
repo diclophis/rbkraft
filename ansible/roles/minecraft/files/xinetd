@@ -6,7 +6,7 @@ service overviewer
    wait                = no
    user                = mavencraft
    server              = /home/mavencraft/mavencraft/scripts/overviewer.sh
-   server_args         = 2
+   server_args         = 8
    port                = 10020
    instances           = 1
 }

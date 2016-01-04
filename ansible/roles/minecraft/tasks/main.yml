@@ -1,7 +1,7 @@
 ---
-- name: setup hostname according to inventory
-  sudo: true
-  hostname: name=mavencraft.net
+#- name: setup hostname according to inventory
+#  sudo: true
+#  hostname: name=mavencraft.net
 
 - name: update and upgrade apt-get
   sudo: true
@@ -21,8 +21,6 @@
   sudo: true
   apt: pkg=apt-transport-https state=present
 
-#- shell: sudo apt-get remove ruby1.8 ruby1.8-dev unzip libreadline5 zip libruby1.8
-
 - name: install main system packages
   apt: pkg={{ item }} state=latest
   sudo: true
@@ -31,7 +29,7 @@
     - vim
     - git
     - screen
-    - ruby2.2
+    - ruby2.1
     - rake
     - openjdk-7-jre
     - python-imaging
@@ -49,18 +47,11 @@
     - libboost-thread-dev
     - libboost-filesystem-dev
     - libboost-test-dev
-
-
-#- python-pil
-#- liblapack3
-#- libgfortran3
-#- libwebp5
-#- libwebpmux1
-
+    - inotify-tools
 
 - name: fetch overviewer
   sudo: true
-  get_url: url="http://overviewer.org/builds/deb64/11/overviewer-0.12.81.deb" dest=/var/tmp/ mode=0440 #sha256sum=8ac27182d9b5ee7c273ba37df871638f527546a929da0aa0d29be5c487e9e1c7
+  get_url: url="http://overviewer.org/builds/deb64/11/overviewer-0.12.81.deb" dest=/var/tmp/ mode=0440
 
 - name: install overviewer
   sudo: true
@@ -83,38 +74,38 @@
 
 - name: fix perms
   sudo: true
-  shell: chown -Rv ubuntu:ubuntu /home/mavencraft/{{ item.dest }}
+  shell: chown -Rv {{ ansible_ssh_user }}:{{ ansible_ssh_user }} /home/mavencraft/{{ item.dest }} || true
   with_items:
     - dest: mavencraft
     - dest: voxelizer
     - dest: voxelize-stl-xinetd
     - dest: fcl 
+    - dest: libccd
+
+- name: required git repos for full mavencrafting
+  git: update=true repo={{ item.repo }} dest=/home/mavencraft/{{ item.dest }} force=true
+  with_items:
+    - dest: mavencraft
+      repo: https://github.com/mavenlink/mavencraft.git
+    - dest: voxelizer
+      repo: https://github.com/diclophis/voxelizer.git
+    - dest: voxelize-stl-xinetd
+      repo: https://github.com/diclophis/voxelize-stl-xinetd.git
+    - dest: fcl
+      repo: https://github.com/flexible-collision-library/fcl.git
     - dest: libccd 
+      repo: https://github.com/danfis/libccd.git
+    - dest: mapcrafter
+      repo: https://github.com/mapcrafter/mapcrafter.git
 
-#- name: required git repos for full mavencrafting
-#  git: update=true repo={{ item.repo }} dest=/home/mavencraft/{{ item.dest }} force=true
-#  with_items:
-#    - dest: mavencraft
-#      repo: git@github.com:mavenlink/mavencraft.git
-#    - dest: voxelizer
-#      repo: git@github.com:diclophis/voxelizer.git
-#    - dest: voxelize-stl-xinetd
-#      repo: git@github.com:diclophis/voxelize-stl-xinetd.git
-#    - dest: fcl
-#      repo: git@github.com:flexible-collision-library/fcl.git
-#    - dest: libccd 
-#      repo: git@github.com:danfis/libccd.git
-#    - dest: mapcrafter
-#      repo: git@github.com:mapcrafter/mapcrafter.git
-
-#- name: build deps
-#  sudo: true
-#  shell: "{{ item }}"
-#  with_items:
-#    - "cd /home/mavencraft/libccd && /home/mavencraft/libccd/bootstrap && mkdir -p /home/mavencraft/libccd/build && cd /home/mavencraft/libccd/build && /home/mavencraft/libccd/configure --prefix=/usr && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/libccd && make -j 2 && make install"
-#    - "cd /home/mavencraft/fcl && mkdir -p /home/mavencraft/fcl/build && cd /home/mavencraft/fcl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/fcl && make -j 2 && make install"
-#    - "cd /home/mavencraft/voxelizer && mkdir -p /home/mavencraft/voxelizer/build && cd /home/mavencraft/voxelizer/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/voxelizer && make -j 2"
-#    - "cd /home/mavencraft/mapcrafter && mkdir -p /home/mavencraft/mapcrafter/build && cd /home/mavencraft/mapcrafter/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/mapcrafter && make -j 2"
+- name: build deps
+  sudo: true
+  shell: "{{ item }}"
+  with_items:
+    - "cd /home/mavencraft/libccd && /home/mavencraft/libccd/bootstrap && mkdir -p /home/mavencraft/libccd/build && cd /home/mavencraft/libccd/build && /home/mavencraft/libccd/configure --prefix=/usr && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/libccd && make -j 2 && make install"
+    - "cd /home/mavencraft/fcl && mkdir -p /home/mavencraft/fcl/build && cd /home/mavencraft/fcl/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/fcl && make -j 2 && make install"
+    - "cd /home/mavencraft/voxelizer && mkdir -p /home/mavencraft/voxelizer/build && cd /home/mavencraft/voxelizer/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/voxelizer && make -j 2"
+    - "cd /home/mavencraft/mapcrafter && mkdir -p /home/mavencraft/mapcrafter/build && cd /home/mavencraft/mapcrafter/build && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr /home/mavencraft/mapcrafter && make -j 2"
 
 - name: faster sync
   sudo: true
@@ -153,7 +144,7 @@
 
 - name: fix existing
   sudo: true
-  shell: chown -Rv ubuntu:users /home/mavencraft/mavencraft
+  shell: chown -Rv {{ ansible_ssh_user }}:users /home/mavencraft/mavencraft
 
 - name: symlink start script
   sudo: true
