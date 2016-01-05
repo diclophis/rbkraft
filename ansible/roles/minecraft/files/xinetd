@@ -23,7 +23,7 @@ service mavencraft-status
    instances           = 1
 }
 
-service minecraft-repair
+service minecraft-repair-kill
 {
    type                = UNLISTED
    socket_type         = stream
@@ -31,7 +31,21 @@ service minecraft-repair
    wait                = no
    user                = mavencraft
    server              = /usr/bin/minecraft-repair.sh
-   port                = 20022
+   server_args         = kill
+   port                = 20122
+   instances           = 1
+}
+
+service minecraft-repair-kill-destroy
+{
+   type                = UNLISTED
+   socket_type         = stream
+   protocol            = tcp
+   wait                = no
+   user                = mavencraft
+   server              = /usr/bin/minecraft-repair.sh
+   server_args         = destroy
+   port                = 20222
    instances           = 1
 }
 
