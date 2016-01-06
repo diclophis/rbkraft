@@ -8,9 +8,10 @@ require 'strscan'
 require 'logger'
 
 USE_POPEN3 = true
-READ_CHUNKS = 1024
-COMMANDS_PER_SWEEP = 128 #32 * 32 #256 * 4 * 2
-COMMANDS_PER_MOD = COMMANDS_PER_SWEEP / 4 #128 * 4
+READ_CHUNKS = 1024 * 4
+READ_CHUNKS_REMOTE = 1024 * 4
+#COMMANDS_PER_SWEEP = 128 * 128 #32 * 32 #256 * 4 * 2
+COMMANDS_PER_MOD = 1024 * 1024 #COMMANDS_PER_SWEEP / 4 #128 * 4
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -139,7 +140,7 @@ class Wrapper
       broadcast_bytes = nil
 
       begin
-        broadcast_bytes = self.minecraft_stdout.read_nonblock(READ_CHUNKS * 2)
+        broadcast_bytes = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
       rescue IO::EAGAINWaitReadable, Errno::EAGAIN => e
         puts "ok #{e}"
       rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
@@ -171,7 +172,7 @@ class Wrapper
           accept_server_io_connection
       else # some input from the api server from a client script
         begin
-          client_input_bytes = readable_io.read_nonblock(READ_CHUNKS)
+          client_input_bytes = readable_io.read_nonblock(READ_CHUNKS_REMOTE)
           enqueue_input_for_minecraft(readable_io, client_input_bytes)
         rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
           close_client(readable_io, e)
@@ -226,15 +227,15 @@ class Wrapper
     end
 
     commands_run = 0
-    while commands_run < COMMANDS_PER_SWEEP && full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift
-      write_minecraft_command(full_command_line)
-      commands_run += 1
-
-      if COMMANDS_PER_MOD > 0 && (commands_run % COMMANDS_PER_MOD) == 0
-        #sleep 0.0001 # to prevent cpu burn
-        handle_minecraft_stdout
-      end
+    while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
+      write_minecraft_command(full_command_line.join("\n"))
+      #commands_run += 1
+      #if COMMANDS_PER_MOD > 0 && (commands_run % COMMANDS_PER_MOD) == 0
+      #  #sleep 0.0001 # to prevent cpu burn
+      #handle_minecraft_stdout
+      #end
     end
+    #write_minecraft_command("save-all flush")
   end
 
   def broadcast_latest_stdout(writable_io)
@@ -301,10 +302,10 @@ class Wrapper
 
   def write_minecraft_command(actual_command_line)
     @count += 1
-    filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\']/, '')
+    filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\'\n]/, '')
     if (filtered_sent_line && filtered_sent_line.length > 0)
       begin
-        puts filtered_sent_line if ((@count % 1024 * 4) == 0)
+        puts "WRAPPER-SENT: #{filtered_sent_line.length}" if ((@count % 1024 * 4) == 0)
         self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
       rescue Errno::EPIPE => e
         puts "minecraft exited"
