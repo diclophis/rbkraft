@@ -1,29 +1,22 @@
+ANSIBLE=ansible-playbook -c ssh -l mavencraft -i ansible/mavencraft.inventory
+
 world:
-	ansible-playbook -c ssh -l mavencraft -i ansible/mavencraft.inventory ansible/provision.yml
+	$(ANSIBLE) ansible/provision.yml
 
 overviewer:
-	echo | nc -w 1 mavencraft.net 10020
+	$(ANSIBLE) -e "port=10020" ansible/toggle.yml
 
 mavencraft:
-	echo | nc -w 1 mavencraft.net 20020
+	$(ANSIBLE) -e "port=20020" ansible/toggle.yml
 
 light:
-	echo | nc -w 1 mavencraft.net 30020
+	$(ANSIBLE) -e "port=30020" ansible/toggle.yml
 
 status:
-	echo | nc -w 1 mavencraft.net 20021
+	$(ANSIBLE) -e "port=20021" ansible/toggle.yml
 
 clean:
-	echo kill | nc -w 1 mavencraft.net 20022
+	$(ANSIBLE) -e "port=20122" ansible/toggle.yml
 
 destroy:
-	echo destroy | nc -w 1 mavencraft.net 20022
-
-towers:
-	time ruby diclophis/big_pyramid.rb draw
-
-render:
-	scp TowerScene.json ubuntu@mavencraft.net:/tmp/TowerScene-raw.json
-	scp render.sh ubuntu@mavencraft.net:/tmp/render.sh
-	scp render.rb ubuntu@mavencraft.net:/tmp/render.rb
-	echo ssh ubuntu@mavencraft.net sh /tmp/render.sh
+	$(ANSIBLE) -e "port=20222" ansible/toggle.yml

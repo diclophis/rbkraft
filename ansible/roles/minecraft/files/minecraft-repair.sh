@@ -1,9 +1,7 @@
 #!/bin/sh
 
-echo minecraft-repair
-
-echo "mode?"
-read line
+line=$1
+echo "minecraft-repair: $line" | logger -t minecraft-repair-$line
 
 if [ "$line" = "destroy" ];
 then
@@ -41,5 +39,3 @@ then
   rm -Rf /home/mavencraft/running-mavencraft
   rm -Rf /home/mavencraft/running-overviewer
 fi;
-
-sleep 1

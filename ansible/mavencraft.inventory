@@ -1,2 +1,4 @@
+[localhost]
+
 [mavencraft]
-mavencraft.net ansible_ssh_user=ubuntu
+192.168.1.106 ansible_ssh_user=jbardin

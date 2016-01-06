@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - wait_for: host={{ item }} port={{ port }} delay=0 timeout=600 state=started
+      with_items: groups['mavencraft']|default([])
