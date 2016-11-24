@@ -8,10 +8,10 @@ require 'strscan'
 require 'logger'
 
 USE_POPEN3 = true
-READ_CHUNKS = 1024 * 32
-READ_CHUNKS_REMOTE = 1024 * 32
+READ_CHUNKS = 1024 * 32 * 32
+READ_CHUNKS_REMOTE = 1024 * 32 * 32
 #COMMANDS_PER_SWEEP = 128 * 128 #32 * 32 #256 * 4 * 2
-COMMANDS_PER_MOD = 1024 * 1024 #COMMANDS_PER_SWEEP / 4 #128 * 4
+COMMANDS_PER_MOD = 1024 * 1024 * 1024 #COMMANDS_PER_SWEEP / 4 #128 * 4
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -305,7 +305,7 @@ class Wrapper
     filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\'\n]/, '')
     if (filtered_sent_line && filtered_sent_line.length > 0)
       begin
-        puts "WRAPPER-SENT: #{filtered_sent_line.length}" if ((@count % 1024 * 4) == 0)
+        puts "WRAPPER-SENT: #{@count} #{filtered_sent_line.length}" if ((@count % 1024 * 4) == 0)
         self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
       rescue Errno::EPIPE => e
         puts "minecraft exited"
