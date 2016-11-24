@@ -26,3 +26,7 @@ https://www.youtube.com/watch?v=VCY2VKXJkSw&feature=youtu.be
     /usr/share/pyshared/overviewer_core/data/web_assets/index.html
 
 # spawn camera
+
+# setup notes
+
+sudo adduser --home /home/minecraft --shell /bin/false --disabled-login --disabled-password minecraft

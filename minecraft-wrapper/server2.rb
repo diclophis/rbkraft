@@ -11,7 +11,7 @@ SELECT_WRITABLE = false
 SELECT_SLEEP = 9999.9
 
 # Start a hot-reloadable server on desired socket
-Dynasty.server(ENV["DYNASTY_SOCK"] || "/tmp/dynasty.sock", ENV["DYNASTY_FORCE"]) do |dynasty|
+Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]) do |dynasty|
   # log to the system log
   logger = nil
   if RUBY_PLATFORM.include?("darwin")

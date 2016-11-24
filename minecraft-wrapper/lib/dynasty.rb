@@ -27,7 +27,7 @@ class Dynasty
 
     if socket == nil
       if File.exists?(socket_file)
-        raise "server exists, DYNASTY_FORCE to continue" unless force_start
+        raise "#{socket_file} server exists, DYNASTY_FORCE to continue" unless force_start
         File.unlink(socket_file)
       end
 
