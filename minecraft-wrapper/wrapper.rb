@@ -8,10 +8,11 @@ require 'strscan'
 require 'logger'
 
 USE_POPEN3 = true
-READ_CHUNKS = 1024 * 32 * 32
-READ_CHUNKS_REMOTE = 1024 * 32 * 32
+FIXNUM_MAX = (2**(0.size * 8 -2) -1)
+READ_CHUNKS = 1024 * 8 * 32 #(FIXNUM_MAX / (1024 * 1024 * 1024)) #(FIXNUM_MAX / 4096) #1024 * 32 * 32
+READ_CHUNKS_REMOTE = 1024 * 8 * 32 #(FIXNUM_MAX / 4096) #1024 * 32 * 32
 #COMMANDS_PER_SWEEP = 128 * 128 #32 * 32 #256 * 4 * 2
-COMMANDS_PER_MOD = 1024 * 1024 * 1024 #COMMANDS_PER_SWEEP / 4 #128 * 4
+COMMANDS_PER_MOD = 1024 #(1024 ^ 4) #COMMANDS_PER_SWEEP / 4 #128 * 4
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -231,7 +232,7 @@ class Wrapper
       write_minecraft_command(full_command_line.join("\n"))
       #commands_run += 1
       #if COMMANDS_PER_MOD > 0 && (commands_run % COMMANDS_PER_MOD) == 0
-      #  #sleep 0.0001 # to prevent cpu burn
+      sleep 0.001 # to prevent cpu burn
       #handle_minecraft_stdout
       #end
     end

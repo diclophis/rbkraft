@@ -26,10 +26,6 @@ touch $MINECRAFT_ROOT/running-$WORLD
 mkdir -p $MINECRAFT_ROOT
 cd $MINECRAFT_ROOT
 
-echo "mode?"
-read line
-echo starting "$line"
-
 echo starting-minecraft-wrapper
 rm -f $DYNASTY_SOCK
 

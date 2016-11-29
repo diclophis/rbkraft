@@ -103,8 +103,7 @@ class MinecraftClient
     start_time = Time.now
 
     #$stdout.puts command_line
-
-    sleep 0.00001
+    #sleep 0.00001
 
     begin
       @server_io.puts(command_line)

@@ -23,7 +23,7 @@ do
     cat $MINECRAFT_ROOT/mavencraft/scripts/normal-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
     cat $MINECRAFT_ROOT/mavencraft/scripts/normal-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null
     inotifywait -t 6 -e CLOSE $MINECRAFT_ROOT/mavencraft-world/world/session.lock
-    $MINECRAFT_ROOT/mavencraft/scripts/mapper.sh    
+    $MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1
   else
     cat $MINECRAFT_ROOT/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
     cat $MINECRAFT_ROOT/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null
