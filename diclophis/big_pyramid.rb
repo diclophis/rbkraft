@@ -11,28 +11,26 @@ oox = 0
 ooy = 0
 ooz = 0
 
-global_painter = DiclophisWorldPainter.new(oox, ooy, ooz)
+global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
 
-global_painter.execute("setworldspawn 0 70 0")
+#global_painter.execute("setworldspawn 0 70 0")
 
 def drop_tower(painter, tx, ty)
 
 #painter.execute("tp world,#{tx},#{60 + (rand * 16.0).to_i},#{ty}")
 #puts painter.execute("setworldspawn #{tx.to_i} 70 #{ty.to_i}")
-position = Vector.new(tx, 55, ty) #painter.player_position("faker")
+#position = Vector.new(tx, 55, ty) #painter.player_position("faker")
 #painter.center = position
-puts position.inspect
+#puts position.inspect
 
-puts "wtf"
-
-s = 20 + (rand * 10.0).to_i
-floors = 11 + (rand * 10.0).to_i
-floors_per_tier = 1 + (rand * 8.5).to_i
+s = 30 + (rand * 10.0).to_i
+floors = 20 + (rand * 10.0).to_i
+floors_per_tier = 1 + (rand * 7.5).to_i
 i = 0
 
 ox = tx
-oy = 55
+oy = 0
 oz = ty
 
 =begin
@@ -58,7 +56,7 @@ exit 0
 
 painter.async do
   floors.times { |f|
-    if ((f % floors_per_tier) == (floors_per_tier - 1))
+    if ((f % floors_per_tier) == (floors_per_tier - 1)) && s > 4
       i = 0
       s -= 3
       ox += 0
@@ -94,12 +92,12 @@ painter.async do
           place = false
           case type
             when painter.air_type
-              place = (rand > 0.00001)
+              place = false #(rand > 0.00001)
             when painter.type
-              place = (rand > 0.01)
+              place = true #(rand > 0.01)
             when painter.glow_type
               place = (rand > 0.1)
-              if (rand > 0.999)
+              if (rand > 0.85)
                 type = painter.water_type
               end
           end
@@ -116,9 +114,10 @@ end
 
 end
 
-4.times { |x|
-  4.times { |y|
-    drop_tower(global_painter, (x * (20 + rand * 5.0)) - 90, (y * (25 + rand * 8.0)) - 90)
+64.times { |x|
+  64.times { |y|
+    drop_tower(global_painter, (x * (20 + rand * 8.0)) - 256, (y * (25 + rand * 10.0)) - 256)
+    $stdout.write(".")
   }
 }
 

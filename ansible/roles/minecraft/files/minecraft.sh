@@ -29,4 +29,7 @@ cd $MINECRAFT_ROOT
 echo starting-minecraft-wrapper
 rm -f $DYNASTY_SOCK
 
-ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:ParallelGCThreads=1 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar --bukkit-settings $WORLD-bukkit.yml --port $MINECRAFT_PORT nogui
+LOG_CONF=-Dlog4j.configurationFile=log4j2.xml
+#LOG_CONF=""
+
+ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java ${LOG_CONF} -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:ParallelGCThreads=1 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar --bukkit-settings $WORLD-bukkit.yml --port $MINECRAFT_PORT nogui
