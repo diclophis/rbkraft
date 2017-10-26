@@ -28,4 +28,6 @@ export MAVENCRAFT_PORT=25566
 
 #/home/minecraft/voxelizer/build/test/testVox $OUT.vox | ruby /home/minecraft/voxelize-stl-xinetd/main.rb $SIZE -200 -160 -300
 
-/home/minecraft/voxelizer/build/test/testVox $OUT.vox | ruby /home/minecraft/voxelize-stl-xinetd/main.rb $SIZE -200 -525 -300
+#/home/minecraft/voxelizer/build/test/testVox $OUT.vox | ruby /home/minecraft/voxelize-stl-xinetd/main.rb $SIZE -100 -525 -133
+
+/home/minecraft/voxelizer/build/test/testVox $OUT.vox | ruby /home/minecraft/voxelize-stl-xinetd/main.rb $SIZE -175 -525 -433 redstone_block

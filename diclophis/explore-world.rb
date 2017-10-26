@@ -11,7 +11,7 @@ oox = 0
 ooy = 0
 ooz = 0
 
-s = 16
+s = 28
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
@@ -23,7 +23,8 @@ global_painter.async do
       global_painter.place((ttx * v) + 4, 3, (tty * v) + 4, global_painter.air_type)
       global_painter.place((ttx * v) + 9, 3, (tty * v) + 13, global_painter.lava_type)
       global_painter.place((ttx * v) + 4, 5, (tty * v) + 4, global_painter.sand_type)
-      sleep 0.0333
+      sleep 0.33
+
 =begin
       v = 7
       z = 3

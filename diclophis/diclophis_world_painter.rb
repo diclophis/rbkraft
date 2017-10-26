@@ -51,6 +51,7 @@ class DiclophisWorldPainter < WorldPainter
       @bedrock_type = "bedrock"
       @quartz_type = "quartz_block"
       @emerald_type = "redstone_block"
+      #@emerald_type = "lapis_block"
       #@emerald_type = "bedrock"
     end
   end
