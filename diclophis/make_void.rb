@@ -11,7 +11,7 @@ oox = 0
 ooy = 0
 ooz = 0
 
-painter = DiclophisWorldPainter.new(oox, ooy, ooz)
+painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
 
 #painter.async do

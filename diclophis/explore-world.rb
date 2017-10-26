@@ -10,7 +10,7 @@ srand
 oox = 0
 ooy = 0
 ooz = 0
-s = 128
+s = 200
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
@@ -18,8 +18,8 @@ puts "connected"
 global_painter.async do
   (-s..s).each { |ttx|
     (-s..s).each { |tty|
-      v = 8
-      z = 1
+      v = 7
+      z = 3
       (-z..z).each { |ttzx|
       (-z..z).each { |ttzy|
       #global_painter.place(ttx * v, 1, tty * v, global_painter.bedrock_type)
