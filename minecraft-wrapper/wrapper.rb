@@ -18,7 +18,7 @@ USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
 READ_CHUNKS = 1024
 READ_CHUNKS_REMOTE = 1024
-COMMANDS_PER_MOD = 1024
+COMMANDS_PER_MOD = 32
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -33,10 +33,15 @@ class Wrapper
                 :command, :options,
                 :input_waiting_to_be_written_to_minecraft,
                 :full_commands_waiting_to_be_written_to_minecraft,
-                :logger
+                :logger,
+                :time_since_last_stat,
+                :count_since_last
 
   def initialize(logger, descriptors, argv)
     @count = 0
+
+    self.time_since_last_stat = Time.now
+    self.count_since_last = 0
 
     self.logger = logger
     self.full_commands_waiting_to_be_written_to_minecraft = []
@@ -235,25 +240,41 @@ class Wrapper
     end
 
     commands_run = 0
-    while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.pop(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
-      #puts full_command_line.inspect
-      #sleep 5
+    start = Time.now
 
-      $TOTAL_COMMANDS += full_command_line.length
+    total_delta = 0
 
-      if (($TOTAL_COMMANDS / 100) % 10) == 0 then
-        puts "WRITE took #{full_command_line.length} / #{$TOTAL_COMMANDS}"
-      end
+    while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
+      commands_this_tick = full_command_line.length
 
-      write_minecraft_command(full_command_line.join("\n"))
-      #commands_run += 1
-      #if COMMANDS_PER_MOD > 0 && (commands_run % COMMANDS_PER_MOD) == 0
-      sleep 0.01 # to prevent cpu burn
-      break
-      #handle_minecraft_stdout
-      #end
+      blob = full_command_line.join("\n")
+
+      has_save = blob.include?("save")
+
+     #  puts "WRITE took #{has_save} #{commands_this_tick} / #{self.full_commands_waiting_to_be_written_to_minecraft.length} == #{$TOTAL_COMMANDS}"
+
+      write_minecraft_command(blob)
+
+      $TOTAL_COMMANDS += commands_this_tick
+      total_delta += commands_this_tick
+
+      sleep 0.0125 # to prevent cpu burn
+
+      # break
     end
-    #write_minecraft_command("save-all flush")
+
+    duration = Time.now - start
+
+    since_time = (Time.now - self.time_since_last_stat)
+
+    if since_time > 1.0
+      self.time_since_last_stat = Time.now
+      old_count = self.count_since_last
+
+      self.count_since_last = $TOTAL_COMMANDS
+
+      puts "WRITE took #{duration.round}s #{total_delta} #{$TOTAL_COMMANDS} #{since_time.round}s --- #{$TOTAL_COMMANDS - old_count}/per-tick"
+    end
   end
 
   def broadcast_latest_stdout(writable_io)

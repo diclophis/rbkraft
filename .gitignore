@@ -1,4 +1,5 @@
 *.deb
+nohup.out
 
 minecraft-wrapper/banned-ips.json
 minecraft-wrapper/banned-players.json

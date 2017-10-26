@@ -16,14 +16,23 @@ export FULL_BACKUP
 export FULL_BACKUP2
 export FULL_MAP
 
+$MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1 -F
+
 while true;
 do
   if [ -e $MINECRAFT_ROOT/minecraft-world/world/level.dat -a -e $MINECRAFT_ROOT/mavencraft-world/world/level.dat ];
   then
     cat $MINECRAFT_ROOT/mavencraft/scripts/normal-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
     cat $MINECRAFT_ROOT/mavencraft/scripts/normal-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null
-    inotifywait -t 6 -e CLOSE $MINECRAFT_ROOT/mavencraft-world/world/session.lock
-    $MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1
+    inotifywait -t 1 -e CLOSE $MINECRAFT_ROOT/mavencraft-world/world/session.lock
+    SHUF=$(shuf -i 1-20 -n 1)
+    if [ "$SHUF" -eq "10" ];
+    then
+      echo "took full snap" | logger
+      $MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1 -F
+    else
+      $MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1
+    fi
   else
     cat $MINECRAFT_ROOT/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
     cat $MINECRAFT_ROOT/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null

@@ -8,11 +8,14 @@ class MinecraftClient
   attr_accessor :async
   attr_accessor :gzip_buffer_sink
   attr_accessor :gzip_buffer_pump
+  attr_accessor :command_count
 
   READ_CHUNK = 8 * 8 * 1024
 
   def initialize(async = false)
     self.async = async
+    self.command_count = 0
+
     #rp, wp = IO.pipe
     #self.gzip_buffer_pump, self.gzip_buffer_sink = rp, Zlib::GzipWriter.new(wp)
     connect
@@ -106,6 +109,7 @@ class MinecraftClient
     #sleep 0.00001
 
     begin
+      self.command_count += 1
       @server_io.puts(command_line)
     rescue Errno::EPIPE => e
       #e.inspect, :oops

@@ -8,7 +8,7 @@ require 'wrapper'
 require 'syslog'
 
 SELECT_WRITABLE = false
-SELECT_SLEEP = 9999.9
+SELECT_SLEEP = 0.01 #999.9
 
 # Start a hot-reloadable server on desired socket
 Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]) do |dynasty|
