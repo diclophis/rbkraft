@@ -7,7 +7,7 @@ class DiclophisWorldPainter < WorldPainter
   :alt_type, :corner_type, :slab, :glass_type, :glow_type,
   :sand_type, :sandstone_type, :water_type, :tnt_type, :lava_type,
   :iron_bars_type, :bedrock_type, :quartz_type,
-  :emerald_type
+  :emerald_type, :wool_type
 
   def initialize(*args)
     real = args.shift
@@ -21,6 +21,7 @@ class DiclophisWorldPainter < WorldPainter
     @corner_type = air_type 
     @slab = air_type 
     @glass_type = air_type
+    @wool_type = air_type
     @glow_type = air_type
     @sand_type = air_type
     @sandstone_type = air_type
@@ -39,7 +40,8 @@ class DiclophisWorldPainter < WorldPainter
       @debug_type = "glowstone"
       @alt_type = "stonebrick"
       @corner_type = "log"
-      @glass_type = "glass"
+      @glass_type = "stained_glass"
+      @wool_type = "wool"
       @sand_type = "sand"
       @sandstone_type = "sandstone"
       @water_type = "water"
@@ -48,7 +50,8 @@ class DiclophisWorldPainter < WorldPainter
       @iron_bars_type = "iron_bars"
       @bedrock_type = "bedrock"
       @quartz_type = "quartz_block"
-      @emerald_type = "emerald_block"
+      @emerald_type = "redstone_block"
+      #@emerald_type = "bedrock"
     end
   end
 end

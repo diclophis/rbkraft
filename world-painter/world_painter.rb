@@ -95,6 +95,7 @@ class WorldPainter
     'obsidian' => 'obsidian',
     'bedrock' => 'bedrock',
     'glass' => 'glass',
+    'stained_glass' => 'stained_glass',
     'air' => 'air',
     'tile.sand.name' => 'sand',
     #'wooden planks' => 'planks',
@@ -204,6 +205,9 @@ class WorldPainter
       x, y, z, thing, data, mode, data_tag = args
     end
     thing = thing.is_a?(String) ? "#{thing}" : thing
+    #if data
+    #  thing = thing + " " + data.to_s
+    #end
     set_block_command = "bpe #{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
     execute set_block_command
   end
