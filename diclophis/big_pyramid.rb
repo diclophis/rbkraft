@@ -25,8 +25,8 @@ def drop_tower(painter, tx, ty)
 #puts position.inspect
 
 s = 30 + (rand * 10.0).to_i
-floors = 20 + (rand * 10.0).to_i
-floors_per_tier = 1 + (rand * 7.5).to_i
+floors = 22 + (rand * 10.0).to_i
+floors_per_tier = 2 + (rand * 7.5).to_i
 i = 0
 
 ox = tx
@@ -56,7 +56,7 @@ exit 0
 
 painter.async do
   floors.times { |f|
-    if ((f % floors_per_tier) == (floors_per_tier - 1)) && s > 4
+    if ((f % floors_per_tier) == (floors_per_tier - 1)) && s > 5
       i = 0
       s -= 3
       ox += 0
@@ -97,7 +97,7 @@ painter.async do
               place = true #(rand > 0.01)
             when painter.glow_type
               place = (rand > 0.1)
-              if (rand > 0.85)
+              if (rand > 0.987)
                 type = painter.water_type
               end
           end
@@ -105,7 +105,6 @@ painter.async do
           painter.place(x + ox, y + oy, z + oz, type) if place
         }
       }
-      #painter.flush_async
     }
 
     oy += 7

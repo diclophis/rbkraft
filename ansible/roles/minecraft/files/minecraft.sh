@@ -32,4 +32,4 @@ rm -f $DYNASTY_SOCK
 LOG_CONF=-Dlog4j.configurationFile=log4j2.xml
 #LOG_CONF=""
 
-ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java ${LOG_CONF} -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:ParallelGCThreads=1 -XX:+AggressiveOpts -server -jar $MINECRAFT_ROOT/minecraft.jar --bukkit-settings $WORLD-bukkit.yml --port $MINECRAFT_PORT nogui
+ruby $MAVENCRAFT_WRAPPER ruby $MAVENCRAFT_BLOCKER java ${LOG_CONF} -d64 -XX:UseSSE=2 -Xmx$RAM -Xms$RAM -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:ParallelGCThreads=32 -XX:+AggressiveOpts -XX:+CMSIncrementalPacing -XX:+CMSClassUnloadingEnabled -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -server -jar $MINECRAFT_ROOT/minecraft.jar --bukkit-settings $WORLD-bukkit.yml --port $MINECRAFT_PORT nogui

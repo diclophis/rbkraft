@@ -5,15 +5,15 @@
 #set -e
 #set -x
 
-if [ -e /home/mavencraft/running-overviewer ];
+if [ -e /home/minecraft/running-overviewer ];
 then
   echo already-running-overviewer
   exit 1
 fi
 
-touch /home/mavencraft/running-overviewer
+touch /home/minecraft/running-overviewer
 
-nohup /home/mavencraft/mavencraft/scripts/overviewer-run.sh $1 &
+nohup /home/minecraft/mavencraft/scripts/overviewer-run.sh $1 &
 
 sleep 1
 

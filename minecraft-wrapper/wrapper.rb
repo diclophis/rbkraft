@@ -7,12 +7,18 @@ require 'fcntl'
 require 'strscan'
 require 'logger'
 
+#1 #1024 #* 8 * 32 #(FIXNUM_MAX / (1024 * 1024 * 1024)) #(FIXNUM_MAX / 4096) #1024 * 32 * 32
+#FIXNUM_MAX #1 # * 32 #(FIXNUM_MAX / 4096) #1024 * 32 * 32
+#1 #1024 #(1024 ^ 4) #COMMANDS_PER_SWEEP / 4 #128 * 4
+#COMMANDS_PER_SWEEP = 128 * 128 #32 * 32 #256 * 4 * 2
+
+$TOTAL_COMMANDS=0
+
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 64 #1024 #* 8 * 32 #(FIXNUM_MAX / (1024 * 1024 * 1024)) #(FIXNUM_MAX / 4096) #1024 * 32 * 32
-READ_CHUNKS_REMOTE = 1024 * 8 # * 32 #(FIXNUM_MAX / 4096) #1024 * 32 * 32
-#COMMANDS_PER_SWEEP = 128 * 128 #32 * 32 #256 * 4 * 2
-COMMANDS_PER_MOD = 128 #1024 #(1024 ^ 4) #COMMANDS_PER_SWEEP / 4 #128 * 4
+READ_CHUNKS = 1024
+READ_CHUNKS_REMOTE = 1024
+COMMANDS_PER_MOD = 1024
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -64,7 +70,7 @@ class Wrapper
   end
 
   def puts(*args)
-    self.logger.crit(*args)
+    self.logger.debug(*args)
   end
 
   def install_trap
@@ -232,11 +238,18 @@ class Wrapper
     while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.pop(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
       #puts full_command_line.inspect
       #sleep 5
-      puts "WRITE #{full_command_line.length}"
+
+      $TOTAL_COMMANDS += full_command_line.length
+
+      if (($TOTAL_COMMANDS / 100) % 10) == 0 then
+        puts "WRITE took #{full_command_line.length} / #{$TOTAL_COMMANDS}"
+      end
+
       write_minecraft_command(full_command_line.join("\n"))
       #commands_run += 1
       #if COMMANDS_PER_MOD > 0 && (commands_run % COMMANDS_PER_MOD) == 0
       sleep 0.01 # to prevent cpu burn
+      break
       #handle_minecraft_stdout
       #end
     end

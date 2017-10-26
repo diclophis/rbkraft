@@ -10,7 +10,7 @@ srand
 oox = 0
 ooy = 0
 ooz = 0
-s = 4096
+s = 128
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
@@ -34,7 +34,7 @@ global_painter.async do
       #global_painter.place((ttx * v) - 8, 1, (tty * v) + 8, global_painter.bedrock_type)
       #global_painter.place((ttx * v) - 8, 1, (tty * v) + 8, global_painter.air_type)
       #$stdout.write(".")
-      sleep 0.000001
+      sleep 0.0000001
       }
       }
     }

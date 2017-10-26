@@ -10,8 +10,9 @@ then
   echo no server detected
 fi;
 
-tail -n 16 /var/log/syslog
-ps f -U mavencraft
+journalctl -n 16 -xe
+
+ps f -U minecraft
 df -h
 free -m
 
