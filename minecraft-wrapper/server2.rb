@@ -8,6 +8,8 @@ require 'wrapper'
 require 'syslog'
 require 'logger'
 
+$stdout.sync = true
+
 SELECT_WRITABLE = false
 SELECT_SLEEP = 0.01 #999.9
 
@@ -15,11 +17,11 @@ SELECT_SLEEP = 0.01 #999.9
 Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]) do |dynasty|
   # log to the system log
   logger = nil
-  if RUBY_PLATFORM.include?("darwin")
-    logger = Syslog.open("mavencraft", Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
-  else
-    logger = Logger.new(STDOUT) #Syslog.open("mavencraft", nil, Syslog::LOG_DAEMON)
-  end
+  #if RUBY_PLATFORM.include?("darwin")
+  #  logger = Syslog.open("mavencraft", Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
+  #else
+  #  logger = Logger.new(STDOUT) #Syslog.open("mavencraft", nil, Syslog::LOG_DAEMON)
+  #end
 
   # In your server, consume any ancestored descriptors, order is important
   # this case, the first 3 sockets are the stdin,stdout,stderr of the wrapped
@@ -52,15 +54,6 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]
     if readable
       dynasty.selectable_descriptors.each { |dio| readable.delete(dio) }
     end
-    
-    #readable.reject! { |io|
-    #  begin
-    #    io.eof?
-    #  rescue Errno::ECONNRESET, Errno::ENOTCONN => e
-    #    # Transport endpoint is not connected
-    #    puts e.inspect
-    #  end
-    #}
 
     if SELECT_WRITABLE
       if writable && writable.length > 0

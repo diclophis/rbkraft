@@ -208,7 +208,8 @@ class WorldPainter
     #if data
     #  thing = thing + " " + data.to_s
     #end
-    set_block_command = "bpe #{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
+    #set_block_command = "#{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
+    set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing}"
     execute set_block_command
   end
 
@@ -284,7 +285,8 @@ class WorldPainter
       puts cmd
     else
       puts cmd if debug?
-      faked_command = ("vdc faker " + cmd)
+      #faked_command = ("vdc faker " + cmd)
+      faked_command = cmd
       output = @client.execute_command(faked_command, pattern)
       puts output if debug?
       output

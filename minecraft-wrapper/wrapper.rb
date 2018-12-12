@@ -16,9 +16,9 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 2048
-READ_CHUNKS_REMOTE = 2048
-COMMANDS_PER_MOD = 64
+READ_CHUNKS = 32
+READ_CHUNKS_REMOTE = 32
+COMMANDS_PER_MOD = 4
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -71,13 +71,13 @@ class Wrapper
 
     #install_client(self.stdin, true)
     #self.logger.crit("starting")
-    self.logger.level = :debug
+    #self.logger.level = :debug
     puts "starting"
   end
 
-  def puts(*args)
-    self.logger.debug(*args)
-  end
+  #def puts(*args)
+  #  self.logger.debug(args.join.strip)
+  #end
 
   def install_trap
     Signal.trap("INT") do
@@ -158,7 +158,7 @@ class Wrapper
       rescue IO::EAGAINWaitReadable, Errno::EAGAIN => e
         puts "ok #{e}"
       rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
-	puts self.minecraft_stderr.read
+	      puts self.minecraft_stderr.read
         puts "wtf #{e}"
         exit 1
       end
@@ -170,7 +170,7 @@ class Wrapper
         if broadcast_bytes.length == 0
           return
         else
-	  #TODO!!!
+	        #TODO!!!
           #puts broadcast_bytes
           #self.clients.each do |io, client|
           #  client.broadcast_scanner << broadcast_bytes if client.authentic
@@ -217,8 +217,6 @@ class Wrapper
 
         stripped_command = full_command_line.strip
 
-        #puts(stripped_command)
-
         if client.authentic
           if stripped_command.length > 0
             if stripped_command == "exit"
@@ -255,10 +253,6 @@ class Wrapper
         blob = fcl.strip #full_command_line.join("\n")
 
         has_save = blob.include?("save")
-
-        #puts blob.inspect
-
-       #  puts "WRITE took #{has_save} #{commands_this_tick} / #{self.full_commands_waiting_to_be_written_to_minecraft.length} == #{$TOTAL_COMMANDS}"
 
         write_minecraft_command(blob)
       end
@@ -315,8 +309,6 @@ class Wrapper
 
     client = self.clients[io]
 
-    #puts client.async.inspect
-
     if client.async
       if client.gzip_pump == nil
         #rp, wp = IO.pipe
@@ -333,10 +325,6 @@ class Wrapper
         end
       end
     end
-
-    #$stdout.write(bytes.inspect)
-
-    #puts [:in, bytes].inspect
 
     self.input_waiting_to_be_written_to_minecraft[io] << bytes
   end

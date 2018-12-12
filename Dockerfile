@@ -18,15 +18,13 @@ COPY setup-minecraft.sh /var/tmp/setup-minecraft.sh
 RUN /var/tmp/setup-minecraft.sh
 
 COPY scripts /home/minecraft
-COPY server.properties eula.txt mapcrafter.conf log4j2.xml /home/minecraft/
+COPY server.properties ops.json eula.txt mapcrafter.conf log4j2.xml /home/minecraft/
 
 COPY minecraft-wrapper /home/minecraft/minecraft-wrapper
 
-#COPY full-stack.sh /home/minecraft/full-stack.sh
-#COPY mavencraft/scripts /home/minecraft/mavencraft/scripts
-
-RUN chown -R minecraft. /home/minecraft
+RUN chown minecraft. /home/minecraft/server.properties /home/minecraft/ops.json
 
 USER minecraft
 
-#CMD ["bash", "/home/minecraft/mavencraft/full-stack.sh"]
+WORKDIR /home/minecraft
+CMD ["bash", "full-stack.sh"]
