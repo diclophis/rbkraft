@@ -39,16 +39,18 @@ spec:
         #    memory: 10000Mi
         #    cpu: 2000m
         ports:
-        - containerPort: 25564
-        - containerPort: 25566
+        - name: minecraft-port
+          containerPort: 25564
+        - name: mavencraft-port
+          containerPort: 25566
         readinessProbe:
           tcpSocket:
-            port: 25564
+            port: minecraft-port
           initialDelaySeconds: 5
           periodSeconds: 10
         livenessProbe:
           tcpSocket:
-            port: 25564
+            port: minecraft-port
           initialDelaySeconds: 15
           periodSeconds: 20
         command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566"]
