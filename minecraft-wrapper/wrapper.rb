@@ -16,9 +16,9 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 1024
-READ_CHUNKS_REMOTE = 1024
-COMMANDS_PER_MOD = 32
+READ_CHUNKS = 2048
+READ_CHUNKS_REMOTE = 2048
+COMMANDS_PER_MOD = 64
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -71,6 +71,7 @@ class Wrapper
 
     #install_client(self.stdin, true)
     #self.logger.crit("starting")
+    self.logger.level = :debug
     puts "starting"
   end
 
@@ -157,6 +158,7 @@ class Wrapper
       rescue IO::EAGAINWaitReadable, Errno::EAGAIN => e
         puts "ok #{e}"
       rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
+	puts self.minecraft_stderr.read
         puts "wtf #{e}"
         exit 1
       end
@@ -168,9 +170,11 @@ class Wrapper
         if broadcast_bytes.length == 0
           return
         else
-          self.clients.each do |io, client|
-            client.broadcast_scanner << broadcast_bytes if client.authentic
-          end
+	  #TODO!!!
+          #puts broadcast_bytes
+          #self.clients.each do |io, client|
+          #  client.broadcast_scanner << broadcast_bytes if client.authentic
+          #end
         end
       end
     end
@@ -247,13 +251,17 @@ class Wrapper
     while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
       commands_this_tick = full_command_line.length
 
-      blob = full_command_line.join("\n")
+      full_command_line.each do |fcl|
+        blob = fcl.strip #full_command_line.join("\n")
 
-      has_save = blob.include?("save")
+        has_save = blob.include?("save")
 
-     #  puts "WRITE took #{has_save} #{commands_this_tick} / #{self.full_commands_waiting_to_be_written_to_minecraft.length} == #{$TOTAL_COMMANDS}"
+        #puts blob.inspect
 
-      write_minecraft_command(blob)
+       #  puts "WRITE took #{has_save} #{commands_this_tick} / #{self.full_commands_waiting_to_be_written_to_minecraft.length} == #{$TOTAL_COMMANDS}"
+
+        write_minecraft_command(blob)
+      end
 
       $TOTAL_COMMANDS += commands_this_tick
       total_delta += commands_this_tick
@@ -267,7 +275,7 @@ class Wrapper
 
     since_time = (Time.now - self.time_since_last_stat)
 
-    if since_time > 1.0
+    if since_time > 5.0
       self.time_since_last_stat = Time.now
       old_count = self.count_since_last
 
@@ -289,7 +297,7 @@ class Wrapper
             #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
             if ((broadcast_line.include?("[Server]") && !broadcast_line.include?("[faker]")) ||
                 (broadcast_line.include?("gettingMessage") && !broadcast_line.include?("signal")))
-              puts "response >> #{broadcast_line}"
+              #puts "response >> #{broadcast_line}"
               writable_io.write(broadcast_line)
             end
           end

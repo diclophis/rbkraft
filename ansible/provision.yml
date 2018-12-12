@@ -1,4 +1,0 @@
----
-- hosts: mavencraft
-  roles:
-    - role: minecraft

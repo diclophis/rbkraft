@@ -8,7 +8,7 @@ set -x
 MINECRAFT_ROOT=/home/minecraft
 
 FULL_BACKUP=$MINECRAFT_ROOT/minecraft-world/world
-FULL_BACKUP2=$MINECRAFT_ROOT/mavencraft-world/world
+FULL_BACKUP2=$MINECRAFT_ROOT/world
 
 FULL_MAP=$MINECRAFT_ROOT/html
 
@@ -20,11 +20,12 @@ $MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1 -F
 
 while true;
 do
-  if [ -e $MINECRAFT_ROOT/minecraft-world/world/level.dat -a -e $MINECRAFT_ROOT/mavencraft-world/world/level.dat ];
+  #if [ -e $MINECRAFT_ROOT/minecraft-world/world/level.dat -a -e $MINECRAFT_ROOT/world/level.dat ];
+  if [ -e $MINECRAFT_ROOT/world/level.dat ];
   then
-    cat $MINECRAFT_ROOT/mavencraft/scripts/normal-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
-    cat $MINECRAFT_ROOT/mavencraft/scripts/normal-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null
-    inotifywait -t 1 -e CLOSE $MINECRAFT_ROOT/mavencraft-world/world/session.lock
+    #cat $MINECRAFT_ROOT/mavencraft/scripts/normal-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
+    #cat $MINECRAFT_ROOT/mavencraft/scripts/normal-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null
+    inotifywait -t 1 -e CLOSE $MINECRAFT_ROOT/world/session.lock
     SHUF=$(shuf -i 1-20 -n 1)
     if [ "$SHUF" -eq "10" ];
     then
@@ -34,9 +35,9 @@ do
       $MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1
     fi
   else
-    cat $MINECRAFT_ROOT/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
-    cat $MINECRAFT_ROOT/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null
-    (test -e $MINECRAFT_ROOT/mavencraft-world/world/session.lock && inotifywait -t 6 -e CLOSE $MINECRAFT_ROOT/mavencraft-world/world/session.lock) || sleep 1
+    #cat $MINECRAFT_ROOT/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
+    #cat $MINECRAFT_ROOT/mavencraft/scripts/initial-save.cmd | nc -w 1 localhost 25567 2>&1 > /dev/null
+    (test -e $MINECRAFT_ROOT/world/session.lock && inotifywait -t 6 -e CLOSE $MINECRAFT_ROOT/world/session.lock) || sleep 1
   fi
 done
 

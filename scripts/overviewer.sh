@@ -5,11 +5,11 @@
 #set -e
 #set -x
 
-if [ -e /home/minecraft/running-overviewer ];
-then
-  echo already-running-overviewer
-  exit 1
-fi
+#if [ -e /home/minecraft/running-overviewer ];
+#then
+#  echo already-running-overviewer
+#  exit 1
+#fi
 
 touch /home/minecraft/running-overviewer
 

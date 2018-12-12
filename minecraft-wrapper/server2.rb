@@ -6,6 +6,7 @@ $: << File.dirname(__FILE__) + '/lib'
 require 'dynasty'
 require 'wrapper'
 require 'syslog'
+require 'logger'
 
 SELECT_WRITABLE = false
 SELECT_SLEEP = 0.01 #999.9
@@ -17,7 +18,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]
   if RUBY_PLATFORM.include?("darwin")
     logger = Syslog.open("mavencraft", Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
   else
-    logger = Syslog.open("mavencraft", nil, Syslog::LOG_DAEMON)
+    logger = Logger.new(STDOUT) #Syslog.open("mavencraft", nil, Syslog::LOG_DAEMON)
   end
 
   # In your server, consume any ancestored descriptors, order is important

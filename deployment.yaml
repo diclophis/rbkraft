@@ -1,0 +1,92 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mavencraft
+  labels:
+    app: mavencraft
+spec:
+  revisionHistoryLimit: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mavencraft
+    spec:
+      volumes:
+        - name: html
+          hostPath:
+            path: /var/tmp/mavencraft/html
+        - name: world
+          hostPath:
+            path: /var/tmp/mavencraft/world
+      containers:
+      - name: mavencraft-wrapper
+        volumeMounts:
+          - mountPath: /home/minecraft/world
+            name: world
+          - mountPath: /home/minecraft/html
+            name: html
+        image: minecraft:latest
+        imagePullPolicy: IfNotPresent
+        workingDir: /home/minecraft
+        #resources:
+        #  requests:
+        #    memory: 10000Mi
+        #    cpu: 2000m
+        ports:
+        - containerPort: 25564
+        - containerPort: 25566
+        readinessProbe:
+          tcpSocket:
+            port: 25564
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 25564
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        command: ["sh", "/home/minecraft/mavencraft/ansible/roles/minecraft/files/minecraft.sh", "10000M", "mavencraft", "25564", "25566"]
+        #command: ["sleep", "infinity"]
+        env:
+      - name: mapcrafter
+        volumeMounts:
+          - mountPath: /home/minecraft/world
+            name: world
+          - mountPath: /home/minecraft/html
+            name: html
+        image: minecraft:latest
+        imagePullPolicy: IfNotPresent
+        workingDir: /home/minecraft
+        #resources:
+        #  requests:
+        #    memory: 10000Mi
+        #    cpu: 30000m
+        command: ["sh", "/home/minecraft/mavencraft/scripts/overviewer-run.sh", "30"]
+        #command: ["sleep", "infinity"]
+        env:
+          - name: LD_LIBRARY_PATH
+            value: /home/minecraft/mapcrafter/src/mapcraftercore
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "mavencraft"
+spec:
+  type: NodePort
+  ports:
+  - port: 25564
+    nodePort: 31500
+    name: mavencraft-port
+    protocol: TCP
+  - port: 25566
+    nodePort: 31505
+    name: minecraft-port
+    protocol: TCP
+  selector:
+    name: "mavencraft"

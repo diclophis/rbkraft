@@ -1,7 +1,0 @@
-#!/bin/sh
-
-BUILD_DIR=$1
-
-echo inline-debug-detect-001
-
-exit 0

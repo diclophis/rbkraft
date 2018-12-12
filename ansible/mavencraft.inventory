@@ -1,4 +1,0 @@
-[localhost]
-
-[mavencraft]
-192.168.1.106 ansible_ssh_user=jbardin
