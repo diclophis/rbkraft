@@ -10,7 +10,7 @@
 
 #java -Dlog4j.configurationFile=log4j2.xml -d64 -XX:UseSSE=2 -Xmx10000M -Xms10000M -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:ParallelGCThreads=32 -XX:+AggressiveOpts -XX:+CMSIncrementalPacing -XX:+CMSClassUnloadingEnabled -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -server -jar /home/minecraft/minecraft.jar --port 25564 nogui
 
-sh /home/minecraft/mavencraft/ansible/roles/minecraft/files/minecraft.sh 10000M mavencraft 25564 25566
+sh /home/minecraft/minecraft.sh 10000M mavencraft 25564 25566
 
 #sleep 5
 

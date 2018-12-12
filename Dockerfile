@@ -12,18 +12,21 @@ COPY bootstrap-minecraft.sh /var/tmp/bootstrap-minecraft.sh
 RUN /var/tmp/bootstrap-minecraft.sh
 
 COPY minecraft.jar minecraft-client.jar /home/minecraft/
-COPY plugins /home/minecraft/plugins
-COPY mavencraft/full-stack.sh /home/minecraft/mavencraft/full-stack.sh
-COPY mavencraft/ansible/roles/minecraft/files/minecraft.sh /home/minecraft/mavencraft/ansible/roles/minecraft/files/minecraft.sh
-COPY mavencraft/minecraft-wrapper /home/minecraft/mavencraft/minecraft-wrapper
-COPY mavencraft/scripts /home/minecraft/mavencraft/scripts
-COPY server.properties eula.txt mapcrafter.conf log4j2.xml /home/minecraft/
+#TODO: bukkit support COPY plugins /home/minecraft/plugins
 
 COPY setup-minecraft.sh /var/tmp/setup-minecraft.sh
 RUN /var/tmp/setup-minecraft.sh
+
+COPY scripts /home/minecraft
+COPY server.properties eula.txt mapcrafter.conf log4j2.xml /home/minecraft/
+
+COPY minecraft-wrapper /home/minecraft/minecraft-wrapper
+
+#COPY full-stack.sh /home/minecraft/full-stack.sh
+#COPY mavencraft/scripts /home/minecraft/mavencraft/scripts
 
 RUN chown -R minecraft. /home/minecraft
 
 USER minecraft
 
-CMD ["bash", "/home/minecraft/mavencraft/full-stack.sh"]
+#CMD ["bash", "/home/minecraft/mavencraft/full-stack.sh"]

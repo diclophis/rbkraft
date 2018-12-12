@@ -46,4 +46,3 @@ make -j
 make install
 
 mkdir -p /home/minecraft/textures
-

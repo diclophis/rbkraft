@@ -1,6 +1,5 @@
 #!/bin/sh
 
-#set -e
 set -x
 
 RAM=$1
@@ -12,14 +11,9 @@ MINECRAFT_ROOT=/home/minecraft
 mkdir -p $MINECRAFT_ROOT/tmp
 
 export DYNASTY_SOCK=$MINECRAFT_ROOT/tmp/$WORLD-dynasty.sock
-MAVENCRAFT_WRAPPER=$MINECRAFT_ROOT/mavencraft/minecraft-wrapper/server2.rb
+MAVENCRAFT_WRAPPER=$MINECRAFT_ROOT/minecraft-wrapper/server2.rb
 
-touch $MINECRAFT_ROOT/running-$WORLD
-
-mkdir -p $MINECRAFT_ROOT
 cd $MINECRAFT_ROOT
-
-rm -f $DYNASTY_SOCK
 
 LOG_CONF=-Dlog4j.configurationFile=log4j2.xml
 LOG_CONF=""
