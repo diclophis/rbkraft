@@ -38,7 +38,7 @@ cd /home/minecraft
 git clone https://github.com/mapcrafter/mapcrafter.git
 
 cd /home/minecraft/mapcrafter
-git checkout world113
+git checkout master
 
 cmake .
 make clean

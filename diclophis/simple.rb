@@ -11,16 +11,16 @@ srand
 #ooy = 0
 #ooz = 0
 
-oox = -242.0
+oox = -233.0
 ooy = 0.0
-ooz = -187.0
+ooz = 242.0
 
 #(-242.64511719001678, 91.0, -187.13305104614997
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
 
-s = 4
+s = 24
 
 global_painter.async do
   (-s..s).each { |ttx|
@@ -28,8 +28,8 @@ global_painter.async do
       v = 1
       #global_painter.place((ttx * v) + 4, 3, (tty * v) + 4, global_painter.air_type)
       #global_painter.place((ttx * v) + 9, 3, (tty * v) + 13, global_painter.lava_type)
-      256.times do |i|
-        global_painter.place((ttx * v) + 4, i, (tty * v) + 4, global_painter.sand_type)
+      255.times do |i|
+        global_painter.place((ttx * v) + 4, i+1, (tty * v) + 4, global_painter.sandstone_type)
       end
       #sleep 0.33
 

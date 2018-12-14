@@ -1,6 +1,6 @@
 *.deb
 nohup.out
-minecraft*.jar
+*.jar
 eula.txt
 
 minecraft-wrapper/banned-ips.json

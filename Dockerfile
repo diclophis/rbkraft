@@ -11,7 +11,7 @@ USER root
 COPY bootstrap-minecraft.sh /var/tmp/bootstrap-minecraft.sh
 RUN /var/tmp/bootstrap-minecraft.sh
 
-COPY minecraft.jar minecraft-client.jar minecraft-client-1.12.jar /home/minecraft/
+COPY minecraft.jar minecraft-1.12.jar minecraft-client.jar minecraft-client-1.12.jar /home/minecraft/
 #TODO: bukkit support COPY plugins /home/minecraft/plugins
 
 COPY setup-minecraft.sh /var/tmp/setup-minecraft.sh
