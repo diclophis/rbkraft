@@ -34,10 +34,6 @@ spec:
         image: mavencraft:latest
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
-        #resources:
-        #  requests:
-        #    memory: 10000Mi
-        #    cpu: 2000m
         ports:
         - name: minecraft-port
           containerPort: 25564
@@ -56,24 +52,20 @@ spec:
         command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566"]
         #command: ["sleep", "infinity"]
         env:
-      #- name: mapcrafter
-      #  volumeMounts:
-      #    - mountPath: /home/minecraft/world
-      #      name: world
-      #    - mountPath: /home/minecraft/html
-      #      name: html
-      #  image: mavencraft:latest
-      #  imagePullPolicy: IfNotPresent
-      #  workingDir: /home/minecraft
-      #  #resources:
-      #  #  requests:
-      #  #    memory: 10000Mi
-      #  #    cpu: 30000m
-      #  command: ["sh", "/home/minecraft/mavencraft/scripts/overviewer-run.sh", "30"]
-      #  #command: ["sleep", "infinity"]
-      #  env:
-      #    - name: LD_LIBRARY_PATH
-      #      value: /home/minecraft/mapcrafter/src/mapcraftercore
+      - name: mapcrafter
+        volumeMounts:
+          - mountPath: /home/minecraft/world
+            name: world
+          - mountPath: /home/minecraft/html
+            name: html
+        image: mavencraft:latest
+        imagePullPolicy: IfNotPresent
+        workingDir: /home/minecraft
+        command: ["bash", "overviewer-run.sh", "30"]
+        #command: ["sleep", "infinity"]
+        env:
+          - name: LD_LIBRARY_PATH
+            value: /home/minecraft/mapcrafter/src/mapcraftercore
 ---
 apiVersion: v1
 kind: Service

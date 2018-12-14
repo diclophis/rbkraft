@@ -44,5 +44,5 @@ cmake .
 make clean
 make -j
 make install
+ldconfig
 
-mkdir -p /home/minecraft/textures
