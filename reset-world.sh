@@ -3,6 +3,8 @@
 set -e
 set -x
 
+VOLUMES=$(echo /var/tmp/mavencraft/{html,world,logs,backup})
+
 rm -Rf /var/tmp/mavencraft
-mkdir -p /var/tmp/mavencraft/{html,world,logs}
-chmod 777 /var/tmp/mavencraft/{html,world,logs}
+mkdir -p ${VOLUMES}
+chmod 777 ${VOLUMES}

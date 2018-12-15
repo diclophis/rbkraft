@@ -1,5 +1,7 @@
 #!/usr/bin/env phantomjs
 
+//chromium-browser --headless --disable-gpu --screenshot fart.png --window-size=1280,1696 https://www.chromestatus.com/
+
 var system = require('system');
 var page = require('webpage').create();
 page.viewportSize = { width: 512, height: 512 };

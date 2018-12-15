@@ -27,4 +27,5 @@ RUN chown minecraft. /home/minecraft/server.properties /home/minecraft/ops.json
 USER minecraft
 
 WORKDIR /home/minecraft
-CMD ["bash", "full-stack.sh"]
+#CMD ["bash", "full-stack.sh"]
+CMD ["bash"]
