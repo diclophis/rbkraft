@@ -15,7 +15,7 @@ class Maze
   def initialize
     @drawn = {}
 
-    @size = 256
+    @size = 1024
     @unit = 16
 
     @shapes = {}
@@ -89,7 +89,10 @@ class Maze
     srand(2)
 
     # generate a 10x10 orthogonal maze and print it to the console
-    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 33, :weave => 0, :wrap => "xy", :sparse => 50)
+    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 25, :weave => 0, :randomness => 25, :wrap => "xy")
+    24.times {
+      @maze.sparsify!
+    }
 
     #puts @maze.to_s(:mode => :lines)
   end
@@ -100,14 +103,20 @@ class Maze
 
     wid = 4
 
+    chunks = []
+
     ((px-wid)..(px+wid)).each do |x|
       ((py-wid)..(py+wid)).each do |y|
         if x >= 0 && x < @size && y >= 0 && y < @size
-          draw_maze(x, y) { |xx, yy, zz, tt|
-            yield xx, yy, zz, tt
-          }
+          chunks << [x, y]
         end
       end
+    end
+
+    chunks.shuffle.each do |x, y|
+      draw_maze(x, y) { |xx, yy, zz, tt|
+        yield xx, yy, zz, tt
+      }
     end
   end
 
@@ -119,22 +128,24 @@ class Maze
     ax = ((x * @unit) - (@size * 0.5 * @unit)).to_i
     ay = ((y * @unit) - (@size * 0.5 * @unit)).to_i
 
-    #((ax)..(ax+(@unit - 1))).each do |dx|
-    #  ((ay)..(ay+(@unit - 1))).each do |dy|
-    #    (((@unit/2))..(@unit - 1)).each do |dz|
-    #      yield [dx, dz, dy, :air]
-    #    end
-    #  end
-    #end
-
-    5.times do |st|
-      @shapes[15].each do |vx, vy, vz|
-        yield [(ax + vx), (vy + (st * 3)), (ay + vz), :air]
-      end
-    end
-
     cell = @maze[x, y]
     return if cell == 0
+
+    #if (rand > 0.99)
+    #  ((ax)..(ax+(@unit - 1))).each do |dx|
+    #    ((ay)..(ay+(@unit - 1))).each do |dy|
+    #      (((@unit/2))..(@unit - 1)).each do |dz|
+    #        yield [dx, dz, dy, :air]
+    #      end
+    #    end
+    #  end
+    #else
+      3.times do |st|
+        @shapes[15].each do |vx, vy, vz|
+          yield [(ax + vx), 1 + (vy + (st * 3)), (ay + vz), :air]
+        end
+      end
+    #end
 
     primary = (cell & Theseus::Maze::PRIMARY)
 
@@ -146,7 +157,7 @@ class Maze
           elsif vy == (@unit - 1)
             :upper
           else
-            :stone
+            (rand > 0.99) ? :lantern : :stone
           end
         end
 
@@ -170,8 +181,6 @@ class Maze
   end
 
   def each_piece(player_position)
-    #px = ((player_position[0].to_i / @unit) + (@size / 2))
-    #py = ((player_position[2].to_i / @unit) + (@size / 2))
     px = ((player_position[0].to_i))
     pz = ((player_position[2].to_i))
 
@@ -198,6 +207,8 @@ end
 oox = 0
 ooy = 0 # 32 + ???
 ooz = 0
+
+puts "started"
 
 maze = Maze.new
 puts "generated"
@@ -240,5 +251,3 @@ global_painter.async do
     end
   end
 end
-
-#sleep
