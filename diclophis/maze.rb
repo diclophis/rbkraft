@@ -23,6 +23,8 @@ class Maze
     16.times { |i|
       ii = begin
         case i
+          when 0
+            0
           when 1
             8
           when 2
@@ -52,7 +54,7 @@ class Maze
           when 14
             2
           when 15
-            0
+            15
         else
           nil
         end
@@ -96,7 +98,7 @@ class Maze
     px = ((player_position[0].to_i / @unit) + (@size / 2))
     py = ((player_position[2].to_i / @unit) + (@size / 2))
 
-    wid = 8
+    wid = 4
 
     ((px-wid)..(px+wid)).each do |x|
       ((py-wid)..(py+wid)).each do |y|
@@ -117,11 +119,17 @@ class Maze
     ax = ((x * @unit) - (@size * 0.5 * @unit)).to_i
     ay = ((y * @unit) - (@size * 0.5 * @unit)).to_i
 
-    ((ax)..(ax+(@unit - 1))).each do |dx|
-      ((ay)..(ay+(@unit - 1))).each do |dy|
-        (((@unit/2)-1)..(@unit - 1)).each do |dz|
-          yield [dx, dz, dy, :air]
-        end
+    #((ax)..(ax+(@unit - 1))).each do |dx|
+    #  ((ay)..(ay+(@unit - 1))).each do |dy|
+    #    (((@unit/2))..(@unit - 1)).each do |dz|
+    #      yield [dx, dz, dy, :air]
+    #    end
+    #  end
+    #end
+
+    5.times do |st|
+      @shapes[15].each do |vx, vy, vz|
+        yield [(ax + vx), (vy + (st * 3)), (ay + vz), :air]
       end
     end
 
@@ -143,10 +151,10 @@ class Maze
         end
 
         if type == :upper
-          type_of_light = ((rand > 0.9) ? :lava : ((rand > 0.8) ? :glow : ((rand > 0.7) ? :beacon : ((rand > 0.6) ? :lantern : :torch))))
-          if (rand > 0.9)
+          type_of_light = ((rand > 0.99) ? :lava : ((rand > 0.8) ? :glow : ((rand > 0.7) ? :beacon : ((rand > 0.6) ? :lantern : :torch))))
+          if (rand > 0.33)
             (0..@unit).to_a.reverse.each do |c|
-              yield [(ax + vx), (vy)-c, (ay + vz), (c == 0) ? type_of_light : :stone]
+              yield [(ax + vx), (vy)-c, (ay + vz), (c == 0) ? type_of_light : :quartz]
             end
           end
         else
@@ -191,8 +199,6 @@ oox = 0
 ooy = 0 # 32 + ???
 ooz = 0
 
-#(-242.64511719001678, 91.0, -187.13305104614997
-
 maze = Maze.new
 puts "generated"
 
@@ -226,6 +232,8 @@ global_painter.async do
             global_painter.place(x, y, z, global_painter.lantern_type)
           when :lava
             global_painter.place(x, y, z, global_painter.lava_type)
+          when :quartz
+            global_painter.place(x, y, z, global_painter.quartz_type)
         else
         end
       end
