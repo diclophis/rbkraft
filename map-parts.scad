@@ -234,3 +234,35 @@ module pathway(direction) {
 // }
 
 pathway(shape);
+
+translate([outer_size * 0.5,outer_size*0.5,outer_size*0.5]) {
+    cube(size=[0.01, 0.01, 0.01], center=true);
+}
+
+translate([-outer_size * 0.5,outer_size*0.5,outer_size*0.5]) {
+    cube(size=[0.01, 0.01, 0.01], center=true);
+}
+
+translate([-outer_size * 0.5,-outer_size*0.5,outer_size*0.5]) {
+    cube(size=[0.01, 0.01, 0.01], center=true);
+}
+
+translate([-outer_size * 0.5,-outer_size*0.5,-outer_size*0.5]) {
+    cube(size=[0.01, 0.01, 0.01], center=true);
+}
+
+translate([outer_size * 0.5,-outer_size*0.5,-outer_size*0.5]) {
+    cube(size=[0.01, 0.01, 0.01], center=true);
+}
+
+translate([outer_size * 0.5,outer_size*0.5,-outer_size*0.5]) {
+    cube(size=[0.01, 0.01, 0.01], center=true);
+}
+
+translate([-outer_size * 0.5,outer_size*0.5,-outer_size*0.5]) {
+    cube(size=[0.01, 0.01, 0.01], center=true);
+}
+
+translate([outer_size * 0.5,-outer_size*0.5,outer_size*0.5]) {
+    cube(size=[0.01, 0.01, 0.01], center=true);
+}

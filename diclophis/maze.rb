@@ -8,7 +8,7 @@ require 'diclophis_world_painter'
 
 class Maze
   def initialize
-    @size = 16
+    @size = 8
     @unit = 32
 
     @shapes = {}
@@ -82,27 +82,58 @@ class Maze
     srand(2)
 
     # generate a 10x10 orthogonal maze and print it to the console
-    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 0, :weave => 0, :wrap => "xy", :sparse => 10)
+    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 33, :weave => 33, :wrap => "xy", :sparse => 33)
 
-    #puts @maze.to_s(:mode => :lines)
+    puts @maze.to_s(:mode => :lines)
   end
 
   def each_bit(player_position)
     px = ((player_position[0].to_i / @unit) + (@size / 2))
     py = ((player_position[2].to_i / @unit) + (@size / 2))
 
-    puts [px, py].inspect
+    #puts [px, py].inspect
 
-    wid = 1
+    wid = 4
 
     ((px-wid)..(px+wid)).each do |x|
       ((py-wid)..(py+wid)).each do |y|
-        if x > 0 && x < @size && y > 0 && y < @size
-          draw_maze(x, y) { |x, y, z|
-            yield x, y, z
+        if x >= 0 && x < @size && y >= 0 && y < @size
+          draw_maze(x, y) { |xx, yy, zz, tt|
+            yield xx, yy, zz, tt
           }
         end
       end
+    end
+  end
+
+  def draw_maze(x, y) #:nodoc:
+    cell = @maze[x, y]
+    return if cell == 0
+
+    primary = (cell & Theseus::Maze::PRIMARY)
+
+
+    if shape = @shapes[primary]
+
+      ax = ((x * @unit) - (@size * 0.5 * @unit)).to_i
+      ay = ((y * @unit) - (@size * 0.5 * @unit)).to_i
+
+      #puts [:draw, x, y, ax, ay].inspect
+
+      ((ax)..(ax+@unit)).each do |dx|
+        ((ay)..(ay+@unit)).each do |dy|
+          (2..(@unit / 2)).each do |dz|
+            yield [dx, dz, dy, :air]
+          end
+        end
+      end
+
+      shape.each do |vx, vy, vz|
+        yield [(ax + vx), (vy), (ay + vz), :stone]
+      end
+    else
+      puts primary, Theseus::Formatters::ASCII::Orthogonal::UTF8_LINES[primary]
+      raise "wtF"
     end
   end
 
@@ -115,34 +146,11 @@ class Maze
     @shapes.each do |index, shape|
       ax = (index * 32)
       ay = 0
-      az = 0
-
-      puts [ax, ay, az].inspect
+      az = 64
 
       shape.each do |vx, vy, vz|
         yield [(ax + vx), (ay + vy), (az + vz)]
       end
-    end
-  end
-
-  def draw_maze(x, y) #:nodoc:
-    cell = @maze[x, y]
-    return if cell == 0
-
-    primary = (cell & Theseus::Maze::PRIMARY)
-
-    if shape = @shapes[primary]
-      ax = (x)
-      ay = (y)
-
-      puts [ax, ay].inspect
-
-      shape.each do |vx, vy, vz|
-        yield [(ax + vx), (vy), (ay + vz)]
-      end
-    else
-      puts primary, Theseus::Formatters::ASCII::Orthogonal::UTF8_LINES[primary]
-      raise "wtF"
     end
   end
 
@@ -169,14 +177,20 @@ maze = Maze.new
 player_position = [0, 64, 0]
 
 global_painter.async do
-  #maze.each_bit(player_position) do |x,y,z|
-  #  #puts [x,y,z].inspect
+  maze.each_bit(player_position) do |x,y,z,t|
+    y -= 12
+    case t
+      when :air
+        global_painter.place(x, y, z, global_painter.air_type)
+      when :stone
+        global_painter.place(x, y, z, global_painter.sandstone_type)
+    else
+    end
+  end
+
+  #maze.each_piece(player_position) do |x,y,z|
   #  global_painter.place(x, y, z, global_painter.sandstone_type)
   #end
-
-  maze.each_piece(player_position) do |x,y,z|
-    global_painter.place(x, y, z, global_painter.sandstone_type)
-  end
 end
 
 puts global_painter.client.command_count
