@@ -24,6 +24,9 @@ spec:
         - name: world
           hostPath:
             path: /var/tmp/mavencraft/world
+        - name: backup
+          hostPath:
+            path: /var/tmp/mavencraft/backup
       containers:
       - name: mavencraft-wrapper
         volumeMounts:
@@ -31,6 +34,8 @@ spec:
             name: world
           - mountPath: /home/minecraft/html
             name: html
+          - mountPath: /home/minecraft/backup
+            name: backup
         image: mavencraft:latest
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
@@ -58,6 +63,8 @@ spec:
             name: world
           - mountPath: /home/minecraft/html
             name: html
+          - mountPath: /home/minecraft/backup
+            name: backup
         image: mavencraft:latest
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft

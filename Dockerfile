@@ -30,6 +30,8 @@ COPY scripts /home/minecraft
 COPY server.properties ops.json eula.txt mapcrafter.conf log4j2.xml /home/minecraft/
 
 COPY minecraft-wrapper /home/minecraft/minecraft-wrapper
+COPY world-painter /home/minecraft/world-painter
+COPY diclophis /home/minecraft/diclophis
 
 USER root
 RUN chown minecraft. /home/minecraft/server.properties /home/minecraft/ops.json
