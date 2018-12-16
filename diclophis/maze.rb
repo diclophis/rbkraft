@@ -106,6 +106,25 @@ class Maze
     end
   end
 
+  def each_piece(player_position)
+    #px = ((player_position[0].to_i / @unit) + (@size / 2))
+    #py = ((player_position[2].to_i / @unit) + (@size / 2))
+    px = ((player_position[0].to_i))
+    pz = ((player_position[2].to_i))
+
+    @shapes.each do |index, shape|
+      ax = (index * 32)
+      ay = 0
+      az = 0
+
+      puts [ax, ay, az].inspect
+
+      shape.each do |vx, vy, vz|
+        yield [(ax + vx), (ay + vy), (az + vz)]
+      end
+    end
+  end
+
   def draw_maze(x, y) #:nodoc:
     cell = @maze[x, y]
     return if cell == 0
@@ -150,8 +169,12 @@ maze = Maze.new
 player_position = [0, 64, 0]
 
 global_painter.async do
-  maze.each_bit(player_position) do |x,y,z|
-    #puts [x,y,z].inspect
+  #maze.each_bit(player_position) do |x,y,z|
+  #  #puts [x,y,z].inspect
+  #  global_painter.place(x, y, z, global_painter.sandstone_type)
+  #end
+
+  maze.each_piece(player_position) do |x,y,z|
     global_painter.place(x, y, z, global_painter.sandstone_type)
   end
 end
