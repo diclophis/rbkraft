@@ -7,9 +7,11 @@ require 'theseus'
 require 'diclophis_world_painter'
 
 class Maze
+  UTF8_LINES = [" ", "╵", "╷", "│", "╶", "└", "┌", "├", "╴", "┘", "┐", "┤", "─", "┴", "┬", "┼"]
+
   def initialize
-    @size = 8
-    @unit = 32
+    @size = 256
+    @unit = 16
 
     @shapes = {}
 
@@ -51,8 +53,6 @@ class Maze
         end
       end
       
-      #UTF8_LINES = [" ", "╵", "╷", "│", "╶", "└", "┌", "├", "╴", "┘", "┐", "┤", "─", "┴", "┬", "┼"]
-
       if ii
         shape_vox = []
         #inio = File.open("/home/minecraft/shape-#{ii}.vox")
@@ -69,7 +69,7 @@ class Maze
             when 3
           else
             x,z,y = input.strip.split(" ").collect(&:to_i)
-            shape_vox << [x,y,z]
+            shape_vox << [x,y,-z]
           end
 
           line_count += 1
@@ -82,7 +82,7 @@ class Maze
     srand(2)
 
     # generate a 10x10 orthogonal maze and print it to the console
-    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 33, :weave => 33, :wrap => "xy", :sparse => 33)
+    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 33, :weave => 0, :wrap => "xy", :sparse => 50)
 
     puts @maze.to_s(:mode => :lines)
   end
@@ -91,9 +91,7 @@ class Maze
     px = ((player_position[0].to_i / @unit) + (@size / 2))
     py = ((player_position[2].to_i / @unit) + (@size / 2))
 
-    #puts [px, py].inspect
-
-    wid = 4
+    wid = 32
 
     ((px-wid)..(px+wid)).each do |x|
       ((py-wid)..(py+wid)).each do |y|
@@ -107,29 +105,37 @@ class Maze
   end
 
   def draw_maze(x, y) #:nodoc:
+    ax = ((x * @unit) - (@size * 0.5 * @unit)).to_i
+    ay = ((y * @unit) - (@size * 0.5 * @unit)).to_i
+
+    ((ax)..(ax+@unit)).each do |dx|
+      ((ay)..(ay+@unit)).each do |dy|
+        (((@unit/2)+1)..(@unit)).each do |dz|
+          yield [dx-(0*@unit-1), dz, dy-(1*@unit-1), :air]
+        end
+      end
+    end
+
     cell = @maze[x, y]
     return if cell == 0
 
     primary = (cell & Theseus::Maze::PRIMARY)
 
+    puts UTF8_LINES[primary]
 
     if shape = @shapes[primary]
-
-      ax = ((x * @unit) - (@size * 0.5 * @unit)).to_i
-      ay = ((y * @unit) - (@size * 0.5 * @unit)).to_i
-
-      #puts [:draw, x, y, ax, ay].inspect
-
-      ((ax)..(ax+@unit)).each do |dx|
-        ((ay)..(ay+@unit)).each do |dy|
-          (2..(@unit / 2)).each do |dz|
-            yield [dx, dz, dy, :air]
+      shape.each do |vx, vy, vz|
+        type = begin
+          if vy == 0
+            :air
+          elsif vy == (@unit - 1)
+            :glow
+          else
+            :stone
           end
         end
-      end
 
-      shape.each do |vx, vy, vz|
-        yield [(ax + vx), (vy), (ay + vz), :stone]
+        yield [(ax + vx), (vy), (ay + vz), type]
       end
     else
       puts primary, Theseus::Formatters::ASCII::Orthogonal::UTF8_LINES[primary]
@@ -144,7 +150,7 @@ class Maze
     pz = ((player_position[2].to_i))
 
     @shapes.each do |index, shape|
-      ax = (index * 32)
+      ax = (index * @unit)
       ay = 0
       az = 64
 
@@ -178,12 +184,14 @@ player_position = [0, 64, 0]
 
 global_painter.async do
   maze.each_bit(player_position) do |x,y,z,t|
-    y -= 12
+    z += 128
     case t
       when :air
         global_painter.place(x, y, z, global_painter.air_type)
       when :stone
         global_painter.place(x, y, z, global_painter.sandstone_type)
+      when :glow
+        global_painter.place(x, y, z, global_painter.glow_type)
     else
     end
   end
