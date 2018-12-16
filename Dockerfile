@@ -22,6 +22,7 @@ USER minecraft
 COPY Gemfile Gemfile.lock /home/minecraft/
 RUN cd /home/minecraft && bundle install --path=vendor/bundle
 
+COPY map-parts.scad /home/minecraft/
 COPY setup-debug.sh /var/tmp/setup-debug.sh
 RUN /var/tmp/setup-debug.sh
 
@@ -30,7 +31,9 @@ COPY server.properties ops.json eula.txt mapcrafter.conf log4j2.xml /home/minecr
 
 COPY minecraft-wrapper /home/minecraft/minecraft-wrapper
 
+USER root
 RUN chown minecraft. /home/minecraft/server.properties /home/minecraft/ops.json
+USER minecraft
 
 WORKDIR /home/minecraft
 #CMD ["bash", "full-stack.sh"]

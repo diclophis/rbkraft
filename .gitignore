@@ -16,3 +16,6 @@ last_center.dat
 ansible/roles/minecraft/files/minecraft.jar
 ansible/roles/minecraft/files/plugins
 ansible/roles/minecraft/files/textures
+
+.bundle
+vendor

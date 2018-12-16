@@ -5,9 +5,9 @@ $: << "diclophis"
 
 require 'diclophis_world_painter'
 
-oox = 0
-ooy = 54
-ooz = 0
+oox = -65 - 32
+ooy = 47 # 32 + ???
+ooz = -65 - 32
 
 #(-242.64511719001678, 91.0, -187.13305104614997
 
