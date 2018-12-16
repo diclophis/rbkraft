@@ -101,7 +101,7 @@ class Maze
     px = ((player_position[0].to_i / @unit) + (@size / 2))
     py = ((player_position[2].to_i / @unit) + (@size / 2))
 
-    wid = 2
+    wid = 8
 
     chunks = []
 
