@@ -1,15 +1,20 @@
 #
 
+$stdout.sync = true
+
 $: << "."
 $: << "diclophis"
 
 require 'theseus'
+require 'nbt_utils'
 require 'diclophis_world_painter'
 
 class Maze
   UTF8_LINES = [" ", "╵", "╷", "│", "╶", "└", "┌", "├", "╴", "┘", "┐", "┤", "─", "┴", "┬", "┼"]
 
   def initialize
+    @drawn = {}
+
     @size = 256
     @unit = 16
 
@@ -52,13 +57,13 @@ class Maze
           nil
         end
       end
-      
+
       if ii
         shape_vox = []
-        #inio = File.open("/home/minecraft/shape-#{ii}.vox")
-        puts "/var/tmp/mavencraft/backup/shape-#{ii}.vox"
+        inio = File.open("/home/minecraft/shape-#{ii}.vox")
 
-        inio = File.open("/var/tmp/mavencraft/backup/shape-#{ii}.vox")
+        #puts "/var/tmp/mavencraft/backup/shape-#{ii}.vox"
+        #inio = File.open("/var/tmp/mavencraft/backup/shape-#{ii}.vox")
 
         line_count = 0
         while input = pop_input(inio)
@@ -84,14 +89,14 @@ class Maze
     # generate a 10x10 orthogonal maze and print it to the console
     @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 33, :weave => 0, :wrap => "xy", :sparse => 50)
 
-    puts @maze.to_s(:mode => :lines)
+    #puts @maze.to_s(:mode => :lines)
   end
 
   def each_bit(player_position)
     px = ((player_position[0].to_i / @unit) + (@size / 2))
     py = ((player_position[2].to_i / @unit) + (@size / 2))
 
-    wid = 32
+    wid = 8
 
     ((px-wid)..(px+wid)).each do |x|
       ((py-wid)..(py+wid)).each do |y|
@@ -105,13 +110,17 @@ class Maze
   end
 
   def draw_maze(x, y) #:nodoc:
+    return if @drawn["#{x}/#{y}"]
+
+    puts "drawing #{x}/#{y}"
+
     ax = ((x * @unit) - (@size * 0.5 * @unit)).to_i
     ay = ((y * @unit) - (@size * 0.5 * @unit)).to_i
 
-    ((ax)..(ax+@unit)).each do |dx|
-      ((ay)..(ay+@unit)).each do |dy|
-        (((@unit/2)+1)..(@unit)).each do |dz|
-          yield [dx-(0*@unit-1), dz, dy-(1*@unit-1), :air]
+    ((ax)..(ax+(@unit - 1))).each do |dx|
+      ((ay)..(ay+(@unit - 1))).each do |dy|
+        (((@unit/2)-1)..(@unit - 1)).each do |dz|
+          yield [dx, dz, dy, :air]
         end
       end
     end
@@ -121,26 +130,35 @@ class Maze
 
     primary = (cell & Theseus::Maze::PRIMARY)
 
-    puts UTF8_LINES[primary]
-
     if shape = @shapes[primary]
       shape.each do |vx, vy, vz|
         type = begin
           if vy == 0
             :air
           elsif vy == (@unit - 1)
-            :glow
+            :upper
           else
             :stone
           end
         end
 
-        yield [(ax + vx), (vy), (ay + vz), type]
+        if type == :upper
+          type_of_light = ((rand > 0.9) ? :lava : ((rand > 0.8) ? :glow : ((rand > 0.7) ? :beacon : ((rand > 0.6) ? :lantern : :torch))))
+          if (rand > 0.9)
+            (0..@unit).to_a.reverse.each do |c|
+              yield [(ax + vx), (vy)-c, (ay + vz), (c == 0) ? type_of_light : :stone]
+            end
+          end
+        else
+          yield [(ax + vx), (vy), (ay + vz), type]
+        end
       end
     else
       puts primary, Theseus::Formatters::ASCII::Orthogonal::UTF8_LINES[primary]
       raise "wtF"
     end
+
+    @drawn["#{x}/#{y}"] = true
   end
 
   def each_piece(player_position)
@@ -175,30 +193,44 @@ ooz = 0
 
 #(-242.64511719001678, 91.0, -187.13305104614997
 
+maze = Maze.new
+puts "generated"
+
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
 
-maze = Maze.new
-
-player_position = [0, 64, 0]
-
 global_painter.async do
-  maze.each_bit(player_position) do |x,y,z,t|
-    z += 128
-    case t
-      when :air
-        global_painter.place(x, y, z, global_painter.air_type)
-      when :stone
-        global_painter.place(x, y, z, global_painter.sandstone_type)
-      when :glow
-        global_painter.place(x, y, z, global_painter.glow_type)
-    else
+  loop do
+    Dir["world/playerdata/*dat"].each do |pd|
+      puts [pd, global_painter.client.command_count].inspect
+
+      nbt_file = NBTUtils::File.new
+      tag = nbt_file.read(pd)
+
+      player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }
+
+      maze.each_bit(player_position) do |x,y,z,t|
+        y += 62 - 7
+        case t
+          when :air
+            global_painter.place(x, y, z, global_painter.air_type)
+          when :stone
+            global_painter.place(x, y, z, global_painter.sandstone_type)
+          when :glow
+            global_painter.place(x, y, z, global_painter.glow_type)
+          when :torch
+            global_painter.place(x, y, z, global_painter.torch_type)
+          when :beacon
+            global_painter.place(x, y, z, global_painter.beacon_type)
+          when :lantern
+            global_painter.place(x, y, z, global_painter.lantern_type)
+          when :lava
+            global_painter.place(x, y, z, global_painter.lava_type)
+        else
+        end
+      end
     end
   end
-
-  #maze.each_piece(player_position) do |x,y,z|
-  #  global_painter.place(x, y, z, global_painter.sandstone_type)
-  #end
 end
 
-puts global_painter.client.command_count
+#sleep
