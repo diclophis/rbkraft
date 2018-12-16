@@ -11,13 +11,13 @@ srand
 #ooy = 0
 #ooz = 0
 
-oox = -233.0
+oox = 112.0
 ooy = 0.0
-ooz = 242.0
+ooz = 245.0
 
 #(-242.64511719001678, 91.0, -187.13305104614997
 
-global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
+global_painter = DiclophisWorldPainter.new(false, oox, ooy, ooz)
 puts "connected"
 
 s = 24

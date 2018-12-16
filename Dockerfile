@@ -17,6 +17,12 @@ COPY minecraft.jar minecraft-1.12.jar minecraft-client.jar minecraft-client-1.12
 COPY setup-minecraft.sh /var/tmp/setup-minecraft.sh
 RUN /var/tmp/setup-minecraft.sh
 
+COPY voxsurf-main.cpp /var/tmp/voxsurf-main.cpp
+COPY setup-debug.sh /var/tmp/setup-debug.sh
+RUN /var/tmp/setup-debug.sh
+
+COPY shape-0.stl /home/minecraft
+
 COPY scripts /home/minecraft
 COPY server.properties ops.json eula.txt mapcrafter.conf log4j2.xml /home/minecraft/
 
