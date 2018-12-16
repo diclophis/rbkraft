@@ -17,11 +17,13 @@ COPY minecraft.jar minecraft-1.12.jar minecraft-client.jar minecraft-client-1.12
 COPY setup-minecraft.sh /var/tmp/setup-minecraft.sh
 RUN /var/tmp/setup-minecraft.sh
 
-COPY voxsurf-main.cpp /var/tmp/voxsurf-main.cpp
+USER minecraft
+
+COPY Gemfile Gemfile.lock /home/minecraft/
+RUN cd /home/minecraft && bundle install --path=vendor/bundle
+
 COPY setup-debug.sh /var/tmp/setup-debug.sh
 RUN /var/tmp/setup-debug.sh
-
-COPY shape-0.stl /home/minecraft
 
 COPY scripts /home/minecraft
 COPY server.properties ops.json eula.txt mapcrafter.conf log4j2.xml /home/minecraft/
@@ -29,8 +31,6 @@ COPY server.properties ops.json eula.txt mapcrafter.conf log4j2.xml /home/minecr
 COPY minecraft-wrapper /home/minecraft/minecraft-wrapper
 
 RUN chown minecraft. /home/minecraft/server.properties /home/minecraft/ops.json
-
-USER minecraft
 
 WORKDIR /home/minecraft
 #CMD ["bash", "full-stack.sh"]

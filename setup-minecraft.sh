@@ -20,12 +20,25 @@ apt update
 
 apt install -y openscad meshlab libassimp-dev libccd-dev
 
+#################################
+cd /home/minecraft
+git clone https://github.com/flexible-collision-library/fcl.git
+cd fcl
+git checkout tags/0.3.3
+
+mkdir build
+cd build
+cmake ..
+make -j
+make install
+
+#################################
 cd /home/minecraft
 git clone https://github.com/topskychen/voxelizer
 cd voxelizer
 git checkout master
 
-cd /home/minecraft
-git clone https://github.com/flexible-collision-library/fcl.git
-cd fcl
-git checkout tags/0.3.3
+mkdir build
+cd build
+cmake ..
+make -j

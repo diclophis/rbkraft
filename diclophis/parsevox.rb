@@ -5,9 +5,9 @@ $: << "diclophis"
 
 require 'diclophis_world_painter'
 
-oox = 120
-ooy = 60
-ooz = 245
+oox = 0
+ooy = 54
+ooz = 0
 
 #(-242.64511719001678, 91.0, -187.13305104614997
 
@@ -31,7 +31,7 @@ global_painter.async do
       when 2
       when 3
     else
-      x,y,z = input.strip.split(" ").collect(&:to_i)
+      x,z,y = input.strip.split(" ").collect(&:to_i)
 
       global_painter.place(x, y, z, global_painter.sandstone_type)
     end
