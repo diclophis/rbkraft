@@ -235,6 +235,22 @@ module pathway(direction) {
 
 pathway(shape);
 
+translate([quarter_slice_size * 0.5, quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
+    cube(size=[0.03, 0.03, 0.03], center=true);
+}
+
+translate([-quarter_slice_size * 0.5, -quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
+    cube(size=[0.03, 0.03, 0.03], center=true);
+}
+
+translate([quarter_slice_size * 0.5, -quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
+    cube(size=[0.03, 0.03, 0.03], center=true);
+}
+
+translate([-quarter_slice_size * 0.5, quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
+    cube(size=[0.03, 0.03, 0.03], center=true);
+}
+
 translate([outer_size * 0.5,outer_size*0.5,outer_size*0.5]) {
     cube(size=[0.01, 0.01, 0.01], center=true);
 }

@@ -15,7 +15,7 @@ class Maze
   def initialize
     @drawn = {}
 
-    @size = 1024
+    @size = 2048
     @unit = 16
 
     @shapes = {}
@@ -90,7 +90,7 @@ class Maze
 
     # generate a 10x10 orthogonal maze and print it to the console
     @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 25, :weave => 0, :randomness => 25, :wrap => "xy")
-    24.times {
+    32.times {
       @maze.sparsify!
     }
 
@@ -101,7 +101,7 @@ class Maze
     px = ((player_position[0].to_i / @unit) + (@size / 2))
     py = ((player_position[2].to_i / @unit) + (@size / 2))
 
-    wid = 4
+    wid = 2
 
     chunks = []
 
@@ -123,8 +123,6 @@ class Maze
   def draw_maze(x, y) #:nodoc:
     return if @drawn["#{x}/#{y}"]
 
-    puts "drawing #{x}/#{y}"
-
     ax = ((x * @unit) - (@size * 0.5 * @unit)).to_i
     ay = ((y * @unit) - (@size * 0.5 * @unit)).to_i
 
@@ -132,6 +130,14 @@ class Maze
     return if cell == 0
 
     #if (rand > 0.99)
+    #  ((ax)..(ax+(@unit - 1))).each do |dx|
+    #    ((ay)..(ay+(@unit - 1))).each do |dy|
+    #      (((0))..(@unit - 1)).each do |dz|
+    #        yield [dx, dz, dy, :air]
+    #      end
+    #    end
+    #  end
+    #elsif (rand > 0.99)
     #  ((ax)..(ax+(@unit - 1))).each do |dx|
     #    ((ay)..(ay+(@unit - 1))).each do |dy|
     #      (((@unit/2))..(@unit - 1)).each do |dz|
@@ -156,17 +162,21 @@ class Maze
             :air
           elsif vy == (@unit - 1)
             :upper
+          elsif vy > ((@unit / 2) + 1)
+            :torch
           else
-            (rand > 0.99) ? :lantern : :stone
+            #(rand > 0.99) ? :lantern : :stone
+            :stone
           end
         end
 
         if type == :upper
-          type_of_light = ((rand > 0.99) ? :lava : ((rand > 0.8) ? :glow : ((rand > 0.7) ? :beacon : ((rand > 0.6) ? :lantern : :torch))))
-          if (rand > 0.33)
-            (0..@unit).to_a.reverse.each do |c|
-              yield [(ax + vx), (vy)-c, (ay + vz), (c == 0) ? type_of_light : :quartz]
-            end
+          #type_of_light = ((rand > 0.99) ? :lava : ((rand > 0.8) ? :glow : ((rand > 0.7) ? :beacon : ((rand > 0.6) ? :lantern : :torch))))
+          type_of_light = :beacon
+          #if (rand > 0.33)
+          stagger = (rand * (@unit * 0.5).to_i)
+          ((0..(@unit * 2))).to_a.reverse.each do |c|
+            yield [(ax + vx), ((vy)-c-stagger) + (0.33 * @unit).to_i, (ay + vz), (c == 0) ? type_of_light : :quartz]
           end
         else
           yield [(ax + vx), (vy), (ay + vz), type]
@@ -219,7 +229,7 @@ puts "connected"
 global_painter.async do
   loop do
     Dir["world/playerdata/*dat"].each do |pd|
-      puts [pd, global_painter.client.command_count].inspect
+      puts [Time.now, pd, global_painter.client.command_count].inspect
 
       nbt_file = NBTUtils::File.new
       tag = nbt_file.read(pd)
@@ -249,5 +259,7 @@ global_painter.async do
         end
       end
     end
+
+    sleep 0.1
   end
 end

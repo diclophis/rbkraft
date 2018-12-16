@@ -22,7 +22,6 @@ while true;
 do
   if [ -e $MINECRAFT_ROOT/world/level.dat ];
   then
-    sleep 1
     cat $MINECRAFT_ROOT/normal-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
     inotifywait -t 1 -e CLOSE $MINECRAFT_ROOT/world/session.lock
     SHUF=$(shuf -i 1-20 -n 1)
