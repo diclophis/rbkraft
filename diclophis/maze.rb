@@ -29,7 +29,7 @@ class Maze
 
     @shapes = {}
 
-    16.times { |i|
+    18.times { |i|
       ii = begin
         case i
           when 0
@@ -64,6 +64,10 @@ class Maze
             2
           when 15
             15
+          when 16
+            16
+          when 17
+            17
         else
           nil
         end
@@ -82,7 +86,7 @@ class Maze
             when 0
             when 1
             when 2
-            when 3
+            #when 3
           else
             x,z,y = input.strip.split(" ").collect(&:to_i)
             shape_vox << [x,y,-z]
@@ -98,8 +102,8 @@ class Maze
     srand(2)
 
     # generate a 10x10 orthogonal maze and print it to the console
-    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 25, :weave => 0, :randomness => 25, :wrap => "xy")
-    64.times {
+    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 0, :weave => 0, :randomness => 100, :wrap => "xy")
+    8.times {
       @maze.sparsify!
     }
 
@@ -157,11 +161,11 @@ class Maze
     #    end
     #  end
     #else
-      #3.times do |st|
-      #  @shapes[15].each do |vx, vy, vz|
-      #    yield [(ax + vx), 1 + (vy + (st * 3)), (ay + vz), :air]
-      #  end
-      #end
+      3.times do |st|
+        @shapes[15+st].each do |vx, vy, vz|
+          yield [(ax + vx), 1 + (vy + (st * 3)), (ay + vz), :stone]
+        end
+      end
     #end
 
     primary = (cell & Theseus::Maze::PRIMARY)

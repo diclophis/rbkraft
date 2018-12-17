@@ -1,18 +1,27 @@
 // maze parts
 
-outer_size = 1.0;
-cut_size = outer_size * 0.5;
-inner_size = outer_size * 1.0;
-core_size = outer_size / 1.015;
-path_size = outer_size * 0.33;
-inner_path_size = path_size * 0.95;
-fudge = 0.06 * outer_size;
-inner_intersection_size = 0.6;
-quarter_slice_size = 0.34;
-outer_fudge_smidge = (outer_size+fudge)*0.789;
-half_smidge = 0.33;
+//outer_size * 0.05;
+//shape = 17;
 
-module pathway(direction) {
+//outer_size * 0.125;
+//shape = 16;
+shape = 17;
+
+module pathway(direction, pscale) {
+    outer_size = 1.0;
+    cut_size = outer_size * 0.5;
+    inner_size = outer_size * 1.0;
+    core_size = outer_size / 1.015;
+    path_size = outer_size * 0.33 * pscale;
+    path_size_h = outer_size * 0.4;
+    //path_size = outer_size * 0.125;
+    inner_path_size = path_size_h * 0.95;
+    fudge = 0.06 * outer_size;
+    inner_intersection_size = 0.6;
+    quarter_slice_size = 0.34;
+    outer_fudge_smidge = (outer_size+fudge)*0.789;
+    half_smidge = 0.33;
+      
     scale([1, 1.0, 0.55]) {
         intersection() {
             if (direction == 5) {
@@ -225,60 +234,74 @@ module pathway(direction) {
             }
         }
     }
+        
+    if (shape < 15 && shape >= 0) {
+      translate([quarter_slice_size * 0.5, quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
+          cube(size=[0.03, 0.03, 0.03], center=true);
+      }
+    
+      translate([-quarter_slice_size * 0.5, -quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
+          cube(size=[0.03, 0.03, 0.03], center=true);
+      }
+    
+      translate([quarter_slice_size * 0.5, -quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
+          cube(size=[0.03, 0.03, 0.03], center=true);
+      }
+    
+      translate([-quarter_slice_size * 0.5, quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
+          cube(size=[0.03, 0.03, 0.03], center=true);
+      }
+    
+      translate([outer_size * 0.5,outer_size*0.5,outer_size*0.5]) {
+          cube(size=[0.01, 0.01, 0.01], center=true);
+      }
+    
+      translate([-outer_size * 0.5,outer_size*0.5,outer_size*0.5]) {
+          cube(size=[0.01, 0.01, 0.01], center=true);
+      }
+    
+      translate([-outer_size * 0.5,-outer_size*0.5,outer_size*0.5]) {
+          cube(size=[0.01, 0.01, 0.01], center=true);
+      }
+    
+      translate([-outer_size * 0.5,-outer_size*0.5,-outer_size*0.5]) {
+          cube(size=[0.01, 0.01, 0.01], center=true);
+      }
+    
+      translate([outer_size * 0.5,-outer_size*0.5,-outer_size*0.5]) {
+          cube(size=[0.01, 0.01, 0.01], center=true);
+      }
+    
+      translate([outer_size * 0.5,outer_size*0.5,-outer_size*0.5]) {
+          cube(size=[0.01, 0.01, 0.01], center=true);
+      }
+    
+      translate([-outer_size * 0.5,outer_size*0.5,-outer_size*0.5]) {
+          cube(size=[0.01, 0.01, 0.01], center=true);
+      }
+    
+      translate([outer_size * 0.5,-outer_size*0.5,outer_size*0.5]) {
+          cube(size=[0.01, 0.01, 0.01], center=true);
+      }
+    }
 }
 
-// for (offset=[0:15]) {
-//     translate([(offset*(outer_size+0)),0,0]) {
-//         pathway(offset);
-//     }
-// }
-
-pathway(shape);
-
-translate([quarter_slice_size * 0.5, quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
-    cube(size=[0.03, 0.03, 0.03], center=true);
-}
-
-translate([-quarter_slice_size * 0.5, -quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
-    cube(size=[0.03, 0.03, 0.03], center=true);
-}
-
-translate([quarter_slice_size * 0.5, -quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
-    cube(size=[0.03, 0.03, 0.03], center=true);
-}
-
-translate([-quarter_slice_size * 0.5, quarter_slice_size * 0.5, quarter_slice_size * 0.35]) {
-    cube(size=[0.03, 0.03, 0.03], center=true);
-}
-
-translate([outer_size * 0.5,outer_size*0.5,outer_size*0.5]) {
-    cube(size=[0.01, 0.01, 0.01], center=true);
-}
-
-translate([-outer_size * 0.5,outer_size*0.5,outer_size*0.5]) {
-    cube(size=[0.01, 0.01, 0.01], center=true);
-}
-
-translate([-outer_size * 0.5,-outer_size*0.5,outer_size*0.5]) {
-    cube(size=[0.01, 0.01, 0.01], center=true);
-}
-
-translate([-outer_size * 0.5,-outer_size*0.5,-outer_size*0.5]) {
-    cube(size=[0.01, 0.01, 0.01], center=true);
-}
-
-translate([outer_size * 0.5,-outer_size*0.5,-outer_size*0.5]) {
-    cube(size=[0.01, 0.01, 0.01], center=true);
-}
-
-translate([outer_size * 0.5,outer_size*0.5,-outer_size*0.5]) {
-    cube(size=[0.01, 0.01, 0.01], center=true);
-}
-
-translate([-outer_size * 0.5,outer_size*0.5,-outer_size*0.5]) {
-    cube(size=[0.01, 0.01, 0.01], center=true);
-}
-
-translate([outer_size * 0.5,-outer_size*0.5,outer_size*0.5]) {
-    cube(size=[0.01, 0.01, 0.01], center=true);
+if (false) {
+ for (offset=[0:15]) {
+     translate([(offset*(1.01+0)),0,0]) {
+         pathway(offset, 1.0);
+     }
+ }
+} else {
+    if (shape > 15) {
+      if (shape == 16) {
+          pathway(15, 0.77);
+      }
+    
+      if (shape == 17) {
+          pathway(15, 0.33);
+      }
+    } else {
+      pathway(shape, 1.0);
+    }
 }
