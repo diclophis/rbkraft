@@ -16,13 +16,13 @@ class Maze
     @drawn = {}
 
     # how far from player to blit in
-    @wid = 2
+    @wid = 1
 
     # size of map in map coordinate space
     @size = 256
 
     # size of map unit in voxel coordinate space
-    @unit = 16
+    @unit = 32
 
     # sea level to match with walking platform
     @sea_level = 4 #66 #63
@@ -145,13 +145,16 @@ class Maze
     return if cell == 0
 
     #if (rand > 0.99)
-    #  ((ax)..(ax+(@unit - 1))).each do |dx|
-    #    ((ay)..(ay+(@unit - 1))).each do |dy|
-    #      (((0))..(@unit - 1)).each do |dz|
-    #        yield [dx, dz, dy, :air]
-    #      end
-    #    end
-    #  end
+    if false
+      ((ax)..(ax+(@unit - 1))).each do |dx|
+        ((ay)..(ay+(@unit - 1))).each do |dy|
+          (((0))..(@unit - 1)).each do |dz|
+            yield [dx, dz, dy, :air]
+          end
+        end
+      end
+    end
+
     #elsif (rand > 0.99)
     #  ((ax)..(ax+(@unit - 1))).each do |dx|
     #    ((ay)..(ay+(@unit - 1))).each do |dy|
@@ -161,12 +164,16 @@ class Maze
     #    end
     #  end
     #else
+
+    if true
+      air_or_cat = rand > 0.5 ? :air : :stone
+      air_or_cat = :air
       3.times do |st|
         @shapes[15+st].each do |vx, vy, vz|
-          yield [(ax + vx), 1 + (vy + (st * 3)), (ay + vz), :stone]
+          yield [(ax + vx), 1 + (vy + (st * 3)), (ay + vz), air_or_cat]
         end
       end
-    #end
+    end
 
     primary = (cell & Theseus::Maze::PRIMARY)
 
@@ -178,8 +185,10 @@ class Maze
             nil
           elsif vy == (@unit - 1)
             :upper
-          elsif vy > ((@unit / 2) + 1) # shelf lighting
-            :torch
+          elsif vy > ((@unit / 2) + 2) # shelf lighting
+            :lantern
+          elsif vy < ((@unit / 2)) # shelf lighting
+            :water
           else
             #(rand > 0.99) ? :lantern : :stone
             :stone
@@ -192,7 +201,9 @@ class Maze
             type_of_light = :lantern
             stagger = (rand * (@unit * 0.5).to_i)
             ((0..(@unit * 2))).to_a.reverse.each do |c|
-              yield [(ax + vx), ((vy)-c-stagger) + (0.33 * @unit).to_i, (ay + vz), (c == 0) ? type_of_light : :quartz]
+              water_col = ((c == 0) ? type_of_light : ((c == 1) ? :quartz : :quartz))
+
+              yield [(ax + vx), ((vy)-c-stagger) + (0.33 * @unit).to_i, (ay + vz), water_col]
             end
           end
         else
@@ -273,6 +284,8 @@ global_painter.async do
             global_painter.place(x, y, z, global_painter.lava_type)
           when :quartz
             global_painter.place(x, y, z, global_painter.quartz_type)
+          when :water
+            global_painter.place(x, y, z, global_painter.water_type)
         else
         end
       end
