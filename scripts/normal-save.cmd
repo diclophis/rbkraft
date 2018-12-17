@@ -1,3 +1,3 @@
 authentic
 save-off
-save-all flush
+save-all

@@ -16,8 +16,8 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 1024
-READ_CHUNKS_REMOTE = 1024
+READ_CHUNKS = 512 * 32
+READ_CHUNKS_REMOTE = 512 * 32
 COMMANDS_PER_MOD = 1024
 CLIENTS_DEFAULT_ASYNC = false
 
@@ -259,9 +259,7 @@ class Wrapper
       $TOTAL_COMMANDS += commands_this_tick
       total_delta += commands_this_tick
 
-    #  sleep 0.125 # to prevent cpu burn
-
-    #  break
+      #sleep 0.1 # to prevent cpu burn
     end
 
     duration = Time.now - start

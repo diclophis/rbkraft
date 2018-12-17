@@ -16,16 +16,16 @@ class Maze
     @drawn = {}
 
     # how far from player to blit in
-    @wid = 1
+    @wid = 3
 
     # size of map in map coordinate space
-    @size = 256
+    @size = 1024
 
     # size of map unit in voxel coordinate space
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 4 #66 #63
+    @sea_level = 63 #4 flat #66 #63 default
 
     @shapes = {}
 
@@ -126,7 +126,10 @@ class Maze
       end
     end
 
-    chunks.shuffle.each do |x, y|
+    chunks.sort_by { |x,y|
+      d = Math.sqrt(((x-px)**2)+((y-py)**2))
+      d
+    }.each do |x, y|
       draw_maze(x, y) { |xx, yy, zz, tt|
         yy += @sea_level - (@unit / 2)
 
@@ -188,7 +191,12 @@ class Maze
           elsif vy > ((@unit / 2) + 2) # shelf lighting
             :lantern
           elsif vy < ((@unit / 2)) # shelf lighting
-            :water
+            if (vx - (@unit / 2)).abs < 3 || (vz - -(@unit / 2)).abs < 3 #((vx + (@unit / 2)).abs  < 4 && (vz + (@unit / 2)).abs < 4)
+              #vy += 1
+              :water
+            else
+              nil #:stone
+            end
           else
             #(rand > 0.99) ? :lantern : :stone
             :stone
@@ -197,7 +205,7 @@ class Maze
 
         if type == :upper
           #type_of_light = ((rand > 0.99) ? :lava : ((rand > 0.8) ? :glow : ((rand > 0.7) ? :beacon : ((rand > 0.6) ? :lantern : :torch))))
-          if (rand > 0.9)
+          if (rand > ((Math.sin(ax*ay) + 1.0) * 0.5))
             type_of_light = :lantern
             stagger = (rand * (@unit * 0.5).to_i)
             ((0..(@unit * 2))).to_a.reverse.each do |c|

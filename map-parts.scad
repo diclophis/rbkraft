@@ -6,20 +6,21 @@
 //outer_size * 0.125;
 //shape = 16;
 //shape = 17;
-shape = 0;
+//shape = 14;
 
 module pathway(direction, pscale) {
     outer_size = 1.0;
-    cut_size = outer_size * 0.5;
+    cut_size = outer_size * 0.33;
     inner_size = outer_size * 1.0;
     core_size = outer_size / 1.015;
     path_size = outer_size * 0.33 * pscale;
-    path_size_h = outer_size * 0.4;
+    path_size_h = outer_size * 0.35;
     //path_size = outer_size * 0.125;
     inner_path_size = path_size * 0.97;
-    fudge = 0.15 * outer_size;
-    inner_intersection_size = 0.6;
-    quarter_slice_size = 0.34;
+    fudge = 0.05 * outer_size;
+    inner_intersection_size = 0.65;
+    quarter_slice_size = 0.24;
+    quarter_slice_size_l = 0.34;
     outer_fudge_smidge = (outer_size+fudge)*0.789;
     half_smidge = 0.33;
       
@@ -243,19 +244,19 @@ module pathway(direction, pscale) {
       shelf_light_h = 0.24;
  
       //shelf lighting
-      translate([quarter_slice_size * shelf_light_offset, quarter_slice_size * shelf_light_offset, quarter_slice_size * shelf_light_h]) {
+      translate([quarter_slice_size_l * shelf_light_offset, quarter_slice_size_l * shelf_light_offset, quarter_slice_size_l * shelf_light_h]) {
           cube(size=shelf_light_size, center=true);
       }
     
-      translate([-quarter_slice_size * shelf_light_offset, -quarter_slice_size * shelf_light_offset, quarter_slice_size * shelf_light_h]) {
+      translate([-quarter_slice_size_l * shelf_light_offset, -quarter_slice_size_l * shelf_light_offset, quarter_slice_size_l * shelf_light_h]) {
           cube(size=shelf_light_size, center=true);
       }
     
-      translate([quarter_slice_size * shelf_light_offset, -quarter_slice_size * shelf_light_offset, quarter_slice_size * shelf_light_h]) {
+      translate([quarter_slice_size_l * shelf_light_offset, -quarter_slice_size_l * shelf_light_offset, quarter_slice_size_l * shelf_light_h]) {
           cube(size=shelf_light_size, center=true);
       }
     
-      translate([-quarter_slice_size * shelf_light_offset, quarter_slice_size * shelf_light_offset, quarter_slice_size * shelf_light_h]) {
+      translate([-quarter_slice_size_l * shelf_light_offset, quarter_slice_size_l * shelf_light_offset, quarter_slice_size_l * shelf_light_h]) {
           cube(size=shelf_light_size, center=true);
       }
     
