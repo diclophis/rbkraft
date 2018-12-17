@@ -52,16 +52,16 @@ spec:
           containerPort: 25564
         - name: mavencraft-port
           containerPort: 25566
-        readinessProbe:
-          tcpSocket:
-            port: minecraft-port
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        livenessProbe:
-          tcpSocket:
-            port: minecraft-port
-          initialDelaySeconds: 15
-          periodSeconds: 20
+        #readinessProbe:
+        #  tcpSocket:
+        #    port: minecraft-port
+        #  initialDelaySeconds: 5
+        #  periodSeconds: 10
+        #livenessProbe:
+        #  tcpSocket:
+        #    port: minecraft-port
+        #  initialDelaySeconds: 15
+        #  periodSeconds: 20
         command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566"]
         #command: ["sleep", "infinity"]
         env:

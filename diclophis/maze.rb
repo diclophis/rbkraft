@@ -15,8 +15,17 @@ class Maze
   def initialize
     @drawn = {}
 
-    @size = 2048
+    # how far from player to blit in
+    @wid = 2
+
+    # size of map in map coordinate space
+    @size = 256
+
+    # size of map unit in voxel coordinate space
     @unit = 16
+
+    # sea level to match with walking platform
+    @sea_level = 4 #66 #63
 
     @shapes = {}
 
@@ -90,7 +99,7 @@ class Maze
 
     # generate a 10x10 orthogonal maze and print it to the console
     @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 25, :weave => 0, :randomness => 25, :wrap => "xy")
-    32.times {
+    64.times {
       @maze.sparsify!
     }
 
@@ -98,15 +107,15 @@ class Maze
   end
 
   def each_bit(player_position)
-    px = ((player_position[0].to_i / @unit) + (@size / 2))
-    py = ((player_position[2].to_i / @unit) + (@size / 2))
+    px = ((player_position[0].to_i / @unit) + (@size / 2)) - 1
+    py = ((player_position[2].to_i / @unit) + (@size / 2)) - 1
 
-    wid = 8
+    #puts [px, py, @size].inspect
 
     chunks = []
 
-    ((px-wid)..(px+wid)).each do |x|
-      ((py-wid)..(py+wid)).each do |y|
+    ((px-@wid)..(px+@wid)).each do |x|
+      ((py-@wid)..(py+@wid)).each do |y|
         if x >= 0 && x < @size && y >= 0 && y < @size
           chunks << [x, y]
         end
@@ -115,6 +124,8 @@ class Maze
 
     chunks.shuffle.each do |x, y|
       draw_maze(x, y) { |xx, yy, zz, tt|
+        yy += @sea_level - (@unit / 2)
+
         yield xx, yy, zz, tt
       }
     end
@@ -146,11 +157,11 @@ class Maze
     #    end
     #  end
     #else
-      3.times do |st|
-        @shapes[15].each do |vx, vy, vz|
-          yield [(ax + vx), 1 + (vy + (st * 3)), (ay + vz), :air]
-        end
-      end
+      #3.times do |st|
+      #  @shapes[15].each do |vx, vy, vz|
+      #    yield [(ax + vx), 1 + (vy + (st * 3)), (ay + vz), :air]
+      #  end
+      #end
     #end
 
     primary = (cell & Theseus::Maze::PRIMARY)
@@ -158,11 +169,12 @@ class Maze
     if shape = @shapes[primary]
       shape.each do |vx, vy, vz|
         type = begin
-          if vy == 0
-            :air
+          if vy < ((@unit / 2) - 1)
+            #:air
+            nil
           elsif vy == (@unit - 1)
             :upper
-          elsif vy > ((@unit / 2) + 1)
+          elsif vy > ((@unit / 2) + 1) # shelf lighting
             :torch
           else
             #(rand > 0.99) ? :lantern : :stone
@@ -172,19 +184,22 @@ class Maze
 
         if type == :upper
           #type_of_light = ((rand > 0.99) ? :lava : ((rand > 0.8) ? :glow : ((rand > 0.7) ? :beacon : ((rand > 0.6) ? :lantern : :torch))))
-          type_of_light = :beacon
-          #if (rand > 0.33)
-          stagger = (rand * (@unit * 0.5).to_i)
-          ((0..(@unit * 2))).to_a.reverse.each do |c|
-            yield [(ax + vx), ((vy)-c-stagger) + (0.33 * @unit).to_i, (ay + vz), (c == 0) ? type_of_light : :quartz]
+          if (rand > 0.9)
+            type_of_light = :lantern
+            stagger = (rand * (@unit * 0.5).to_i)
+            ((0..(@unit * 2))).to_a.reverse.each do |c|
+              yield [(ax + vx), ((vy)-c-stagger) + (0.33 * @unit).to_i, (ay + vz), (c == 0) ? type_of_light : :quartz]
+            end
           end
         else
-          yield [(ax + vx), (vy), (ay + vz), type]
+          if type
+            yield [(ax + vx), (vy), (ay + vz), type]
+          end
         end
       end
     else
       puts primary, Theseus::Formatters::ASCII::Orthogonal::UTF8_LINES[primary]
-      raise "wtF"
+      raise "unknown map coord"
     end
 
     @drawn["#{x}/#{y}"] = true
@@ -217,7 +232,6 @@ end
 oox = 0
 ooy = 0 # 32 + ???
 ooz = 0
-
 puts "started"
 
 maze = Maze.new
@@ -229,15 +243,15 @@ puts "connected"
 global_painter.async do
   loop do
     Dir["world/playerdata/*dat"].each do |pd|
-      puts [Time.now, pd, global_painter.client.command_count].inspect
 
       nbt_file = NBTUtils::File.new
       tag = nbt_file.read(pd)
 
-      player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }
+      player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }.collect { |f| f.to_i }
+
+      #puts [Time.now, pd, global_painter.client.command_count, player_position].inspect
 
       maze.each_bit(player_position) do |x,y,z,t|
-        y += 62 - 7
         case t
           when :air
             global_painter.place(x, y, z, global_painter.air_type)
@@ -259,7 +273,5 @@ global_painter.async do
         end
       end
     end
-
-    sleep 0.1
   end
 end

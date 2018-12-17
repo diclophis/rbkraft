@@ -139,6 +139,7 @@ class Wrapper
   end
 
   def accept_server_io_connection
+    puts [:connected_client]
     install_client(self.server_io.accept_nonblock)
   end
 
