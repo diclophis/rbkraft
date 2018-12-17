@@ -17,16 +17,13 @@ Stuff for Minecraft
 
 [Glass floor](https://www.youtube.com/watch?v=jj0q3xPUeY8&feature=youtu.be)
 
-https://www.youtube.com/watch?v=VCY2VKXJkSw&feature=youtu.be
+[Other Vid](https://www.youtube.com/watch?v=VCY2VKXJkSw&feature=youtu.be)
 
-# notes
 
-    pkill -9 -f ruby; pkill -9 -f java; DYNASTY_FORCE=1 minecraft.sh
-    sh ~/mavencraft/scripts/overviewer.sh
-    /usr/share/pyshared/overviewer_core/data/web_assets/index.html
-
-# spawn camera
-
-# setup notes
-
-sudo adduser --home /home/minecraft --shell /bin/false --disabled-login --disabled-password minecraft
+![image](images/world1-276.png)
+![image](images/world1-2947.png)
+![image](images/world2-2048.png)
+![image](images/world-4096.png)
+![image](images/world4-2048.png)
+![image](images/world4-501.png)
+![image](images/world-5000-maze.png)
