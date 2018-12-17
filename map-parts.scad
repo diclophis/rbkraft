@@ -6,7 +6,7 @@
 //outer_size * 0.125;
 //shape = 16;
 //shape = 17;
-//shape = 14;
+shape = 14;
 
 module pathway(direction, pscale) {
     outer_size = 1.0;
@@ -240,7 +240,7 @@ module pathway(direction, pscale) {
     if (shape < 15 && shape >= 0) {
         
       shelf_light_size = [0.033, 0.033, 0.033];
-      shelf_light_offset = 0.50;
+      shelf_light_offset = 0.525;
       shelf_light_h = 0.24;
  
       //shelf lighting
