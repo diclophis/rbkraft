@@ -78,7 +78,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 0
-  replicas: 1
+  replicas: 0
   template:
     metadata:
       labels:
@@ -116,6 +116,62 @@ spec:
         workingDir: /home/minecraft
         command: ["bundle", "exec", "ruby", "diclophis/maze.rb"]
         #command: ["sleep", "infinity"]
+        env:
+          - name: MAVENCRAFT_SERVER
+            value: mavencraft-cluster-ip
+          - name: MAVENCRAFT_PORT
+            value: "31505"
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: text
+  labels:
+    app: text
+spec:
+  revisionHistoryLimit: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: text
+    spec:
+      volumes:
+        - name: html
+          hostPath:
+            path: /var/tmp/mavencraft/html
+        - name: world
+          hostPath:
+            path: /var/tmp/mavencraft/world
+        - name: backup
+          hostPath:
+            path: /var/tmp/mavencraft/backup
+      terminationGracePeriodSeconds: 1
+      containers:
+      - name: text
+        volumeMounts:
+          - mountPath: /home/minecraft/world
+            name: world
+          - mountPath: /home/minecraft/html
+            name: html
+          - mountPath: /home/minecraft/backup
+            name: backup
+        image: mavencraft:latest
+        resources:
+          requests:
+            memory: "2000Mi"
+            cpu: "1000m"
+          limits:
+            memory: "3000Mi"
+            cpu: "1000m"
+        imagePullPolicy: IfNotPresent
+        workingDir: /home/minecraft
+        #command: ["bundle", "exec", "ruby", "diclophis/maze.rb"]
+        command: ["sleep", "infinity"]
         env:
           - name: MAVENCRAFT_SERVER
             value: mavencraft-cluster-ip

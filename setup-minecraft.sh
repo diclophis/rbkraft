@@ -18,7 +18,7 @@ apt install -y software-properties-common
 add-apt-repository ppa:openscad/releases
 apt update
 
-apt install -y openscad meshlab libassimp-dev libccd-dev
+apt install -y openscad meshlab libassimp-dev libccd-dev xvfb
 
 #################################
 cd /home/minecraft

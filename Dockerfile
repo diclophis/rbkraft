@@ -22,7 +22,7 @@ USER minecraft
 COPY Gemfile Gemfile.lock /home/minecraft/
 RUN cd /home/minecraft && bundle install --path=vendor/bundle
 
-COPY map-parts.scad /home/minecraft/
+COPY openscad/map-parts.scad /home/minecraft/
 COPY setup-debug.sh /var/tmp/setup-debug.sh
 RUN /var/tmp/setup-debug.sh
 
@@ -37,6 +37,8 @@ RUN chown minecraft. /home/minecraft/server.properties /home/minecraft/ops.json
 USER minecraft
 
 COPY diclophis /home/minecraft/diclophis
+
+COPY openscad /home/minecraft/openscad
 
 WORKDIR /home/minecraft
 #CMD ["bash", "full-stack.sh"]
