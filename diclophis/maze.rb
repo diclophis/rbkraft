@@ -25,7 +25,7 @@ class Maze
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 4 #4 flat #66 #63 default
+    @sea_level = 63 #4 flat #66 #63 default
 
     @shapes = {}
 
@@ -128,7 +128,7 @@ class Maze
 
     chunks.sort_by { |x,y|
       d = Math.sqrt(((x-px)**2)+((y-py)**2))
-      d
+      d.abs
     }.each do |x, y|
       draw_maze(x, y) { |xx, yy, zz, tt|
         yy += @sea_level - (@unit / 2)
