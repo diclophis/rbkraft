@@ -6,7 +6,7 @@
 //outer_size * 0.125;
 //shape = 16;
 //shape = 17;
-shape = 14;
+//shape = 0;
 
 module pathway(direction, pscale) {
     outer_size = 1.0;
@@ -21,7 +21,7 @@ module pathway(direction, pscale) {
     inner_intersection_size = 0.65;
     quarter_slice_size = 0.24;
     quarter_slice_size_l = 0.34;
-    outer_fudge_smidge = (outer_size+fudge)*0.789;
+    outer_fudge_smidge = (outer_size+fudge)*0.99;
     half_smidge = 0.33;
       
     scale([1, 1.0, 0.33]) {
@@ -304,11 +304,11 @@ if (false) {
 } else {
     if (shape > 15) {
       if (shape == 16) {
-          pathway(15, 0.67);
+          pathway(15, 0.77);
       }
     
       if (shape == 17) {
-          pathway(15, 0.32);
+          pathway(15, 0.44);
       }
     } else {
       pathway(shape, 1.0);
