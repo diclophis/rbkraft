@@ -55,7 +55,7 @@ while input = pop_input(inio)
       puts input
   else
     x,z,y = input.strip.split(" ").collect(&:to_i)
-    y -= (SIZE * 0.333)
+    y -= (SIZE * 0.2)
     shape_vox << [x,y,-z]
   end
 
