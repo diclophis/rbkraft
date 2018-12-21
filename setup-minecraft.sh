@@ -5,7 +5,7 @@ set -e
 
 mkdir /home/minecraft/plugins
 ln -s /home/minecraft/cache/VirtualPlayers2.jar /home/minecraft/plugins
-ln -s /home/minecraft/cache/EssentialsX-2.15.0.56.jar /home/minecraft/plugins
+ln -s /home/minecraft/cache/EssentialsX-2.15.0.57.jar /home/minecraft/plugins
 
 ls -l /home/minecraft/cache
 
@@ -17,14 +17,6 @@ mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.12.2.jar /home/m
 make -j
 make install
 ldconfig
-
-apt update
-apt install -y software-properties-common
-
-add-apt-repository ppa:openscad/releases
-apt update
-
-apt install -y openscad meshlab libassimp-dev libccd-dev xvfb
 
 #################################
 cd /home/minecraft

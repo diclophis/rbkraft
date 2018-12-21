@@ -3,9 +3,15 @@
 set -e
 set -x
 
+apt update && apt install -y software-properties-common
+
+add-apt-repository ppa:openscad/releases
+apt update
+
 apt-get update \
   && apt-get upgrade --no-install-recommends -y \
   && apt-get install --no-install-recommends -y \
+       openscad meshlab libassimp-dev libccd-dev xvfb \
        locales ruby2.5 rake git \
        apache2 apache2-utils \
        docker-registry \

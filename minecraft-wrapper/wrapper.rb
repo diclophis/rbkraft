@@ -171,11 +171,16 @@ class Wrapper
         if broadcast_bytes.length == 0
           return
         else
-	        #TODO!!!
-          #puts broadcast_bytes
-          #self.clients.each do |io, client|
-          #  client.broadcast_scanner << broadcast_bytes if client.authentic
-          #end
+          puts broadcast_bytes
+          if broadcast_bytes.include?("X:") ||
+             broadcast_bytes.include?("Y:") ||
+             broadcast_bytes.include?("Z:") ||
+             broadcast_bytes.include?("The block at") ||
+             broadcast_bytes.include?("found the block")
+            self.clients.each do |io, client|
+              client.broadcast_scanner << broadcast_bytes if client.authentic
+            end
+          end
         end
       end
     end

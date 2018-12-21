@@ -62,7 +62,7 @@ spec:
         #    port: minecraft-port
         #  initialDelaySeconds: 15
         #  periodSeconds: 20
-        command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566"]
+        command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
         #command: ["sleep", "infinity"]
         env:
 ---
@@ -170,7 +170,6 @@ spec:
             cpu: "1000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
-        #command: ["bundle", "exec", "ruby", "diclophis/maze.rb"]
         command: ["sleep", "infinity"]
         env:
           - name: MAVENCRAFT_SERVER
@@ -232,6 +231,50 @@ spec:
           - name: LD_LIBRARY_PATH
             value: /home/minecraft/mapcrafter/src/mapcraftercore
 ---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: web
+spec:
+  revisionHistoryLimit: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: web
+    spec:
+      volumes:
+        - name: html
+          hostPath:
+            path: /var/tmp/mavencraft/html
+      terminationGracePeriodSeconds: 1
+      containers:
+      - name: http-server
+        volumeMounts:
+          - mountPath: /home/minecraft/html
+            name: html
+        image: mavencraft:latest
+        resources:
+          requests:
+            memory: "200Mi"
+            cpu: "300m"
+          limits:
+            memory: "300Mi"
+            cpu: "400m"
+        imagePullPolicy: IfNotPresent
+        workingDir: /home/minecraft/html
+        ports:
+        - name: web-port
+          containerPort: 8080
+        command: ["ruby", "-run", "-ehttpd", ".", "-p8080", "-b0.0.0.0"]
+        #command: ["sleep", "infinity"]
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -266,3 +309,17 @@ spec:
     protocol: TCP
   selector:
     name: "mavencraft"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "web-node-port"
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    nodePort: 31580
+    name: web-port
+    protocol: TCP
+  selector:
+    name: "web"

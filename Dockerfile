@@ -35,7 +35,7 @@ COPY minecraft-wrapper /home/minecraft/minecraft-wrapper
 COPY world-painter /home/minecraft/world-painter
 
 USER root
-RUN chown minecraft. /home/minecraft/server.properties /home/minecraft/ops.json
+RUN chown minecraft. /home/minecraft/server.properties /home/minecraft/ops.json /home/minecraft/plugins
 USER minecraft
 
 COPY diclophis /home/minecraft/diclophis
@@ -43,5 +43,6 @@ COPY diclophis /home/minecraft/diclophis
 COPY openscad /home/minecraft/openscad
 
 WORKDIR /home/minecraft
+
 #CMD ["bash", "full-stack.sh"]
 CMD ["bash"]
