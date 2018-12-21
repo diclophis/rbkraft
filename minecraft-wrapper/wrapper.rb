@@ -171,10 +171,21 @@ class Wrapper
         if broadcast_bytes.length == 0
           return
         else
+=begin
+[08:17:32 INFO]: Saved the world
+[08:17:32 INFO]: CONSOLE issued server command: /getpos diclophis
+[08:17:32 INFO]: Current World: world
+[08:17:32 INFO]: X: -32 (+East <-> -West)
+[08:17:32 INFO]: Y: 39 (+Up <-> -Down)
+[08:17:32 INFO]: Z: -28 (+South <-> -North)
+[08:17:32 INFO]: Yaw: 260.7 (Rotation)
+[08:17:32 INFO]: Pitch: 32.55 (Head angle)
+=end
           puts broadcast_bytes
           if broadcast_bytes.include?("X:") ||
              broadcast_bytes.include?("Y:") ||
              broadcast_bytes.include?("Z:") ||
+             broadcast_bytes.include?("Pitch:") ||
              broadcast_bytes.include?("The block at") ||
              broadcast_bytes.include?("found the block")
             self.clients.each do |io, client|
@@ -291,11 +302,11 @@ class Wrapper
           if client.async
           else
             #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
-            if ((broadcast_line.include?("[Server]") && !broadcast_line.include?("[faker]")) ||
-                (broadcast_line.include?("gettingMessage") && !broadcast_line.include?("signal")))
-              #puts "response >> #{broadcast_line}"
+            #if ((broadcast_line.include?("[Server]") && !broadcast_line.include?("[faker]")) ||
+            #    (broadcast_line.include?("gettingMessage") && !broadcast_line.include?("signal")))
+              puts "response >> #{broadcast_line}"
               writable_io.write(broadcast_line)
-            end
+            #end
           end
         rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
           # Broken pipe (Errno::EPIPE)

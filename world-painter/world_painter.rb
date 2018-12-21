@@ -205,11 +205,12 @@ class WorldPainter
       x, y, z, thing, data, mode, data_tag = args
     end
     thing = thing.is_a?(String) ? "#{thing}" : thing
-    #if data
-    #  thing = thing + " " + data.to_s
-    #end
+    if data
+      thing = thing + " " + data.to_s
+    end
     #set_block_command = "#{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
-    set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing}"
+    set_block_command = "dc faker bpe #{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
+    #set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing}"
     execute set_block_command
   end
 
@@ -233,7 +234,9 @@ class WorldPainter
   TEST_REGEX = /Successfully found the block at ([\d-]+),([\d-]+),([\d-]+)\.|The block at ([\d-]+),([\d-]+),([\d-]+) is (.*?) \(/
   def bulk_test(vectors)
     vectors.each do |vector|
-      client.puts("testforblock #{@center.x + vector.x} #{@center.y + vector.y} #{@center.z + vector.z} 0")
+      cmd = "testforblock #{@center.x + vector.x} #{@center.y + vector.y} #{@center.z + vector.z} 0"
+      puts cmd.inspect
+      client.puts(cmd)
     end
 
     search = vectors.inject({}) { |m, v| m[v.to_a.join(',')] = v; m } # turn vectors into { "1,2,3" => Vector, "2,3,4" => Vector, ... }
@@ -242,7 +245,7 @@ class WorldPainter
 
     while true
       server_data = last_server_data + client.read_nonblock
-      puts server_data if debug?
+      puts [server_data].inspect if debug?
       server_data.scan(TEST_REGEX).each do |match|
         if match[0]
           x,y,z = match
@@ -278,15 +281,17 @@ class WorldPainter
 
   def execute(cmd, pattern = nil)
 
-  #$stdout.puts cmd
+    $stdout.puts [:doing, cmd, pattern].inspect
 
     sleep 0.0001
     if dry_run?
-      puts cmd
+      puts [:dry, cmd].inspect
     else
+      puts [:exec].inspect
       puts cmd if debug?
       #faked_command = ("vdc faker " + cmd)
       faked_command = cmd
+      puts [:biip, @client].inspect
       output = @client.execute_command(faked_command, pattern)
       puts output if debug?
       output
@@ -366,8 +371,10 @@ class WorldPainter
 
     execute("getpos #{player_name}")
     while line = client.gets
+      puts ["!@#!@#!@#!@#", line].inspect
       [:x, :y, :z].each do |c|
-        position << (line.split(" ")[6].gsub(",", "")).to_f if line.include?(c.to_s.upcase + ": ")
+        #position << (line.split(" ")[6].gsub(",", "")).to_f if line.include?(c.to_s.upcase + ": ")
+        position << (line.split(" ")[3].to_f) if line.include?(c.to_s.upcase + ": ")
         #puts line.inspect if line.include?(c.to_s.upcase + ": ")
         #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Current World: world'
         #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= X: 0 (+East <-> -West)'

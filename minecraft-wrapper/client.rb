@@ -70,6 +70,9 @@ class MinecraftClient
     end
 
     if async
+      #puts [:async_bit].inspect
+      $stdout.puts [:async].inspect
+      $stdout.flush
       #read_nonblock
     else
       command_result = ""
@@ -85,6 +88,8 @@ class MinecraftClient
       else
         command_result = @server_io.gets
       end
+
+      $stdout.puts [:woot, command_result].inspect
 
       command_result
 

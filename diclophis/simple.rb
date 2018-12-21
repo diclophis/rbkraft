@@ -11,14 +11,14 @@ srand
 #ooy = 0
 #ooz = 0
 
-oox = 42000.0
+oox = 0.0
 ooy = 0.0
-ooz = 42000.0
+ooz = 0.0
 
-global_painter = DiclophisWorldPainter.new(false, oox, ooy, ooz)
+global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
 
-s = 6
+s = 32
 
 global_painter.async do
   (-s..s).each { |ttx|
