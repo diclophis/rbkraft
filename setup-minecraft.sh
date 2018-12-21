@@ -3,10 +3,16 @@
 set -x
 set -e
 
+mkdir /home/minecraft/plugins
+ln -s /home/minecraft/cache/VirtualPlayers2.jar /home/minecraft/plugins
+ln -s /home/minecraft/cache/EssentialsX-2.15.0.56.jar /home/minecraft/plugins
+
+ls -l /home/minecraft/cache
+
 cd /home/minecraft/mapcrafter
 
-mapcrafter_textures.py /home/minecraft/minecraft-client.jar /home/minecraft/mapcrafter/src/data/textures
-mapcrafter_textures.py /home/minecraft/minecraft-client-1.12.jar /home/minecraft/mapcrafter/src/data/textures
+mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.13.2.jar /home/minecraft/mapcrafter/src/data/textures
+mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.12.2.jar /home/minecraft/mapcrafter/src/data/textures
 
 make -j
 make install
