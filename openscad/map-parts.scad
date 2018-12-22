@@ -7,6 +7,16 @@
 //shape = 16;
 //shape = 17;
 //shape = 0;
+module skew(dims) {
+matrix = [
+	[ 1, tan(dims[0]), tan(dims[1]), 0 ],
+	[ tan(dims[2]), 1, tan(dims[3]), 0 ],
+	[ tan(dims[4]), tan(dims[5]), 1, 0 ],
+	[ 0, 0, 0, 1 ]
+];
+multmatrix(matrix)
+children();
+}
 
 module pathway(direction, pscale) {
     outer_size = 1.0;
@@ -236,6 +246,33 @@ module pathway(direction, pscale) {
             }
         }
     }
+ 
+    brot = (direction == 9) ? [90, 0, 0] :  [0, 90, 0];
+    brotb = (direction == 9) ? [0, 45, 0] : [-45, 0, 0];
+    bskew = (direction == 9) ? [0,20,0,0,20,0] : [0, 0, 0, 20, 0, 20];
+    if (direction == 9 || direction == 10) {
+      rotate(brotb) {
+          skew(bskew) {
+              rotate(brot) {
+                  rotate_extrude(convexity = 10, $fn = 100)
+                  translate([0.3, -0.125, 0]) {
+                    circle(r = 0.033, $fn = 10);
+                  }
+                  
+                  rotate_extrude(convexity = 10, $fn = 100)
+                  translate([0.3, 0.125, 0]) {
+                    circle(r = 0.033, $fn = 10);
+                  }
+        
+        
+                  rotate_extrude(convexity = 10, $fn = 100)
+                  translate([0.3, -0.125, 0]) {
+                    square(size=[0.005, 0.25]);
+                  }
+              }
+          }
+      }
+    }
         
     if (shape < 15 && shape >= 0) {
         
@@ -293,14 +330,19 @@ module pathway(direction, pscale) {
           cube(size=[0.01, 0.01, 0.01], center=true);
       }
     }
+    
+
 }
 
 if (false) {
- for (offset=[0:15]) {
-     translate([(offset*(1.01+0)),0,0]) {
-         pathway(offset, 1.0);
-     }
- }
+//    for (offset=[0:15]) {
+//        translate([(offset*(1.01+0)),0,0]) {
+//            pathway(offset, 1.0);
+//        }
+//    }
+  
+    pathway(9, 1.0);
+
 } else {
     if (shape > 15) {
       if (shape == 16) {
