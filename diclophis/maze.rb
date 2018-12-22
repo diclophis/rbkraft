@@ -16,7 +16,7 @@ class Maze
     @drawn = {}
 
     # how far from player to blit in
-    @wid = 1
+    @wid = 2
 
     # size of map in map coordinate space
     @size = 1024
@@ -231,7 +231,7 @@ class Maze
       if (under & Theseus::Maze::W != 0) && (under & Theseus::Maze::E != 0)
         shape = @shapes[18]
         shape.each do |vx, vy, vz|
-          type = :stone
+          type = :stonex
           yield [(ax + vx), (vy), (ay + vz), type]
         end
       end
@@ -239,7 +239,7 @@ class Maze
       if (under & Theseus::Maze::N != 0) && (under & Theseus::Maze::S != 0)
         shape = @shapes[19]
         shape.each do |vx, vy, vz|
-          type = :stone
+          type = :stonex
           yield [(ax + vx), (vy), (ay + vz), type]
         end
       end
@@ -290,7 +290,7 @@ global_painter.async do
   loop do
     #$stdout.write(".")
 
-    sleep 0.01
+    sleep 0.1
 
     Dir["#{ARGV[0]}world/playerdata/*dat"].each do |pd|
       nbt_file = NBTUtils::File.new
@@ -307,13 +307,15 @@ global_painter.async do
 
       maze.each_bit(remapped) do |x,y,z,t|
         #$stdout.write(".")
-        sleep 0.00000000000001
+        sleep 0.0001
 
         case t
           when :air
             global_painter.place(x, y, z, global_painter.air_type)
           when :stone
             global_painter.place(x, y, z, global_painter.sandstone_type)
+          when :stonex
+            global_painter.place(x, y, z, global_painter.type)
           when :glow
             global_painter.place(x, y, z, global_painter.glow_type)
           when :torch

@@ -29,7 +29,7 @@ COPY setup-debug.sh /var/tmp/setup-debug.sh
 RUN /var/tmp/setup-debug.sh
 
 COPY scripts /home/minecraft
-COPY server.properties ops.json eula.txt mapcrafter.conf log4j2.xml /home/minecraft/
+COPY server.properties ops.json eula.txt mapcrafter.conf log4j2.xml bukkit.yml /home/minecraft/
 
 COPY minecraft-wrapper /home/minecraft/minecraft-wrapper
 COPY world-painter /home/minecraft/world-painter

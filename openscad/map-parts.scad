@@ -255,33 +255,40 @@ module pathway(direction, pscale) {
     brotb = (direction == 18) ? [0, 45, 0] : [-45, 0, 0];
     bskew = (direction == 18) ? [0,bskewpa,0,0,bskewpa,0] : [0, 0, 0, bskewpa, 0, bskewpa];
     bbridth = 0.39;
-    bhandlew = 0.0225;
+    bhandlew = 0.028;
     bwid = 0.182;
     if (direction == 18 || direction == 19) {
         translate([0, 0, -0.09]) {
             difference() {
-                
-                
-                rotate(brotb) {
-                    translate([0,0.05,0]) {
-
-                    skew(bskew) {
-                        rotate(brot) {
-
-                                rotate_extrude(convexity = 10, $fn = 100)
-                                translate([bbridth, -bwid, 0.0]) {
-                                    circle(r = bhandlew, $fn = 10);
+                union() {
+                    translate([0,0,0.0125]) {
+                        rotate(brotb) {
+    
+                            skew(bskew) {
+                                rotate(brot) {
+                                    rotate_extrude(convexity = 10, $fn = 100)
+                                    translate([bbridth, -bwid, 0.0]) {
+                                        circle(r = bhandlew, $fn = 10);
+                                    }
+                                    rotate_extrude(convexity = 10, $fn = 100)
+                                    translate([bbridth, bwid, 0.0]) {
+                                        circle(r = bhandlew, $fn = 10);
+                                    }
                                 }
-                                rotate_extrude(convexity = 10, $fn = 100)
-                                translate([bbridth, bwid, 0.0]) {
-                                    circle(r = bhandlew, $fn = 10);
-                                }
-
                             }
-                            
-                            rotate_extrude(convexity = 10, $fn = 100)
-                            translate([bbridth*0.975, -bwid, 0]) {
-                                square(size=[0.005, bwid*2.0]);
+                        }
+                    }
+                    
+                    translate([0,0,-0.005]) {
+                        rotate(brotb) {
+    
+                            skew(bskew) {
+                                rotate(brot) {
+                                    rotate_extrude(convexity = 10, $fn = 100)
+                                    translate([bbridth*0.975, -bwid, 0]) {
+                                        square(size=[0.005, bwid*2.0]);
+                                    }
+                                }
                             }
                         }
                     }
@@ -386,4 +393,4 @@ module default_render(bits_from_cli) {
     }
 }
 
-default_render(-1);
+default_render(shape);
