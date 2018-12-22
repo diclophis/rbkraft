@@ -19,7 +19,7 @@ module pathway(direction, pscale) {
     inner_path_size = path_size * 0.97;
     fudge = 0.05 * outer_size;
     inner_intersection_size = 0.65;
-    quarter_slice_size = 0.24;
+    quarter_slice_size = 0.2343;
     quarter_slice_size_l = 0.34;
     outer_fudge_smidge = (outer_size+fudge)*0.99;
     half_smidge = 0.33;
@@ -148,25 +148,25 @@ module pathway(direction, pscale) {
     
                     if (direction == 5) {
                         translate([-outer_size*quarter_slice_size,0,0]) {
-                            cube(size=[outer_size+fudge, inner_path_size, inner_path_size], center=true);
+                            cube(size=[outer_size+fudge-(fudge * 0.25), inner_path_size, inner_path_size], center=true);
                         }
                     }
     
                     if (direction == 6) {
                         translate([outer_size*quarter_slice_size,0,0]) {
-                            cube(size=[outer_size+fudge, inner_path_size, inner_path_size], center=true);
+                            cube(size=[outer_size+fudge-(fudge * 0.25), inner_path_size, inner_path_size], center=true);
                         }
                     }
     
                     if (direction == 7) {
                         translate([0,-outer_size*quarter_slice_size,0]) {
-                            cube(size=[inner_path_size, outer_size+fudge, inner_path_size], center=true);
+                            cube(size=[inner_path_size, outer_size+fudge-(fudge * 0.25), inner_path_size], center=true);
                         }
                     }
     
                     if (direction == 8) {
                         translate([0, outer_size*quarter_slice_size,0]) {
-                            cube(size=[inner_path_size, outer_size+fudge, inner_path_size], center=true);
+                            cube(size=[inner_path_size, outer_size+fudge-(fudge * 0.25), inner_path_size], center=true);
                         }
                     }
     

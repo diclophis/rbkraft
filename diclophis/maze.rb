@@ -16,16 +16,16 @@ class Maze
     @drawn = {}
 
     # how far from player to blit in
-    @wid = 1
+    @wid = 2
 
     # size of map in map coordinate space
-    @size = 16
+    @size = 1024
 
     # size of map unit in voxel coordinate space
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 4 #4 flat #66 #63 default
+    @sea_level = 63 #4 flat #66 #63 default
 
     @shapes = {}
 
@@ -205,7 +205,7 @@ class Maze
 
         if type == :upper
           #type_of_light = ((rand > 0.99) ? :lava : ((rand > 0.8) ? :glow : ((rand > 0.7) ? :beacon : ((rand > 0.6) ? :lantern : :torch))))
-          if (rand > ((Math.sin(ax*ay) + 1.0) * 0.5))
+          if (rand > (0.99 - (0.1 * ((Math.sin(ax*ay*0.01) + 1.0) * 0.5))))
             type_of_light = :lantern
             stagger = (rand * (@unit * 0.5).to_i)
             ((0..(@unit * 2))).to_a.reverse.each do |c|
@@ -265,7 +265,9 @@ puts "connected"
 
 global_painter.async do
   loop do
-    sleep 0.1
+    #$stdout.write(".")
+
+    sleep 0.01
 
     Dir["#{ARGV[0]}world/playerdata/*dat"].each do |pd|
       nbt_file = NBTUtils::File.new
@@ -281,6 +283,9 @@ global_painter.async do
       #[].each do |x,y,z,t|
 
       maze.each_bit(remapped) do |x,y,z,t|
+        #$stdout.write(".")
+        sleep 0.00000000000001
+
         case t
           when :air
             global_painter.place(x, y, z, global_painter.air_type)
