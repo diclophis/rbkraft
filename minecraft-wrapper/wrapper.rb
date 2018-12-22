@@ -181,13 +181,14 @@ class Wrapper
 [08:17:32 INFO]: Yaw: 260.7 (Rotation)
 [08:17:32 INFO]: Pitch: 32.55 (Head angle)
 =end
-          puts broadcast_bytes
+          #puts broadcast_bytes
           if broadcast_bytes.include?("X:") ||
              broadcast_bytes.include?("Y:") ||
              broadcast_bytes.include?("Z:") ||
              broadcast_bytes.include?("Pitch:") ||
              broadcast_bytes.include?("The block at") ||
-             broadcast_bytes.include?("found the block")
+             broadcast_bytes.include?("found the block") ||
+             broadcast_bytes.include?("CONSOLE issued server command")
             self.clients.each do |io, client|
               client.broadcast_scanner << broadcast_bytes if client.authentic
             end
@@ -304,7 +305,7 @@ class Wrapper
             #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
             #if ((broadcast_line.include?("[Server]") && !broadcast_line.include?("[faker]")) ||
             #    (broadcast_line.include?("gettingMessage") && !broadcast_line.include?("signal")))
-              puts "response >> #{broadcast_line}"
+              #puts "response >> #{broadcast_line}"
               writable_io.write(broadcast_line)
             #end
           end

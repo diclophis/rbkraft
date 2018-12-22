@@ -1,7 +1,7 @@
 require_relative '../world-painter/world_painter.rb'
 require 'pp'
 
-painter = WorldPainter.new(0, 70, 0, async_client: false, debug: true)
+painter = WorldPainter.new(0, 70, 0, async_client: false, debug: false)
 print "Player: "
 STDOUT.flush
 player_name = gets.strip
@@ -12,9 +12,8 @@ memory = {}
 previous_floor_tiles = []
 previous_position = nil
 while true
-  sleep 1.05
-  new_pos = painter.player_position(player_name) - painter.center
-  puts new_pos.inspect
+  player_p = painter.player_position(player_name) 
+  new_pos = player_p - painter.center
   ground_position = new_pos + Vector.new(0, -1, 0)
   if ground_position != previous_position
     floor_tiles = []

@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'strscan'
+
 require_relative '../minecraft-wrapper/client.rb'
 
 # Minecraft block types: http://minecraft-ids.grahamedgecombe.com/
@@ -221,7 +223,7 @@ class WorldPainter
 
   def test(x, y = nil, z = nil)
     x, y, z = x.to_a if x.is_a?(Vector)
-    result = execute("testforblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} 0", /The block at|Successfully found the block/)
+    result = execute("testforblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} air", /The block at|Successfully found the block/)
     if result =~ /Successfully found the block/
       'air'
     else
@@ -229,13 +231,9 @@ class WorldPainter
     end
   end
 
-  # [00:49:57 INFO]: The block at 19563,70,20394 is Grass Block (expected: tile.air.name).
-  # [00:49:55 INFO]: Successfully found the block at 19558,70,20391.
-  TEST_REGEX = /Successfully found the block at ([\d-]+),([\d-]+),([\d-]+)\.|The block at ([\d-]+),([\d-]+),([\d-]+) is (.*?) \(/
   def bulk_test(vectors)
     vectors.each do |vector|
-      cmd = "testforblock #{@center.x + vector.x} #{@center.y + vector.y} #{@center.z + vector.z} 0"
-      puts cmd.inspect
+      cmd = "testforblock #{@center.x + vector.x} #{@center.y + vector.y} #{@center.z + vector.z} air"
       client.puts(cmd)
     end
 
@@ -243,28 +241,39 @@ class WorldPainter
     output = {}
     last_server_data = ''
 
+    scanner = StringScanner.new("")
+
     while true
-      server_data = last_server_data + client.read_nonblock
-      puts [server_data].inspect if debug?
-      server_data.scan(TEST_REGEX).each do |match|
-        if match[0]
-          x,y,z = match
+      scanner << client.read_nonblock
+
+      while has_eol = scanner.check_until(/\n/)
+        full_command_line = scanner.scan_until(/\n/)
+
+        stripped_command = full_command_line.strip
+
+        puts [stripped_command].inspect if debug?
+
+        x = y = z = nil
+
+        if stripped_command.include?("Successfully found the block at ")
           type = 'air'
-        else
-          _,_,_,x,y,z,type = match
+          _, _, _, _, _, _, _, x, y, z, _ = stripped_command.split(" ")
+          
+        elsif stripped_command.include?("The block at ")
+          _, _, _, _, _, x, y, z, _, type, _ = stripped_command.split(" ")
         end
 
-        x = x.to_i - @center.x
-        y = y.to_i - @center.y
-        z = z.to_i - @center.z
+        if x && y && z
+          x = x.to_i - @center.x
+          y = y.to_i - @center.y
+          z = z.to_i - @center.z
 
-        search_result = search.delete([x,y,z].join(','))
-        output[search_result] = type.downcase if search_result
+          search_result = search.delete([x,y,z].join(','))
+          output[search_result] = type.downcase if search_result
+        end
       end
 
       break if search.empty?
-
-      last_server_data = server_data.split(TEST_REGEX).last || ''
 
       sleep 0.05
     end
@@ -280,18 +289,11 @@ class WorldPainter
   end
 
   def execute(cmd, pattern = nil)
-
-    $stdout.puts [:doing, cmd, pattern].inspect
-
-    sleep 0.0001
     if dry_run?
       puts [:dry, cmd].inspect
     else
-      puts [:exec].inspect
       puts cmd if debug?
-      #faked_command = ("vdc faker " + cmd)
       faked_command = cmd
-      puts [:biip, @client].inspect
       output = @client.execute_command(faked_command, pattern)
       puts output if debug?
       output
@@ -371,19 +373,11 @@ class WorldPainter
 
     execute("getpos #{player_name}")
     while line = client.gets
-      puts ["!@#!@#!@#!@#", line].inspect
       [:x, :y, :z].each do |c|
-        #position << (line.split(" ")[6].gsub(",", "")).to_f if line.include?(c.to_s.upcase + ": ")
-        position << (line.split(" ")[3].to_f) if line.include?(c.to_s.upcase + ": ")
-        #puts line.inspect if line.include?(c.to_s.upcase + ": ")
-        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Current World: world'
-        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= X: 0 (+East <-> -West)'
-        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Y: 0 (+Up <-> -Down)'
-        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Z: 704 (+South <-> -North)'
-        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Yaw: 180 (Rotation)'
-        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Pitch: 0 (Head angle)'
-        #[09:03:57 INFO]: [diclophis] 'diclophis gettingMessage= Distance: 0'
-        #[09:04:08 INFO]: [diclophis] 'diclophis gettingMessage= [Server] charted'
+        if line.include?(c.to_s.upcase + ": ")
+          comps = (line.split(" "))
+          position << comps[3].to_f
+        end
       end
       break if line.include?("Pitch")
     end
