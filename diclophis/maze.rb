@@ -16,7 +16,7 @@ class Maze
     @drawn = {}
 
     # how far from player to blit in
-    @wid = 2
+    @wid = 1
 
     # size of map in map coordinate space
     @size = 1024
@@ -25,11 +25,11 @@ class Maze
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 63 #4 flat #66 #63 default
+    @sea_level = 4 #4 flat #66 #63 default
 
     @shapes = {}
 
-    18.times { |i|
+    20.times { |i|
       ii = begin
         case i
           when 0
@@ -68,6 +68,10 @@ class Maze
             16
           when 17
             17
+          when 18
+            18
+          when 19
+            19
         else
           nil
         end
@@ -180,6 +184,7 @@ class Maze
 
     primary = (cell & Theseus::Maze::PRIMARY)
 
+
     if shape = @shapes[primary]
       shape.each do |vx, vy, vz|
         type = begin
@@ -218,6 +223,24 @@ class Maze
           if type
             yield [(ax + vx), (vy), (ay + vz), type]
           end
+        end
+      end
+
+      under = cell >> Theseus::Maze::UNDER_SHIFT
+
+      if (under & Theseus::Maze::W != 0) && (under & Theseus::Maze::E != 0)
+        shape = @shapes[18]
+        shape.each do |vx, vy, vz|
+          type = :stone
+          yield [(ax + vx), (vy), (ay + vz), type]
+        end
+      end
+
+      if (under & Theseus::Maze::N != 0) && (under & Theseus::Maze::S != 0)
+        shape = @shapes[19]
+        shape.each do |vx, vy, vz|
+          type = :stone
+          yield [(ax + vx), (vy), (ay + vz), type]
         end
       end
     else
