@@ -16,16 +16,16 @@ class Maze
     @drawn = {}
 
     # how far from player to blit in
-    @wid = 3
+    @wid = 1
 
     # size of map in map coordinate space
-    @size = 1024
+    @size = 16
 
     # size of map unit in voxel coordinate space
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 63 #4 flat #66 #63 default
+    @sea_level = 4 #4 flat #66 #63 default
 
     @shapes = {}
 
@@ -102,7 +102,7 @@ class Maze
     srand(2)
 
     # generate a 10x10 orthogonal maze and print it to the console
-    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 0, :weave => 0, :randomness => 100, :wrap => "xy")
+    @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 0, :weave => 50, :randomness => 50, :wrap => "xy")
     8.times {
       @maze.sparsify!
     }
@@ -111,8 +111,8 @@ class Maze
   end
 
   def each_bit(player_position)
-    px = ((player_position[0].to_i / @unit) + (@size / 2)) - 1
-    py = ((player_position[2].to_i / @unit) + (@size / 2)) - 1
+    px = ((player_position[0].to_i / @unit) + (@size / 2))
+    py = ((player_position[2].to_i / @unit) + (@size / 2))
 
     #puts [px, py, @size].inspect
 
@@ -265,16 +265,22 @@ puts "connected"
 
 global_painter.async do
   loop do
-    Dir["world/playerdata/*dat"].each do |pd|
+    sleep 0.1
 
+    Dir["#{ARGV[0]}world/playerdata/*dat"].each do |pd|
       nbt_file = NBTUtils::File.new
       tag = nbt_file.read(pd)
 
-      player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }.collect { |f| f.to_i }
+      player_name = tag.find_tag("bukkit").find_tag("lastKnownName").payload["data"]
+      player_position = global_painter.player_position(player_name)
+      remapped = [player_position.x, player_position.y, player_position.z]
+      puts [player_name, remapped].inspect
 
+      #player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }.collect { |f| f.to_i }
       #puts [Time.now, pd, global_painter.client.command_count, player_position].inspect
+      #[].each do |x,y,z,t|
 
-      maze.each_bit(player_position) do |x,y,z,t|
+      maze.each_bit(remapped) do |x,y,z,t|
         case t
           when :air
             global_painter.place(x, y, z, global_painter.air_type)

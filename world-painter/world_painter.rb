@@ -264,6 +264,10 @@ class WorldPainter
         end
 
         if x && y && z
+          x.gsub!(",", "")
+          y.gsub!(",", "")
+          z.gsub!(",", "")
+
           x = x.to_i - @center.x
           y = y.to_i - @center.y
           z = z.to_i - @center.z
@@ -375,8 +379,8 @@ class WorldPainter
     while line = client.gets
       [:x, :y, :z].each do |c|
         if line.include?(c.to_s.upcase + ": ")
-          comps = (line.split(" "))
-          position << comps[3].to_f
+          comps = line.split(" ").to_a
+          position << comps.at(3).gsub(",", "").to_f
         end
       end
       break if line.include?("Pitch")
