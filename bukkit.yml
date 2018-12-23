@@ -1,8 +1,8 @@
 
 chunk-gc:
-  period-in-ticks: 600
+  period-in-ticks: 1
   load-threshold: 1
 ticks-per:
-  animal-spawns: 400
-  monster-spawns: 1
-  autosave: 500
+  animal-spawns: 1000
+  monster-spawns: 1000
+  autosave: 1

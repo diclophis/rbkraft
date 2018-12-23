@@ -16,7 +16,7 @@ class Maze
     @drawn = {}
 
     # how far from player to blit in
-    @wid = 2
+    @wid = 1
 
     # size of map in map coordinate space
     @size = 1024
@@ -25,7 +25,7 @@ class Maze
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 4 #4 flat #66 #63 default
+    @sea_level = 63 #4 flat #63 default
 
     @shapes = {}
 
@@ -103,8 +103,6 @@ class Maze
       end
     }
 
-    srand(2)
-
     # generate a 10x10 orthogonal maze and print it to the console
     @maze = Theseus::OrthogonalMaze.generate(:width => @size, :height => @size, :braid => 0, :weave => 50, :randomness => 50, :wrap => "xy")
     8.times {
@@ -115,10 +113,45 @@ class Maze
   end
 
   def each_bit(player_position)
-    px = ((player_position[0].to_i / @unit) + (@size / 2))
-    py = ((player_position[2].to_i / @unit) + (@size / 2))
+    px = (((player_position[0].to_i + (@unit/2)) / @unit) + (@size / 2))
+    py = (((player_position[2].to_i + (@unit/2)) / @unit) + (@size / 2))
 
-    #puts [px, py, @size].inspect
+
+#[505, 523, 1024]
+#["diclophis", [-208, 64, 383]]
+#[505, 523, 1024]
+#["diclophis", [-208, 64, 383]]
+#[505, 523, 1024]
+#["diclophis", [-208, 64, 383]]
+#[505, 523, 1024]
+#["diclophis", [-208, 64, 383]]
+#[505, 523, 1024]
+#["diclophis", [-208, 64, 383]]
+#[505, 523, 1024]
+#
+#["diclophis", [-208, 64, 383]]
+#[505, 523, 1024]
+#
+#["diclophis", [-208, 64, 384]]
+#[505, 524, 1024]
+#
+#["diclophis", [-208, 64, 384]]
+#[505, 524, 1024]
+#["diclophis", [-208, 64, 384]]
+#[505, 524, 1024]
+#["diclophis", [-208, 64, 384]]
+#[505, 524, 1024]
+#["diclophis", [-208, 64, 384]]
+#[505, 524, 1024]
+#["diclophis", [-208, 64, 384]]
+#[505, 524, 1024]
+#["diclophis", [-208, 64, 384]]
+#[505, 524, 1024]
+#["diclophis", [-208, 64, 384]]
+#[505, 524, 1024]
+#["diclophis", [-208, 64, 384]]
+#[505, 524, 1024]
+
 
     chunks = []
 
@@ -129,6 +162,8 @@ class Maze
         end
       end
     end
+
+    puts [px, py, @size, chunks.length].inspect
 
     chunks.sort_by { |x,y|
       d = Math.sqrt(((x-px)**2)+((y-py)**2))
@@ -143,7 +178,7 @@ class Maze
   end
 
   def draw_maze(x, y) #:nodoc:
-    return if @drawn["#{x}/#{y}"]
+    #return if @drawn["#{x}/#{y}"]
 
     ax = ((x * @unit) - (@size * 0.5 * @unit)).to_i
     ay = ((y * @unit) - (@size * 0.5 * @unit)).to_i
@@ -248,7 +283,7 @@ class Maze
       raise "unknown map coord"
     end
 
-    @drawn["#{x}/#{y}"] = true
+    #@drawn["#{x}/#{y}"] = true
   end
 
   def each_piece(player_position)
@@ -280,14 +315,20 @@ ooy = 0 # 32 + ???
 ooz = 0
 puts "started"
 
+srand(2)
+
 maze = Maze.new
 puts "generated"
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
 
+drawn = {}
+
 global_painter.async do
   loop do
+    srand(3)
+
     #$stdout.write(".")
 
     sleep 0.1
@@ -305,33 +346,43 @@ global_painter.async do
       #puts [Time.now, pd, global_painter.client.command_count, player_position].inspect
       #[].each do |x,y,z,t|
 
+      count_drawn_this_poscheck = 0
       maze.each_bit(remapped) do |x,y,z,t|
         #$stdout.write(".")
-        sleep 0.0001
+        #sleep 0.00001
 
-        case t
-          when :air
-            global_painter.place(x, y, z, global_painter.air_type)
-          when :stone
-            global_painter.place(x, y, z, global_painter.sandstone_type)
-          when :stonex
-            global_painter.place(x, y, z, global_painter.type)
-          when :glow
-            global_painter.place(x, y, z, global_painter.glow_type)
-          when :torch
-            global_painter.place(x, y, z, global_painter.torch_type)
-          when :beacon
-            global_painter.place(x, y, z, global_painter.beacon_type)
-          when :lantern
-            global_painter.place(x, y, z, global_painter.lantern_type)
-          when :lava
-            global_painter.place(x, y, z, global_painter.lava_type)
-          when :quartz
-            global_painter.place(x, y, z, global_painter.quartz_type)
-          when :water
-            global_painter.place(x, y, z, global_painter.water_type)
-        else
+        key = "#{x}/#{y}#{z}/#{t}"
+        unless drawn[key]
+          count_drawn_this_poscheck += 1
+
+          case t
+            when :air
+              global_painter.place(x, y, z, global_painter.air_type)
+            when :stone
+              global_painter.place(x, y, z, global_painter.sandstone_type)
+            when :stonex
+              global_painter.place(x, y, z, global_painter.type)
+            when :glow
+              global_painter.place(x, y, z, global_painter.glow_type)
+            when :torch
+              global_painter.place(x, y, z, global_painter.torch_type)
+            when :beacon
+              global_painter.place(x, y, z, global_painter.beacon_type)
+            when :lantern
+              global_painter.place(x, y, z, global_painter.lantern_type)
+            when :lava
+              global_painter.place(x, y, z, global_painter.lava_type)
+            when :quartz
+              global_painter.place(x, y, z, global_painter.quartz_type)
+            when :water
+              global_painter.place(x, y, z, global_painter.water_type)
+          else
+          end
+
+          drawn[key] = true
         end
+
+        break if count_drawn_this_poscheck > 4096
       end
     end
   end

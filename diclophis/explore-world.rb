@@ -11,10 +11,17 @@ oox = 0
 ooy = 0
 ooz = 0
 
-s = 200
+s = 32
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
 puts "connected"
+
+global_painter.async do
+  global_painter.execute("/dc faker connect")
+  global_painter.execute("/dc faker respawn")
+end
+
+exit 1
 
 global_painter.async do
   (-s..s).each { |ttx|
