@@ -259,7 +259,7 @@ module pathway(direction, pscale) {
     bwid = 0.182;
     if (direction == 18 || direction == 19) {
         translate([0, 0, -0.09]) {
-            difference() {
+            //difference() {
                 difference() {
                     union() {
                         translate([0,0,0.0125]) {
@@ -320,12 +320,12 @@ module pathway(direction, pscale) {
                     }
                 }
                 
-                translate([0, 0.0, 0.033]) {
-                    rotate(brotb*2.0) {
-                        cylinder(h = 2.5, r1 = 0.125, r2 = 0.125, center = true, $fn=100);
-                    }
-                }
-            }
+                //translate([0, 0.0, 0.033]) {
+                //    rotate(brotb*2.0) {
+                //        cylinder(h = 2.5, r1 = 0.125, r2 = 0.125, center = true, $fn=100);
+                //    }
+                //}
+            //}
         }
     }
     

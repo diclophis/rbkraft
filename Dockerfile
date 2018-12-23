@@ -38,9 +38,9 @@ USER root
 RUN chown minecraft. /home/minecraft/server.properties /home/minecraft/ops.json /home/minecraft/plugins
 USER minecraft
 
-COPY diclophis /home/minecraft/diclophis
-
 COPY openscad /home/minecraft/openscad
+
+COPY diclophis /home/minecraft/diclophis
 
 WORKDIR /home/minecraft
 

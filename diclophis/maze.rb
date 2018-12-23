@@ -130,6 +130,29 @@ class Maze
     end
   end
 
+  def foo(xyz, ax, ay)
+      #dome clearance
+      shape = @shapes[20]
+      shape.each do |vx, vy, vz|
+        type = :air
+        yield [(ax + vx), (vy), (ay + vz), type] if type
+      end
+      shape = @shapes[xyz]
+      shape.each do |vx, vy, vz|
+        type = begin
+          if (vy > ((@unit / 2) + 9)) ||
+             (vy < ((@unit / 2) - 2))
+            :air
+          elsif vy > ((@unit / 2) + 8)
+            :lantern
+          else
+            :stonex
+          end
+        end
+        yield [(ax + vx), (vy), (ay + vz), type] if type
+      end
+  end
+
   def draw_maze(x, y) #:nodoc:
     #return if @drawn["#{x}/#{y}"]
 
@@ -173,53 +196,15 @@ class Maze
     under = cell >> Theseus::Maze::UNDER_SHIFT
 
     if (under & Theseus::Maze::W != 0) && (under & Theseus::Maze::E != 0)
-      shape = @shapes[20]
-      shape.each do |vx, vy, vz|
-        type = begin
-          if vy > (@unit - 4)
-            :air #:lantern
-          else
-            :air
-          end
-        end
-        yield [(ax + vx), (vy), (ay + vz), type] if type
-      end
-      shape = @shapes[18]
-      shape.each do |vx, vy, vz|
-        type = begin
-          if vy > ((@unit / 2) + 8)
-            :lantern
-          else
-            :stonex
-          end
-        end
-        yield [(ax + vx), (vy), (ay + vz), type] if type
-      end
+      foo(18, ax, ay) { |x,y,z,t|
+        yield x,y,z,t
+      }
     end
 
     if (under & Theseus::Maze::N != 0) && (under & Theseus::Maze::S != 0)
-      shape = @shapes[20]
-      shape.each do |vx, vy, vz|
-        type = begin
-          if vy > (@unit - 4)
-            :air #:lantern
-          else
-            :air
-          end
-        end
-        yield [(ax + vx), (vy), (ay + vz), type] if type
-      end
-      shape = @shapes[19]
-      shape.each do |vx, vy, vz|
-        type = begin
-          if vy > ((@unit / 2) + 8)
-            :lantern
-          else
-            :stonex
-          end
-        end
-        yield [(ax + vx), (vy), (ay + vz), type] if type
-      end
+      foo(19, ax, ay) { |x,y,z,t|
+        yield x,y,z,t
+      }
     end
 
     primary = (cell & Theseus::Maze::PRIMARY)
@@ -252,7 +237,7 @@ class Maze
           if (rand > (0.99 - (0.1 * ((Math.sin(ax*ay*0.01) + 1.0) * 0.5))))
             type_of_light = :lantern
             stagger = (rand * (@unit * 0.5).to_i)
-            ((0..(@unit * 2))).to_a.reverse.each do |c|
+            ((0..(@unit * 1.3))).to_a.reverse.each do |c|
               water_col = ((c == 0) ? type_of_light : ((c == 1) ? :quartz : :quartz))
 
               yield [(ax + vx), ((vy)-c-stagger) + (0.33 * @unit).to_i, (ay + vz), water_col]
@@ -321,8 +306,13 @@ global_painter.async do
     sleep 0.1
 
     Dir["#{ARGV[0]}world/playerdata/*dat"].each do |pd|
-      nbt_file = NBTUtils::File.new
-      tag = nbt_file.read(pd)
+      begin
+        nbt_file = NBTUtils::File.new
+        tag = nbt_file.read(pd)
+      rescue Errno::ENOENT => e
+        puts e
+        break
+      end
 
       player_name = tag.find_tag("bukkit").find_tag("lastKnownName").payload["data"]
       player_position = global_painter.player_position(player_name)
@@ -362,7 +352,7 @@ global_painter.async do
             when :quartz
               global_painter.place(x, y, z, global_painter.quartz_type)
             when :water
-              global_painter.place(x, y, z, global_painter.water_type)
+              global_painter.place(x, y, z, global_painter.sandstone_type)
           else
           end
 
