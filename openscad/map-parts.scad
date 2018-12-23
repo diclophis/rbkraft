@@ -260,46 +260,83 @@ module pathway(direction, pscale) {
     if (direction == 18 || direction == 19) {
         translate([0, 0, -0.09]) {
             difference() {
-                union() {
-                    translate([0,0,0.0125]) {
-                        rotate(brotb) {
-    
-                            skew(bskew) {
-                                rotate(brot) {
-                                    rotate_extrude(convexity = 10, $fn = 100)
-                                    translate([bbridth, -bwid, 0.0]) {
-                                        circle(r = bhandlew, $fn = 10);
-                                    }
-                                    rotate_extrude(convexity = 10, $fn = 100)
-                                    translate([bbridth, bwid, 0.0]) {
-                                        circle(r = bhandlew, $fn = 10);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    translate([0,0,-0.005]) {
-                        rotate(brotb) {
-    
-                            skew(bskew) {
-                                rotate(brot) {
-                                    rotate_extrude(convexity = 10, $fn = 100)
-                                    translate([bbridth*0.975, -bwid, 0]) {
-                                        square(size=[0.005, bwid*2.0]);
+                difference() {
+                    union() {
+                        translate([0,0,0.0125]) {
+                            rotate(brotb) {
+        
+                                skew(bskew) {
+                                    rotate(brot) {
+                                        rotate_extrude(convexity = 10, $fn = 100)
+                                        translate([bbridth, -bwid, 0.0]) {
+                                            circle(r = bhandlew, $fn = 10);
+                                        }
+                                        rotate_extrude(convexity = 10, $fn = 100)
+                                        translate([bbridth, bwid, 0.0]) {
+                                            circle(r = bhandlew, $fn = 10);
+                                        }
                                     }
                                 }
                             }
                         }
+                        
+                        translate([0,0,-0.005]) {
+                            rotate(brotb) {
+                                skew(bskew) {
+                                    rotate(brot) {
+                                        rotate_extrude(convexity = 10, $fn = 100)
+                                        translate([bbridth*0.975, -bwid, 0]) {
+                                            square(size=[0.005, bwid*2.0]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                          bshelf_light_size = [0.033, 0.033, 0.2];
+                          bshelf_light_offset = 0.525;
+                          bshelf_light_h = 0.9;
+                     
+                          //shelf lighting
+                          translate([quarter_slice_size_l * bshelf_light_offset, quarter_slice_size_l * bshelf_light_offset, quarter_slice_size_l * bshelf_light_h]) {
+                              cube(size=bshelf_light_size, center=true);
+                          }
+                        
+                          translate([-quarter_slice_size_l * bshelf_light_offset, -quarter_slice_size_l * bshelf_light_offset, quarter_slice_size_l * bshelf_light_h]) {
+                              cube(size=bshelf_light_size, center=true);
+                          }
+                        
+                          translate([quarter_slice_size_l * bshelf_light_offset, -quarter_slice_size_l * bshelf_light_offset, quarter_slice_size_l * bshelf_light_h]) {
+                              cube(size=bshelf_light_size, center=true);
+                          }
+                        
+                          translate([-quarter_slice_size_l * bshelf_light_offset, quarter_slice_size_l * bshelf_light_offset, quarter_slice_size_l * bshelf_light_h]) {
+                              cube(size=bshelf_light_size, center=true);
+                          }
+                    }
+    
+                    translate([-0.75, -0.75, -0.33]) {
+                        cube(size=[1.5, 1.5, 0.39]);
                     }
                 }
                 
-                
-                
-                translate([-0.75, -0.75, -0.33]) {
-                    cube(size=[1.5, 1.5, 0.39]);
+                translate([0, 0.0, 0.033]) {
+                    rotate(brotb*2.0) {
+                        cylinder(h = 2.5, r1 = 0.125, r2 = 0.125, center = true, $fn=100);
+                    }
                 }
-            }   
+            }
+        }
+    }
+    
+    if (direction == 20) {
+        translate([0, 0, -0.05]) {
+            intersection() {
+                sphere(r=0.625, $fn=100);
+                translate([-0.5,-0.5,0.075]) {
+                    cube(size=[1.0, 1.0, 0.475]);
+                }
+            }
         }
     }
         
@@ -326,7 +363,7 @@ module pathway(direction, pscale) {
       }
   }
   
-  if ((direction < 15 && direction >= 0) || (direction < 20 && direction >= 18)) {
+  if ((direction < 15 && direction >= 0) || (direction < 21 && direction >= 18)) {
     
       // voxel space normalization regestry tris
       translate([outer_size * 0.5,outer_size*0.5,outer_size*0.5]) {
@@ -383,7 +420,7 @@ module bitblit(shape_in) {
 
 module default_render(bits_from_cli) {
     if (bits_from_cli == -1) {
-        for (offset=[0:19]) {
+        for (offset=[0:20]) {
             translate([(offset*(1.001+0)),0,0]) {
                 bitblit(offset, 1.0);
             }

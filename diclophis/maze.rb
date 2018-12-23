@@ -29,7 +29,7 @@ class Maze
 
     @shapes = {}
 
-    20.times { |i|
+    21.times { |i|
       ii = begin
         case i
           when 0
@@ -62,18 +62,8 @@ class Maze
             1
           when 14
             2
-          when 15
-            15
-          when 16
-            16
-          when 17
-            17
-          when 18
-            18
-          when 19
-            19
         else
-          nil
+          i
         end
       end
 
@@ -115,43 +105,6 @@ class Maze
   def each_bit(player_position)
     px = (((player_position[0].to_i + (@unit/2)) / @unit) + (@size / 2))
     py = (((player_position[2].to_i + (@unit/2)) / @unit) + (@size / 2))
-
-
-#[505, 523, 1024]
-#["diclophis", [-208, 64, 383]]
-#[505, 523, 1024]
-#["diclophis", [-208, 64, 383]]
-#[505, 523, 1024]
-#["diclophis", [-208, 64, 383]]
-#[505, 523, 1024]
-#["diclophis", [-208, 64, 383]]
-#[505, 523, 1024]
-#["diclophis", [-208, 64, 383]]
-#[505, 523, 1024]
-#
-#["diclophis", [-208, 64, 383]]
-#[505, 523, 1024]
-#
-#["diclophis", [-208, 64, 384]]
-#[505, 524, 1024]
-#
-#["diclophis", [-208, 64, 384]]
-#[505, 524, 1024]
-#["diclophis", [-208, 64, 384]]
-#[505, 524, 1024]
-#["diclophis", [-208, 64, 384]]
-#[505, 524, 1024]
-#["diclophis", [-208, 64, 384]]
-#[505, 524, 1024]
-#["diclophis", [-208, 64, 384]]
-#[505, 524, 1024]
-#["diclophis", [-208, 64, 384]]
-#[505, 524, 1024]
-#["diclophis", [-208, 64, 384]]
-#[505, 524, 1024]
-#["diclophis", [-208, 64, 384]]
-#[505, 524, 1024]
-
 
     chunks = []
 
@@ -217,8 +170,59 @@ class Maze
       end
     end
 
-    primary = (cell & Theseus::Maze::PRIMARY)
+    under = cell >> Theseus::Maze::UNDER_SHIFT
 
+    if (under & Theseus::Maze::W != 0) && (under & Theseus::Maze::E != 0)
+      shape = @shapes[20]
+      shape.each do |vx, vy, vz|
+        type = begin
+          if vy > (@unit - 4)
+            :air #:lantern
+          else
+            :air
+          end
+        end
+        yield [(ax + vx), (vy), (ay + vz), type] if type
+      end
+      shape = @shapes[18]
+      shape.each do |vx, vy, vz|
+        type = begin
+          if vy > ((@unit / 2) + 8)
+            :lantern
+          else
+            :stonex
+          end
+        end
+        yield [(ax + vx), (vy), (ay + vz), type] if type
+      end
+    end
+
+    if (under & Theseus::Maze::N != 0) && (under & Theseus::Maze::S != 0)
+      shape = @shapes[20]
+      shape.each do |vx, vy, vz|
+        type = begin
+          if vy > (@unit - 4)
+            :air #:lantern
+          else
+            :air
+          end
+        end
+        yield [(ax + vx), (vy), (ay + vz), type] if type
+      end
+      shape = @shapes[19]
+      shape.each do |vx, vy, vz|
+        type = begin
+          if vy > ((@unit / 2) + 8)
+            :lantern
+          else
+            :stonex
+          end
+        end
+        yield [(ax + vx), (vy), (ay + vz), type] if type
+      end
+    end
+
+    primary = (cell & Theseus::Maze::PRIMARY)
 
     if shape = @shapes[primary]
       shape.each do |vx, vy, vz|
@@ -261,23 +265,6 @@ class Maze
         end
       end
 
-      under = cell >> Theseus::Maze::UNDER_SHIFT
-
-      if (under & Theseus::Maze::W != 0) && (under & Theseus::Maze::E != 0)
-        shape = @shapes[18]
-        shape.each do |vx, vy, vz|
-          type = :stonex
-          yield [(ax + vx), (vy), (ay + vz), type]
-        end
-      end
-
-      if (under & Theseus::Maze::N != 0) && (under & Theseus::Maze::S != 0)
-        shape = @shapes[19]
-        shape.each do |vx, vy, vz|
-          type = :stonex
-          yield [(ax + vx), (vy), (ay + vz), type]
-        end
-      end
     else
       puts primary, Theseus::Formatters::ASCII::Orthogonal::UTF8_LINES[primary]
       raise "unknown map coord"
