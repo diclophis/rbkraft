@@ -16,8 +16,8 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 512 * 32
-READ_CHUNKS_REMOTE = 512 * 32
+READ_CHUNKS = 512 * 4
+READ_CHUNKS_REMOTE = 512 * 4
 COMMANDS_PER_MOD = 1024
 CLIENTS_DEFAULT_ASYNC = false
 
@@ -181,7 +181,7 @@ class Wrapper
 [08:17:32 INFO]: Yaw: 260.7 (Rotation)
 [08:17:32 INFO]: Pitch: 32.55 (Head angle)
 =end
-          #puts broadcast_bytes
+          puts broadcast_bytes
           if broadcast_bytes.include?("X:") ||
              broadcast_bytes.include?("Y:") ||
              broadcast_bytes.include?("Z:") ||
@@ -276,20 +276,25 @@ class Wrapper
       $TOTAL_COMMANDS += commands_this_tick
       total_delta += commands_this_tick
 
-      #sleep 0.1 # to prevent cpu burn
+      sleep 0.005 # to prevent cpu burn
     end
 
     duration = Time.now - start
 
     since_time = (Time.now - self.time_since_last_stat)
 
-    if since_time > 5.0
+    if since_time > 1.0
       self.time_since_last_stat = Time.now
       old_count = self.count_since_last
 
       self.count_since_last = $TOTAL_COMMANDS
+      per_tick = ($TOTAL_COMMANDS - old_count)
 
       puts "WRITE took #{duration.round}s #{total_delta} #{$TOTAL_COMMANDS} --- #{$TOTAL_COMMANDS - old_count}/per-tick"
+
+      #if per_tick > 2000
+      #  sleep 0.66
+      #end
     end
   end
 

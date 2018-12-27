@@ -66,7 +66,7 @@ painter.async do
             painter.place(x, i, y, painter.air_type)
           end
           $stdout.write(".")
-          sleep 0.0001
+          #sleep 0.0001
         end
       end
     end

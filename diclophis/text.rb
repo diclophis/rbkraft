@@ -7,6 +7,7 @@ $: << "diclophis"
 
 require 'diclophis_world_painter'
 
+TMPROOT="/var/tmp"
 MINECRAFT_ROOT="/home/minecraft"
 OUT="/home/minecraft/backup/text-output"
 SIZE=ARGV[0].to_i
@@ -19,7 +20,7 @@ FOO="-om vn fn"
 #MESHARGS="-i resources/shape-${I}.stl -o resources/shape-${I}.obj $FOO -s openscad/$FILTERS"
 #MESHARGS_TWO="-i resources/shape-${I}-mid.obj -o resources/shape-${I}.obj $FOO -s openscad/foop.mlx"
 
-system("meshlabserver -i #{OUT}-0.stl -o #{OUT}-1.stl #{FOO}-0.stl -s openscad/foop.mlx") || exit(1)
+system("meshlabserver -i #{OUT}-0.stl -o #{OUT}-1.stl -s openscad/foop.mlx") || exit(1)
 
 system("/home/minecraft/voxelizer/build/bin/voxelizer #{SIZE} 8 #{OUT}-1.stl #{OUT}.vox") || exit(1)
 

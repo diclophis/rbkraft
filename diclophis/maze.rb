@@ -25,7 +25,7 @@ class Maze
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 63 #4 flat #63 default
+    @sea_level = 4 #4 flat #63 default
 
     @shapes = {}
 
@@ -352,7 +352,7 @@ global_painter.async do
             when :quartz
               global_painter.place(x, y, z, global_painter.quartz_type)
             when :water
-              global_painter.place(x, y, z, global_painter.sandstone_type)
+              global_painter.place(x, y, z, global_painter.water_type)
           else
           end
 
