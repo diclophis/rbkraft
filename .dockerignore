@@ -1,3 +1,5 @@
 images
 vendor
 *jar
+*.obj
+*.stl

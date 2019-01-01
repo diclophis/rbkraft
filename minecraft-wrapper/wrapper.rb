@@ -16,9 +16,9 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 512 * 4
-READ_CHUNKS_REMOTE = 512 * 4
-COMMANDS_PER_MOD = 1024
+READ_CHUNKS = 4 #512 * 32
+READ_CHUNKS_REMOTE = 4 #512 * 32
+COMMANDS_PER_MOD = 16 #4096
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -171,28 +171,9 @@ class Wrapper
         if broadcast_bytes.length == 0
           return
         else
-=begin
-[08:17:32 INFO]: Saved the world
-[08:17:32 INFO]: CONSOLE issued server command: /getpos diclophis
-[08:17:32 INFO]: Current World: world
-[08:17:32 INFO]: X: -32 (+East <-> -West)
-[08:17:32 INFO]: Y: 39 (+Up <-> -Down)
-[08:17:32 INFO]: Z: -28 (+South <-> -North)
-[08:17:32 INFO]: Yaw: 260.7 (Rotation)
-[08:17:32 INFO]: Pitch: 32.55 (Head angle)
-=end
-          #puts broadcast_bytes
-          if broadcast_bytes.include?("X:") ||
-             broadcast_bytes.include?("Y:") ||
-             broadcast_bytes.include?("Z:") ||
-             broadcast_bytes.include?("Pitch:") ||
-             broadcast_bytes.include?("The block at") ||
-             broadcast_bytes.include?("found the block") ||
-             broadcast_bytes.include?("successfully summoned") ||
-             broadcast_bytes.include?("CONSOLE issued server command")
-            self.clients.each do |io, client|
-              client.broadcast_scanner << broadcast_bytes if client.authentic
-            end
+          #TODO: keep on global scanner?
+          self.clients.each do |io, client|
+            client.broadcast_scanner << broadcast_bytes if client.authentic
           end
         end
       end
@@ -248,6 +229,7 @@ class Wrapper
                 close_client(io, Exception.new("saved: #{full_command_line}")) unless client.async
               else
                 self.full_commands_waiting_to_be_written_to_minecraft << stripped_command
+                break
               end
             end
           end
@@ -265,7 +247,7 @@ class Wrapper
 
     total_delta = 0
 
-    while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
+    if ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
       commands_this_tick = full_command_line.length
 
       full_command_line.each do |fcl|
@@ -277,7 +259,8 @@ class Wrapper
       $TOTAL_COMMANDS += commands_this_tick
       total_delta += commands_this_tick
 
-      #sleep 0.0075 # to prevent cpu burn
+      sleep 0.00005 # to prevent cpu burn
+      #break
     end
 
     duration = Time.now - start
@@ -305,19 +288,28 @@ class Wrapper
     unless client.nil? || client.broadcast_scanner.eos?
       while has_eol = client.broadcast_scanner.check_until(/\n/)
         broadcast_line = client.broadcast_scanner.scan_until(/\n/)
-        begin
-          if client.async
-          else
-            #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
-            #if ((broadcast_line.include?("[Server]") && !broadcast_line.include?("[faker]")) ||
-            #    (broadcast_line.include?("gettingMessage") && !broadcast_line.include?("signal")))
-              #puts "response >> #{broadcast_line}"
-              writable_io.write(broadcast_line)
-            #end
+        if broadcast_line.include?("X:") ||
+           broadcast_line.include?("Y:") ||
+           broadcast_line.include?("Z:") ||
+           broadcast_line.include?("Pitch:") ||
+           broadcast_line.include?("The block at") ||
+           broadcast_line.include?("found the block") ||
+           broadcast_line.include?("successfully summoned") ||
+           broadcast_line.include?("CONSOLE issued server command")
+          begin
+            if client.async
+            else
+              #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
+              #if ((broadcast_line.include?("[Server]") && !broadcast_line.include?("[faker]")) ||
+              #    (broadcast_line.include?("gettingMessage") && !broadcast_line.include?("signal")))
+                #puts "response >> #{broadcast_line}"
+                writable_io.write(broadcast_line)
+              #end
+            end
+          rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
+            # Broken pipe (Errno::EPIPE)
+            close_client(writable_io, e)
           end
-        rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
-          # Broken pipe (Errno::EPIPE)
-          close_client(writable_io, e)
         end
       end
     end

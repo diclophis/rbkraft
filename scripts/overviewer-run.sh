@@ -16,7 +16,7 @@ export FULL_BACKUP
 export FULL_BACKUP2
 export FULL_MAP
 
-$MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1 -F
+$MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1
 
 while true;
 do
@@ -28,7 +28,8 @@ do
     if [ "$SHUF" -eq "10" ];
     then
       echo "took full snap" | logger
-      $MINECRAFT_ROOT/mapper.sh $1 -F
+      cat $MINECRAFT_ROOT/normal-save.cmd | nc -w 1 mavencraft-cluster-ip 31505 2>&1 > /dev/null
+      $MINECRAFT_ROOT/mapper.sh $1
     else
       $MINECRAFT_ROOT/mapper.sh $1
     fi

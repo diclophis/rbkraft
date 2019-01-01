@@ -2,6 +2,8 @@
 nohup.out
 *.jar
 eula.txt
+*.stl
+*.obj
 
 minecraft-wrapper/banned-ips.json
 minecraft-wrapper/banned-players.json

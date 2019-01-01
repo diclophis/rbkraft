@@ -19,13 +19,13 @@ class Maze
     @wid = 1
 
     # size of map in map coordinate space
-    @size = 1024
+    @size = 128
 
     # size of map unit in voxel coordinate space
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 63 #4 flat #63 default
+    @sea_level = 50 #4 flat #63 default
 
     @shapes = {}
 
@@ -302,11 +302,10 @@ global_painter.async do
   loop do
     srand(3)
 
-    #$stdout.write(".")
+    connected_players = Dir["#{ARGV[0]}world/playerdata/*dat"]
+    puts connected_players.inspect
 
-    sleep 0.33
-
-    Dir["#{ARGV[0]}world/playerdata/*dat"].each do |pd|
+    connected_players.each do |pd|
       begin
         nbt_file = NBTUtils::File.new
         tag = nbt_file.read(pd)
@@ -316,6 +315,8 @@ global_painter.async do
       end
 
       player_name = tag.find_tag("bukkit").find_tag("lastKnownName").payload["data"]
+      puts player_name.inspect
+
       player_position = global_painter.player_position(player_name)
       remapped = [player_position.x, player_position.y, player_position.z]
       puts [player_name, remapped].inspect
@@ -363,5 +364,11 @@ global_painter.async do
         break if count_drawn_this_poscheck > 4096
       end
     end
+
+    ##$stdout.write(".")
+    #puts "loop"
+
+    #sleep 0.33
+    sleep 1
   end
 end
