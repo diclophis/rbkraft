@@ -25,7 +25,7 @@ class Maze
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 4 #4 flat #63 default
+    @sea_level = 63 #4 flat #63 default
 
     @shapes = {}
 
@@ -220,12 +220,13 @@ class Maze
           elsif vy > ((@unit / 2) + 2) # shelf lighting
             :lantern
           elsif vy < ((@unit / 2)) # shelf lighting
-            if (vx - (@unit / 2)).abs < 3 || (vz - -(@unit / 2)).abs < 3 #((vx + (@unit / 2)).abs  < 4 && (vz + (@unit / 2)).abs < 4)
-              #vy += 1
-              :water
-            else
-              nil #:stone
-            end
+            :stone
+            #if (vx - (@unit / 2)).abs < 3 || (vz - -(@unit / 2)).abs < 3 #((vx + (@unit / 2)).abs  < 4 && (vz + (@unit / 2)).abs < 4)
+            #  #vy += 1
+            #  :water
+            #else
+            #  nil #:stone
+            #end
           else
             #(rand > 0.99) ? :lantern : :stone
             :stone
@@ -303,7 +304,7 @@ global_painter.async do
 
     #$stdout.write(".")
 
-    sleep 0.1
+    sleep 0.33
 
     Dir["#{ARGV[0]}world/playerdata/*dat"].each do |pd|
       begin
@@ -320,7 +321,7 @@ global_painter.async do
       puts [player_name, remapped].inspect
 
       #player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }.collect { |f| f.to_i }
-      #puts [Time.now, pd, global_painter.client.command_count, player_position].inspect
+      puts [Time.now, pd, global_painter.client.command_count, player_position].inspect
       #[].each do |x,y,z,t|
 
       count_drawn_this_poscheck = 0

@@ -111,7 +111,8 @@ puts "connected"
 global_painter.async do
   shape_vox.each do |x,y,z|
     if (y+ooy) >= 0 && (y+ooy) <= 256
-      global_painter.place(x, y, z, global_painter.quartz_type)
+      global_painter.place(x, y, z, global_painter.type)
+      sleep 0.0001
     end
   end
 end

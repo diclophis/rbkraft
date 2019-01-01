@@ -30,6 +30,12 @@
     "bypassesPlayerLimit": false
   },
   {
+    "uuid": "d4f9e61f-ca79-30bc-bfba-bdcaec555ffd",
+    "name": "tectonic_earth",
+    "level": 4,
+    "bypassesPlayerLimit": false
+  },
+  {
     "uuid": "44c6146c-ad93-4806-8916-549f4253dc17",
     "name": "dsboulder",
     "level": 4,

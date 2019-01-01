@@ -181,13 +181,14 @@ class Wrapper
 [08:17:32 INFO]: Yaw: 260.7 (Rotation)
 [08:17:32 INFO]: Pitch: 32.55 (Head angle)
 =end
-          puts broadcast_bytes
+          #puts broadcast_bytes
           if broadcast_bytes.include?("X:") ||
              broadcast_bytes.include?("Y:") ||
              broadcast_bytes.include?("Z:") ||
              broadcast_bytes.include?("Pitch:") ||
              broadcast_bytes.include?("The block at") ||
              broadcast_bytes.include?("found the block") ||
+             broadcast_bytes.include?("successfully summoned") ||
              broadcast_bytes.include?("CONSOLE issued server command")
             self.clients.each do |io, client|
               client.broadcast_scanner << broadcast_bytes if client.authentic
@@ -276,7 +277,7 @@ class Wrapper
       $TOTAL_COMMANDS += commands_this_tick
       total_delta += commands_this_tick
 
-      sleep 0.005 # to prevent cpu burn
+      #sleep 0.0075 # to prevent cpu burn
     end
 
     duration = Time.now - start
