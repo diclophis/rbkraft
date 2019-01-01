@@ -9,7 +9,7 @@ def prompt(msg)
 end
 
 def load_painter
-  painter = WorldPainter.new(20_050, 70, 19_960, async_client: false, debug: true)
+  painter = WorldPainter.new(20008, 70, 19953, async: true, debug: true)
   player_name = prompt("Player:")
   player_name = 'tectonic_earth' if player_name == ''
   if player_name == 'last'

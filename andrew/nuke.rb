@@ -8,11 +8,11 @@ player = gets.strip
 exit unless player.length > 0
 
 speed = 1
-p = WorldPainter.new(19_747, 72, 20_000, debug: true)
+p = WorldPainter.new(20000, 72, 20_000, async: true, debug: true)
 p.center = p.player_position(player)
 
 puts p.center.inspect
 
 300.times do |i|
-  puts p.summon 0, 10, 0, 'PrimedTnt', "{Fuse:#{(rand * 50 + 10).to_i},Motion:[#{rand * speed - speed/2.0},#{(rand * speed) - speed/2.0},#{(rand * speed) - speed/2.0}]}"
+  puts p.summon 0, 10, 0, 'Tnt', "{Fuse:#{(rand * 50 + 10).to_i},Motion:[#{rand * speed - speed/2.0},#{(rand * speed) - speed/2.0},#{(rand * speed) - speed/2.0}]}"
 end
