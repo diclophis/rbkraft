@@ -32,9 +32,8 @@ unless File.exists?(newtmp)
   system("ls -l #{TMPROOT}")
 
   FOO="-om vn fn"
-  system("meshlabserver -i #{newtmp} -o #{newtmp}-1.stl -s openscad/foop.mlx") || exit(1)
+  system("meshlabserver -i #{newtmp} -o #{newtmp}-1.stl -s openscad/foop-normalized-y.mlx") || exit(1)
   system("/home/minecraft/voxelizer/build/bin/voxelizer #{SIZE} 32 #{newtmp}-1.stl #{newtmp}.vox") || exit(1)
-
 end
 
 tmp_stl.close
@@ -50,7 +49,7 @@ end
 puts [:vox2ruby, newtmp].inspect
 inio = File.open("#{newtmp}.vox")
 
-min_x = max_x = min_y = max_y = min_z = max_z = 0
+min_x = max_x = min_y = max_y = min_z = max_z = nil
 bit_a = bit_b = bit_c = nil
 
 shape_vox = []
@@ -64,8 +63,15 @@ while input = pop_input(inio)
     when 2
       bit_c = input.to_f
   else
-    x,z,y = input.strip.split(" ").collect(&:to_i)
-    z = -z
+    #x,z,y = input.strip.split(" ").collect(&:to_i)
+    x,y,z = input.strip.split(" ").collect(&:to_i)
+
+    min_x ||= x
+    min_y ||= y
+    min_z ||= z
+    max_x ||= x
+    max_y ||= y
+    max_z ||= z
 
     if x < min_x
       min_x = x
@@ -86,15 +92,26 @@ while input = pop_input(inio)
       max_z = z
     end
 
+    #z = -z
+
     shape_vox << [x,y,z]
   end
 
   line_count += 1
 end
 
-oox = X - (((max_x - min_x) / 2))
-ooy = Y + ((bit_a * bit_b[1])) #((bit_b[1] * ((max_y - min_y)))) #- (bit_b[1] * SIZE))
-ooz = Z + (((max_z - min_z) / 2))
+oox = -min_x + X - (((max_x - min_x) * 0.5))
+ooy = -min_y + 128 - ((((max_y - min_y) * 0.5))) #((bit_b[1] * ((max_y - min_y)))) #- (bit_b[1] * SIZE))
+ooz = -min_z + Z - (((max_z - min_z) * 0.5))
+
+#[:bit, 512, [-1.92312, -1.92312, -1.92312], 0.00450916]
+#[:minmax, 0, 37, 290, 511, 245, 283]
+#[:ooo, 82, -856.63744, 119]
+
+
+#[:bit, 32, [-0.5001, -0.5001, -0.5001], 0.0312563]
+#[:minmax, 0, 31, 0, 31, 0, 31]
+#[:ooo, -15, -16.0032, 15]
 
 puts [:bit, bit_a, bit_b, bit_c].inspect
 puts [:minmax, min_x, max_x, min_y, max_y, min_z, max_z].inspect
@@ -111,11 +128,16 @@ puts "connected"
 global_painter.async do
   shape_vox.each do |x,y,z|
     if (y+ooy) > 0 && (y+ooy) < 256
-      if rand > 0.954321
-        global_painter.place(x, y, z, global_painter.tnt_type)
-      else
-        global_painter.place(x, y, z, global_painter.quartz_type)
-      end
+      #if rand > 0.999
+      #  global_painter.place(x, y, z, global_painter.lava_type)
+      #els
+      #if rand > 0.99
+      #  global_painter.place(x, y, z, global_painter.lantern_type)
+      #else
+        #global_painter.place(x, y, z, global_painter.type)
+        #global_painter.place(x, y, z, global_painter.type)
+        global_painter.place(x, y, z, global_painter.obsidian_type)
+      #end
     end
   end
 end

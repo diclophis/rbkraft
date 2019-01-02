@@ -16,9 +16,9 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 8 #512 * 32
-READ_CHUNKS_REMOTE = 8 #512 * 32
-COMMANDS_PER_MOD = 32 #4096
+READ_CHUNKS = 16 #512 * 32
+READ_CHUNKS_REMOTE = 16 # 512 * 32
+COMMANDS_PER_MOD = 1
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -247,7 +247,7 @@ class Wrapper
 
     total_delta = 0
 
-    if ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
+    while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
       commands_this_tick = full_command_line.length
 
       full_command_line.each do |fcl|
@@ -259,7 +259,7 @@ class Wrapper
       $TOTAL_COMMANDS += commands_this_tick
       total_delta += commands_this_tick
 
-      sleep 0.000025 # to prevent cpu burn
+      sleep 0.000075
       #break
     end
 

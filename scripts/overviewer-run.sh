@@ -23,16 +23,17 @@ do
   if [ -e $MINECRAFT_ROOT/world/level.dat ];
   then
     #cat $MINECRAFT_ROOT/normal-save.cmd | nc -w 1 mavencraft-cluster-ip 31505 2>&1 > /dev/null
-    inotifywait -t 1 -e CLOSE $MINECRAFT_ROOT/world/session.lock
-    SHUF=$(shuf -i 1-20 -n 1)
-    if [ "$SHUF" -eq "10" ];
-    then
-      echo "took full snap" | logger
-      cat $MINECRAFT_ROOT/normal-save.cmd | nc -w 1 mavencraft-cluster-ip 31505 2>&1 > /dev/null
+    sleep 1
+    inotifywait -t 5 -e CLOSE $MINECRAFT_ROOT/world/session.lock
+    #SHUF=$(shuf -i 1-20 -n 1)
+    #if [ "$SHUF" -eq "10" ];
+    #then
+    #  echo "took full snap" | logger
+      #cat $MINECRAFT_ROOT/normal-save.cmd | nc -w 1 mavencraft-cluster-ip 31505 2>&1 > /dev/null
       $MINECRAFT_ROOT/mapper.sh $1
-    else
-      $MINECRAFT_ROOT/mapper.sh $1
-    fi
+    #else
+    #  $MINECRAFT_ROOT/mapper.sh $1
+    #fi
   else
     cat $MINECRAFT_ROOT/initial-save.cmd | nc -w 1 mavencraft-cluster-ip 31505 2>&1 > /dev/null
     (test -e $MINECRAFT_ROOT/world/session.lock && inotifywait -t 6 -e CLOSE $MINECRAFT_ROOT/world/session.lock) || sleep 1
