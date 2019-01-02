@@ -369,6 +369,6 @@ global_painter.async do
     #puts "loop"
 
     #sleep 0.33
-    sleep 1
+    sleep 0.01
   end
 end
