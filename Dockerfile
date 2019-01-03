@@ -42,6 +42,8 @@ COPY openscad /home/minecraft/openscad
 
 COPY diclophis /home/minecraft/diclophis
 
+COPY eisenscript /home/minecraft/eisenscript
+
 WORKDIR /home/minecraft
 
 #CMD ["bash", "full-stack.sh"]

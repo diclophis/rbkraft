@@ -40,10 +40,10 @@ spec:
         image: mavencraft:latest
         resources:
           requests:
-            memory: "11000Mi"
-            cpu: "3000m"
+            memory: "1000Mi"
+            cpu: "100m"
           limits:
-            memory: "12000Mi"
+            memory: "2000Mi"
             cpu: "4000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
@@ -107,11 +107,11 @@ spec:
         image: mavencraft:latest
         resources:
           requests:
-            memory: "2000Mi"
-            cpu: "1000m"
+            memory: "1000Mi"
+            cpu: "100m"
           limits:
-            memory: "3000Mi"
-            cpu: "1000m"
+            memory: "2000Mi"
+            cpu: "4000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
         command: ["bundle", "exec", "ruby", "diclophis/maze.rb"]
@@ -166,8 +166,8 @@ spec:
             memory: "2000Mi"
             cpu: "1000m"
           limits:
-            memory: "12000Mi"
-            cpu: "32000m"
+            memory: "20000Mi"
+            cpu: "8000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
         command: ["sleep", "infinity"]
@@ -219,10 +219,10 @@ spec:
         resources:
           requests:
             memory: "2000Mi"
-            cpu: "30000m"
+            cpu: "3000m"
           limits:
             memory: "3000Mi"
-            cpu: "40000m"
+            cpu: "4000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
         command: ["bash", "overviewer-run.sh", "30"]
@@ -265,8 +265,8 @@ spec:
             memory: "200Mi"
             cpu: "300m"
           limits:
-            memory: "300Mi"
-            cpu: "400m"
+            memory: "1000Mi"
+            cpu: "4000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft/html
         ports:
@@ -282,7 +282,7 @@ metadata:
 spec:
   ports:
   - targetPort: 25564
-    port: 31500
+    port: 31501
     name: minecraft-port
     protocol: TCP
   - targetPort: 25566
@@ -300,7 +300,7 @@ spec:
   type: NodePort
   ports:
   - port: 25564
-    nodePort: 31500
+    nodePort: 31501
     name: minecraft-port
     protocol: TCP
   - port: 25566

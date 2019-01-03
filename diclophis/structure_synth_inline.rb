@@ -23,7 +23,7 @@ tmp_mlx.flush
 
 tmp_stl = Tempfile.new(["rendered-es", ".stl"])
 
-meshlab_eisen_to_stl_cmd = "meshlabserver -i #{tmp_stl.path} -o #{tmp_stl.path} -s #{tmp_mlx.path}"
+meshlab_eisen_to_stl_cmd = "meshlabserver -i #{tmp_stl.path} -o #{tmp_stl.path} -s #{tmp_mlx.path} 2> /dev/null"
 
 meshlab_output = IO.popen(meshlab_eisen_to_stl_cmd).read
 
@@ -32,7 +32,11 @@ meshlab_output.include?("saved as #{tmp_stl.path}") || exit(1)
 #system("cat #{tmp_stl.path}")
 tmp_stl.rewind
 
-$stdout.write(tmp_stl.read) #File.read(tmp_stl.path))
+if ARGV[2]
+  File.write(ARGV[2], tmp_stl.read)
+else
+  $stdout.write(tmp_stl.read)
+end
 
 tmp_stl.close
 tmp_mlx.close
