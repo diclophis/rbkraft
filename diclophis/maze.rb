@@ -19,7 +19,7 @@ class Maze
     @wid = 1
 
     # size of map in map coordinate space
-    @size = 1024
+    @size = 4096
 
     # size of map unit in voxel coordinate space
     @unit = 32
