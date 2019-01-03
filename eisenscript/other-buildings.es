@@ -12,6 +12,7 @@ set maxdepth 500
 
 // 3 * mainP
 #define fourthP 18
+#define flat 0.0001
 
 rFloors
 thirdP * {z 3} rFloors
@@ -23,7 +24,7 @@ rSideY
 
 
 rule rFloors {
-     {x 9 y 9 s fourthP fourthP 0.1} box
+     {x 9 y 9 s fourthP fourthP flat} box
 }
 
 rule rFront {
@@ -50,11 +51,11 @@ rule rSideY1 {
 }
 
 rule plane w 2 {
-      { x 1.5  z 1.5 s 3 0.1 3} box
+      { x 1.5  z 1.5 s 3 flat 3} box
 }
 
 rule plane w 1 {
-      { x 3 z 1.5 s 6 0.5 3} box
+      { x 3 z 1.5 s 6 0.15 3} box
 }
 
 rule plane w 2  {
@@ -62,11 +63,11 @@ rule plane w 2  {
 }
 
 rule plane w 1 {
-      { x 1.5  z 1.5 s 0.5 0.1 3} box
+      { x 1.5  z 1.5 s 0.15 flat 3} box
 }
 
 rule plane w 1 {
-       { x 1.5  z 5 s 0.3 0.3 10} box
+       { x 1.5  z 5 s 0.13 0.13 10} box
 }
 
 rule plane w 5 {
@@ -75,22 +76,22 @@ rule plane w 5 {
 
 
 rule plane w 2 {
-      { x 1.5 z 1.5 ry -45 s 0.1 0.1 4.24} box
-      { x 1.5 z 1.5 ry  45 s 0.1 0.1 4.24} box
-      {x 1.5 z 3 ry 90 s 0.1 0.1 3} box
+      { x 1.5 z 1.5 ry -45 s flat flat 4.24} box
+      { x 1.5 z 1.5 ry  45 s flat flat 4.24} box
+      {x 1.5 z 3 ry 90 s flat flat 3} box
 }
 
 //Scaffolding
 rule rod {
-       {z 7.5 s 0.1 0.1 15 } box
+       {z 7.5 s flat flat 15 } box
 }
 
 rule rod {
-       {z 10 s 0.1 0.1 20  } box
+       {z 10 s flat flat 20  } box
 }
 
 rule rod {
-        {z 6.5 s 0.1 0.1 13  } box
+        {z 6.5 s flat flat 13  } box
 }
 
 rule rod {
