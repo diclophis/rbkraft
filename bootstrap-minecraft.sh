@@ -27,6 +27,7 @@ apt-get update \
        ruby-bundler rake ruby2.5-dev build-essential make \
        default-jre \
        python-numpy nginx cmake libassimp-dev m4 autoconf libtool libboost-dev libboost-all-dev libboost-thread-dev libboost-filesystem-dev libboost-test-dev inotify-tools \
+       ffmpeg \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 locale-gen --purge en_US.UTF-8 && /bin/echo -e  "LANG=$LANG\nLANGUAGE=$LANGUAGE\n" | tee /etc/default/locale \

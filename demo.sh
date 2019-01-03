@@ -9,3 +9,4 @@ ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx eisenscrip
 
 #cat /var/tmp/long-b.stl | bash run-vox-blit.sh 480 1000 -54 -8600
 #http://structuresynth.sourceforge.net/reference.php
+#http://www.timestretch.com/article/structure_synth_tutorial

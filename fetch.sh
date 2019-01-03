@@ -48,7 +48,7 @@ curl_sha_checksum_fetch \
 curl_sha_checksum_fetch \
   "EssentialsX-2.15.0.57.jar" \
   "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/Essentials/target/EssentialsX-2.15.0.57.jar" \
-  "f3dcaf72eb6b5bbc7ea11bb2c384cf7fa4ca911d"
+  "221ac23e4ccd603245789e1fdf576215f6995bf6"
 
 curl_sha_checksum_fetch \
   "craftbukkit-server-1.12.2.jar" \
