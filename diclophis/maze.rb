@@ -19,13 +19,13 @@ class Maze
     @wid = 1
 
     # size of map in map coordinate space
-    @size = 128
+    @size = 1024
 
     # size of map unit in voxel coordinate space
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 50 #4 flat #63 default
+    @sea_level = 30 #4 flat #63 default
 
     @shapes = {}
 
@@ -116,7 +116,7 @@ class Maze
       end
     end
 
-    puts [px, py, @size, chunks.length].inspect
+    #puts [px, py, @size, chunks.length].inspect
 
     chunks.sort_by { |x,y|
       d = Math.sqrt(((x-px)**2)+((y-py)**2))
@@ -303,7 +303,12 @@ global_painter.async do
     srand(3)
 
     connected_players = Dir["#{ARGV[0]}world/playerdata/*dat"]
-    puts connected_players.inspect
+
+    if connected_players.empty?
+      sleep 3
+    else
+      puts connected_players.inspect
+    end
 
     connected_players.each do |pd|
       begin
@@ -365,10 +370,6 @@ global_painter.async do
       end
     end
 
-    ##$stdout.write(".")
-    #puts "loop"
-
-    #sleep 0.33
-    sleep 0.01
+    sleep 0.66
   end
 end

@@ -288,6 +288,7 @@ class Wrapper
     unless client.nil? || client.broadcast_scanner.eos?
       while has_eol = client.broadcast_scanner.check_until(/\n/)
         broadcast_line = client.broadcast_scanner.scan_until(/\n/)
+        #puts broadcast_line.inspect
         if broadcast_line.include?("X:") ||
            broadcast_line.include?("Y:") ||
            broadcast_line.include?("Z:") ||
@@ -299,12 +300,8 @@ class Wrapper
           begin
             if client.async
             else
-              #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
-              #if ((broadcast_line.include?("[Server]") && !broadcast_line.include?("[faker]")) ||
-              #    (broadcast_line.include?("gettingMessage") && !broadcast_line.include?("signal")))
-                #puts "response >> #{broadcast_line}"
-                writable_io.write(broadcast_line)
-              #end
+              #puts "response >> #{broadcast_line}"
+              writable_io.write(broadcast_line)
             end
           rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
             # Broken pipe (Errno::EPIPE)
