@@ -166,7 +166,7 @@ spec:
             memory: "2000Mi"
             cpu: "1000m"
           limits:
-            memory: "3000Mi"
+            memory: "12000Mi"
             cpu: "32000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft

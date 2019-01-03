@@ -26,7 +26,7 @@ shasum = IO.popen("shasum #{tmp_stl.path}").read.split(" ")[0]
 
 newtmp = File.join(TMPROOT, "#{SIZE}-#{shasum}.stl")
 
-unless File.exists?(newtmp)
+unless File.exists?(newtmp) && File.exists?("#{newtmp}.vox")
   puts [:copying_and_voxelizing, tmp_stl.path, newtmp].inspect
   FileUtils.copy(tmp_stl.path, newtmp)
   system("ls -l #{TMPROOT}")
@@ -100,7 +100,7 @@ while input = pop_input(inio)
 end
 
 oox = -min_x + X - (((max_x - min_x) * 0.5))
-ooy = -min_y + 128 - ((((max_y - min_y) * 0.5))) #((bit_b[1] * ((max_y - min_y)))) #- (bit_b[1] * SIZE))
+ooy = -min_y + Y + 128 - ((((max_y - min_y) * 0.5))) #((bit_b[1] * ((max_y - min_y)))) #- (bit_b[1] * SIZE))
 ooz = -min_z + Z - (((max_z - min_z) * 0.5))
 
 #[:bit, 512, [-1.92312, -1.92312, -1.92312], 0.00450916]
