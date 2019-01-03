@@ -134,6 +134,8 @@ global_painter.async do
       #  global_painter.place(x, y, z, global_painter.lantern_type)
       #else
         #global_painter.place(x, y, z, global_painter.type)
+        #global_painter.place(x, y, z, global_painter.glow_type)
+        #global_painter.place(x, y, z, global_painter.sandstone_type)
         global_painter.place(x, y, z, global_painter.quartz_type)
         #global_painter.place(x, y, z, global_painter.obsidian_type)
       #end

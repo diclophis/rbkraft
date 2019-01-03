@@ -2,7 +2,7 @@
 set maxdepth 16
 set background white  
 //Floor
-{ s 100 100 0.1 z -3 color #eee } box
+//{ s 100 100 0.1 z -3 color #eee } box
 // Blocks
 50 * { x 1 } 50 * { y 1 } 1 * { s 0.38 0.5 0.4 } spiral
 rule spiral w 100 {
