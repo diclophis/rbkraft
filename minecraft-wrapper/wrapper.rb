@@ -300,7 +300,7 @@ class Wrapper
           begin
             if client.async
             else
-              #puts "response >> #{broadcast_line}"
+              puts "response >> #{broadcast_line}"
               writable_io.write(broadcast_line)
             end
           rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e

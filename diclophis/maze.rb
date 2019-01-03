@@ -19,7 +19,7 @@ class Maze
     @wid = 1
 
     # size of map in map coordinate space
-    @size = 4096
+    @size = 2048
 
     # size of map unit in voxel coordinate space
     @unit = 32
@@ -322,12 +322,13 @@ global_painter.async do
       player_name = tag.find_tag("bukkit").find_tag("lastKnownName").payload["data"]
       puts player_name.inspect
 
-      player_position = global_painter.player_position(player_name)
+      fallback_player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }.collect { |f| f.to_i }
+      player_position = global_painter.player_position(player_name, fallback_player_position)
+
       remapped = [player_position.x, player_position.y, player_position.z]
       puts [player_name, remapped].inspect
 
-      #player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }.collect { |f| f.to_i }
-      puts [Time.now, pd, global_painter.client.command_count, player_position].inspect
+      puts [Time.now, pd, global_painter.client.command_count, player_position, fallback_player_position].inspect
       #[].each do |x,y,z,t|
 
       count_drawn_this_poscheck = 0
@@ -370,6 +371,6 @@ global_painter.async do
       end
     end
 
-    sleep 0.66
+    sleep 0.13
   end
 end
