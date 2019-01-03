@@ -10,3 +10,8 @@ ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx eisenscrip
 #cat /var/tmp/long-b.stl | bash run-vox-blit.sh 480 1000 -54 -8600
 #http://structuresynth.sourceforge.net/reference.php
 #http://www.timestretch.com/article/structure_synth_tutorial
+
+#buildings
+#ruby diclophis/structure_synth_inline.rb openscad/structure-synth-alt.mlx eisenscript/other-buildings.es > /var/tmp/other-c.stl
+#cat /var/tmp/other-c.stl | bash run-vox-blit.sh 128 100 -64 0
+#https://github.com/ssrb/mega-structure
