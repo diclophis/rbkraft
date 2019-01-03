@@ -15,7 +15,7 @@ X=ARGV[1].to_i
 Y=ARGV[2].to_i
 Z=ARGV[3].to_i
 
-inp = $stdin.read #lines.join("\n")
+inp = $stdin.read
 puts inp.length
 tmp_stl = Tempfile.new
 tmp_stl.write(inp)
@@ -31,7 +31,6 @@ unless File.exists?(newtmp)
   FileUtils.copy(tmp_stl.path, newtmp)
   system("ls -l #{TMPROOT}")
 
-  FOO="-om vn fn"
   system("meshlabserver -i #{newtmp} -o #{newtmp}-1.stl -s openscad/foop-normalized-y.mlx") || exit(1)
   system("/home/minecraft/voxelizer/build/bin/voxelizer #{SIZE} 32 #{newtmp}-1.stl #{newtmp}.vox") || exit(1)
 end
@@ -135,8 +134,8 @@ global_painter.async do
       #  global_painter.place(x, y, z, global_painter.lantern_type)
       #else
         #global_painter.place(x, y, z, global_painter.type)
-        #global_painter.place(x, y, z, global_painter.type)
-        global_painter.place(x, y, z, global_painter.obsidian_type)
+        global_painter.place(x, y, z, global_painter.quartz_type)
+        #global_painter.place(x, y, z, global_painter.obsidian_type)
       #end
     end
   end
