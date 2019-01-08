@@ -78,7 +78,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 0
-  replicas: 1
+  replicas: 0
   template:
     metadata:
       labels:

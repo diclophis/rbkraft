@@ -172,6 +172,8 @@ class Wrapper
           return
         else
           #TODO: keep on global scanner?
+          #TODO: yes
+          puts broadcast_bytes
           self.clients.each do |io, client|
             client.broadcast_scanner << broadcast_bytes if client.authentic
           end
@@ -288,7 +290,6 @@ class Wrapper
     unless client.nil? || client.broadcast_scanner.eos?
       while has_eol = client.broadcast_scanner.check_until(/\n/)
         broadcast_line = client.broadcast_scanner.scan_until(/\n/)
-        #puts broadcast_line.inspect
         if broadcast_line.include?("X:") ||
            broadcast_line.include?("Y:") ||
            broadcast_line.include?("Z:") ||
@@ -313,7 +314,6 @@ class Wrapper
   end
 
   def enqueue_input_for_minecraft(io, bytes)
-
     self.input_waiting_to_be_written_to_minecraft[io] ||= StringScanner.new("")
 
     client = self.clients[io]
