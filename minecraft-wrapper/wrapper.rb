@@ -173,7 +173,7 @@ class Wrapper
         else
           #TODO: keep on global scanner?
           #TODO: yes
-          #puts broadcast_bytes
+          puts broadcast_bytes
           self.clients.each do |io, client|
             client.broadcast_scanner << broadcast_bytes if client.authentic
           end
