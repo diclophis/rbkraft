@@ -41,10 +41,10 @@ spec:
         resources:
           requests:
             memory: "1000Mi"
-            cpu: "100m"
+            cpu: "10000m"
           limits:
             memory: "2000Mi"
-            cpu: "4000m"
+            cpu: "30000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
         ports:

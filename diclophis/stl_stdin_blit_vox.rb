@@ -14,6 +14,7 @@ SIZE=ARGV[0].to_i
 X=ARGV[1].to_i
 Y=ARGV[2].to_i
 Z=ARGV[3].to_i
+T=ARGV[4]
 
 inp = $stdin.read
 puts inp.length
@@ -93,7 +94,8 @@ while input = pop_input(inio)
 
     #z = -z
 
-    shape_vox << [x,y,z]
+    #shape_vox << [x,y,z]
+    shape_vox.unshift [x,y,z]
   end
 
   line_count += 1
@@ -127,13 +129,13 @@ puts "connected"
 global_painter.async do
   shape_vox.each do |x,y,z|
     if (y+ooy) > 0 && (y+ooy) < 256
-      if rand > 0.9
+      if false #rand > 0.9
         global_painter.place(x, y, z, global_painter.tnt_type)
       else
       #if rand > 0.99
       #  global_painter.place(x, y, z, global_painter.lantern_type)
       #else
-        global_painter.place(x, y, z, global_painter.type)
+        global_painter.place(x, y, z, T)
         #global_painter.place(x, y, z, global_painter.glow_type)
         #global_painter.place(x, y, z, global_painter.sandstone_type)
         #global_painter.place(x, y, z, global_painter.quartz_type)

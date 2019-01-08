@@ -294,7 +294,7 @@ maze = Maze.new
 puts "generated"
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
-puts "connected"
+puts "connected #{T}"
 
 drawn = {}
 
