@@ -19,13 +19,13 @@ class Maze
     @wid = 1
 
     # size of map in map coordinate space
-    @size = 32
+    @size = 1024
 
     # size of map unit in voxel coordinate space
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 4 #4 flat #63 default
+    @sea_level = 4 # 4 flat #63 default
 
     @shapes = {}
 
@@ -319,8 +319,11 @@ global_painter.async do
         break
       end
 
-      player_name = tag.find_tag("bukkit").find_tag("lastKnownName").payload["data"]
-      puts player_name.inspect
+      if bukkit = tag.find_tag("bukkit")
+        player_name = bukkit.find_tag("lastKnownName").payload["data"]
+      else
+        player_name = "faker"
+      end
 
       fallback_player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }.collect { |f| f.to_i }
       player_position = global_painter.player_position(player_name, fallback_player_position)

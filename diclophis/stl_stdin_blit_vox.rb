@@ -128,7 +128,7 @@ puts "connected"
 
 global_painter.async do
   shape_vox.each do |x,y,z|
-    if (y+ooy) > 0 && (y+ooy) < 256
+    if (y+ooy) > 3 && (y+ooy) < 253
       if false #rand > 0.9
         global_painter.place(x, y, z, global_painter.tnt_type)
       else

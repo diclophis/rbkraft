@@ -16,9 +16,9 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 512 * 32
-READ_CHUNKS_REMOTE = 8 # 512 * 32
-COMMANDS_PER_MOD = 2
+READ_CHUNKS = 1
+READ_CHUNKS_REMOTE = 1 # 59 ... 512 * 32
+COMMANDS_PER_MOD = 1
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -173,7 +173,7 @@ class Wrapper
         else
           #TODO: keep on global scanner?
           #TODO: yes
-          puts broadcast_bytes
+          #puts broadcast_bytes
           self.clients.each do |io, client|
             client.broadcast_scanner << broadcast_bytes if client.authentic
           end
@@ -261,9 +261,11 @@ class Wrapper
       $TOTAL_COMMANDS += commands_this_tick
       total_delta += commands_this_tick
 
-      sleep 0.000075
+      #sleep 0.001
       #break
     end
+
+    sleep 1.0/60.0
 
     duration = Time.now - start
 
@@ -276,7 +278,7 @@ class Wrapper
       self.count_since_last = $TOTAL_COMMANDS
       per_tick = ($TOTAL_COMMANDS - old_count)
 
-      puts "WRITE took #{duration.round}s #{total_delta} #{$TOTAL_COMMANDS} --- #{$TOTAL_COMMANDS - old_count}/per-tick"
+      puts "WRITE took #{duration.round}s #{total_delta} #{$TOTAL_COMMANDS} --- #{$TOTAL_COMMANDS - old_count}/per-tick (#{self.full_commands_waiting_to_be_written_to_minecraft.length})"
 
       #if per_tick > 2000
       #  sleep 0.66
