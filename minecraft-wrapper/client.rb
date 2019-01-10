@@ -22,7 +22,20 @@ class MinecraftClient
   end
 
   def connect
-    @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "127.0.0.1", ENV["MAVENCRAFT_PORT"] || 25566)
+    last_error = nil
+
+    5.times {
+      begin
+        @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "127.0.0.1", ENV["MAVENCRAFT_PORT"] || 25566)
+        break
+      rescue SocketError => e
+        last_error = e
+        sleep 1
+      end
+    }
+
+    raise "not connected #{last_error}" unless @server_io
+
     @server_io.sync = true
     if async
       @server_io.puts("authentic")

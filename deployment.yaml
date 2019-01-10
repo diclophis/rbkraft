@@ -62,7 +62,7 @@ spec:
         #    port: minecraft-port
         #  initialDelaySeconds: 15
         #  periodSeconds: 20
-        command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/minecraft-server-1.12.2.jar"]
+        command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
         #command: ["sleep", "infinity"]
         env:
 ---

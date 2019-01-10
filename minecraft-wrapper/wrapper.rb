@@ -18,7 +18,7 @@ USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
 READ_CHUNKS = 1
 READ_CHUNKS_REMOTE = 1 # 59 ... 512 * 32
-COMMANDS_PER_MOD = 1
+COMMANDS_PER_MOD = 128
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -35,12 +35,13 @@ class Wrapper
                 :full_commands_waiting_to_be_written_to_minecraft,
                 :logger,
                 :time_since_last_stat,
-                :count_since_last
+                :count_since_last,
+                :time_since_last_process
 
   def initialize(logger, descriptors, argv)
     @count = 0
 
-    self.time_since_last_stat = Time.now
+    self.time_since_last_process = self.time_since_last_stat = Time.now
     self.count_since_last = 0
 
     self.logger = logger
@@ -249,23 +250,26 @@ class Wrapper
 
     total_delta = 0
 
-    while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
-      commands_this_tick = full_command_line.length
+    if (start - self.time_since_last_process) > (1.0 / 10.0) #10fps
+      while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
+        commands_this_tick = full_command_line.length
 
-      full_command_line.each do |fcl|
-        blob = fcl.strip #full_command_line.join("\n")
+        full_command_line.each do |fcl|
+          blob = fcl.strip #full_command_line.join("\n")
 
-        write_minecraft_command(blob)
+          write_minecraft_command(blob)
+        end
+
+        $TOTAL_COMMANDS += commands_this_tick
+        total_delta += commands_this_tick
+
+        #sleep 0.001
+        break
       end
 
-      $TOTAL_COMMANDS += commands_this_tick
-      total_delta += commands_this_tick
-
-      #sleep 0.001
-      #break
+      #sleep 1.0/120.0
+      self.time_since_last_process = Time.now
     end
-
-    sleep 1.0/60.0
 
     duration = Time.now - start
 
