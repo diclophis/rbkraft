@@ -19,13 +19,13 @@ class Maze
     @wid = 1
 
     # size of map in map coordinate space
-    @size = 2048
+    @size = 32
 
     # size of map unit in voxel coordinate space
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 30 #4 flat #63 default
+    @sea_level = 4 #4 flat #63 default
 
     @shapes = {}
 
@@ -294,7 +294,7 @@ maze = Maze.new
 puts "generated"
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
-puts "connected #{T}"
+puts "connected"
 
 drawn = {}
 
@@ -333,6 +333,10 @@ global_painter.async do
 
       count_drawn_this_poscheck = 0
       maze.each_bit(remapped) do |x,y,z,t|
+        unless (y+ooy) > 0 && (y+ooy) < 256
+          next
+        end
+
         #$stdout.write(".")
         #sleep 0.00001
 

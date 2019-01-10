@@ -62,7 +62,7 @@ spec:
         #    port: minecraft-port
         #  initialDelaySeconds: 15
         #  periodSeconds: 20
-        command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
+        command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/minecraft-server-1.12.2.jar"]
         #command: ["sleep", "infinity"]
         env:
 ---
@@ -78,7 +78,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 0
-  replicas: 0
+  replicas: 1
   template:
     metadata:
       labels:
@@ -272,6 +272,14 @@ spec:
         ports:
         - name: web-port
           containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: web-port
+        livenessProbe:
+          httpGet:
+            path: /
+            port: web-port
         command: ["ruby", "-run", "-ehttpd", ".", "-p8080", "-b0.0.0.0"]
         #command: ["sleep", "infinity"]
 ---
