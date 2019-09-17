@@ -19,13 +19,13 @@ class Maze
     @wid = 1
 
     # size of map in map coordinate space
-    @size = 128
+    @size = 2048
 
     # size of map unit in voxel coordinate space
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 50 #4 flat #63 default
+    @sea_level = 30 #4 flat #63 default
 
     @shapes = {}
 
@@ -116,7 +116,7 @@ class Maze
       end
     end
 
-    puts [px, py, @size, chunks.length].inspect
+    #puts [px, py, @size, chunks.length].inspect
 
     chunks.sort_by { |x,y|
       d = Math.sqrt(((x-px)**2)+((y-py)**2))
@@ -294,7 +294,7 @@ maze = Maze.new
 puts "generated"
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
-puts "connected"
+puts "connected #{T}"
 
 drawn = {}
 
@@ -303,7 +303,12 @@ global_painter.async do
     srand(3)
 
     connected_players = Dir["#{ARGV[0]}world/playerdata/*dat"]
-    puts connected_players.inspect
+
+    if connected_players.empty?
+      sleep 3
+    else
+      puts connected_players.inspect
+    end
 
     connected_players.each do |pd|
       begin
@@ -317,12 +322,13 @@ global_painter.async do
       player_name = tag.find_tag("bukkit").find_tag("lastKnownName").payload["data"]
       puts player_name.inspect
 
-      player_position = global_painter.player_position(player_name)
+      fallback_player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }.collect { |f| f.to_i }
+      player_position = global_painter.player_position(player_name, fallback_player_position)
+
       remapped = [player_position.x, player_position.y, player_position.z]
       puts [player_name, remapped].inspect
 
-      #player_position = tag.find_tag("Pos").payload.to_ary.collect { |t| t.payload.value }.collect { |f| f.to_i }
-      puts [Time.now, pd, global_painter.client.command_count, player_position].inspect
+      puts [Time.now, pd, global_painter.client.command_count, player_position, fallback_player_position].inspect
       #[].each do |x,y,z,t|
 
       count_drawn_this_poscheck = 0
@@ -365,10 +371,6 @@ global_painter.async do
       end
     end
 
-    ##$stdout.write(".")
-    #puts "loop"
-
-    #sleep 0.33
-    sleep 0.01
+    sleep 0.13
   end
 end

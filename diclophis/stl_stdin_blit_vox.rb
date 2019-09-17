@@ -14,8 +14,9 @@ SIZE=ARGV[0].to_i
 X=ARGV[1].to_i
 Y=ARGV[2].to_i
 Z=ARGV[3].to_i
+T=ARGV[4]
 
-inp = $stdin.read #lines.join("\n")
+inp = $stdin.read
 puts inp.length
 tmp_stl = Tempfile.new
 tmp_stl.write(inp)
@@ -26,12 +27,11 @@ shasum = IO.popen("shasum #{tmp_stl.path}").read.split(" ")[0]
 
 newtmp = File.join(TMPROOT, "#{SIZE}-#{shasum}.stl")
 
-unless File.exists?(newtmp)
+unless File.exists?(newtmp) && File.exists?("#{newtmp}.vox")
   puts [:copying_and_voxelizing, tmp_stl.path, newtmp].inspect
   FileUtils.copy(tmp_stl.path, newtmp)
   system("ls -l #{TMPROOT}")
 
-  FOO="-om vn fn"
   system("meshlabserver -i #{newtmp} -o #{newtmp}-1.stl -s openscad/foop-normalized-y.mlx") || exit(1)
   system("/home/minecraft/voxelizer/build/bin/voxelizer #{SIZE} 32 #{newtmp}-1.stl #{newtmp}.vox") || exit(1)
 end
@@ -94,14 +94,15 @@ while input = pop_input(inio)
 
     #z = -z
 
-    shape_vox << [x,y,z]
+    #shape_vox << [x,y,z]
+    shape_vox.unshift [x,y,z]
   end
 
   line_count += 1
 end
 
 oox = -min_x + X - (((max_x - min_x) * 0.5))
-ooy = -min_y + 128 - ((((max_y - min_y) * 0.5))) #((bit_b[1] * ((max_y - min_y)))) #- (bit_b[1] * SIZE))
+ooy = -min_y + Y + 128 - ((((max_y - min_y) * 0.5))) #((bit_b[1] * ((max_y - min_y)))) #- (bit_b[1] * SIZE))
 ooz = -min_z + Z - (((max_z - min_z) * 0.5))
 
 #[:bit, 512, [-1.92312, -1.92312, -1.92312], 0.00450916]
@@ -128,16 +129,18 @@ puts "connected"
 global_painter.async do
   shape_vox.each do |x,y,z|
     if (y+ooy) > 0 && (y+ooy) < 256
-      #if rand > 0.999
-      #  global_painter.place(x, y, z, global_painter.lava_type)
-      #els
+      if false #rand > 0.9
+        global_painter.place(x, y, z, global_painter.tnt_type)
+      else
       #if rand > 0.99
       #  global_painter.place(x, y, z, global_painter.lantern_type)
       #else
-        #global_painter.place(x, y, z, global_painter.type)
-        #global_painter.place(x, y, z, global_painter.type)
-        global_painter.place(x, y, z, global_painter.obsidian_type)
-      #end
+        global_painter.place(x, y, z, T)
+        #global_painter.place(x, y, z, global_painter.glow_type)
+        #global_painter.place(x, y, z, global_painter.sandstone_type)
+        #global_painter.place(x, y, z, global_painter.quartz_type)
+        #global_painter.place(x, y, z, global_painter.obsidian_type)
+      end
     end
   end
 end

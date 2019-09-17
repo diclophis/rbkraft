@@ -43,7 +43,7 @@ class DiclophisWorldPainter < WorldPainter
       @glow_type = "glowstone"
       @slab = "stone_slab"
       @debug_type = "glowstone"
-      @alt_type = "stonebrick"
+      @alt_type = "stone_bricks"
       @corner_type = "log"
       @glass_type = "stained_glass"
       @wool_type = "wool"

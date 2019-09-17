@@ -5,7 +5,7 @@ set -e
 
 mkdir /home/minecraft/plugins
 ln -s /home/minecraft/cache/VirtualPlayers2.jar /home/minecraft/plugins
-ln -s /home/minecraft/cache/EssentialsX-2.15.0.57.jar /home/minecraft/plugins
+ln -s /home/minecraft/cache/EssentialsX-2.15.0.60.jar /home/minecraft/plugins
 
 ls -l /home/minecraft/cache
 

@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'strscan'
+require 'timeout'
 
 require_relative '../minecraft-wrapper/client.rb'
 
@@ -372,20 +373,27 @@ class WorldPainter
     [Math.cos(angle) * radius, Math.sin(angle) * radius]
   end
 
-  def player_position(player_name)
-    position = []
-
+  def player_position(player_name, fallback = nil)
     execute("getpos #{player_name}")
-    while line = client.gets
-      [:x, :y, :z].each do |c|
-        if line.include?(c.to_s.upcase + ": ")
-          comps = line.split(" ").to_a
-          position << comps.at(3).gsub(",", "").to_f
-        end
-      end
-      break if line.include?("Pitch")
-    end
 
-    Vector.new(position)
+    begin
+      Timeout.timeout(0.33) do
+        position = []
+
+        while line = client.gets
+          [:x, :y, :z].each do |c|
+            if line.include?(c.to_s.upcase + ": ")
+              comps = line.split(" ").to_a
+              position << comps.at(3).gsub(",", "").to_f
+            end
+          end
+          break if line.include?("Pitch")
+        end
+
+        Vector.new(position)
+      end
+    rescue Timeout::Error => _
+      Vector.new(fallback) if fallback
+    end
   end
 end

@@ -16,9 +16,9 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 16 #512 * 32
-READ_CHUNKS_REMOTE = 16 # 512 * 32
-COMMANDS_PER_MOD = 1
+READ_CHUNKS = 512 * 32
+READ_CHUNKS_REMOTE = 8 # 512 * 32
+COMMANDS_PER_MOD = 2
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -172,6 +172,8 @@ class Wrapper
           return
         else
           #TODO: keep on global scanner?
+          #TODO: yes
+          puts broadcast_bytes
           self.clients.each do |io, client|
             client.broadcast_scanner << broadcast_bytes if client.authentic
           end
@@ -299,12 +301,8 @@ class Wrapper
           begin
             if client.async
             else
-              #unless (broadcast_line.include?("[faker]") || broadcast_line.include?("faker placed"))
-              #if ((broadcast_line.include?("[Server]") && !broadcast_line.include?("[faker]")) ||
-              #    (broadcast_line.include?("gettingMessage") && !broadcast_line.include?("signal")))
-                #puts "response >> #{broadcast_line}"
-                writable_io.write(broadcast_line)
-              #end
+              puts "response >> #{broadcast_line}"
+              writable_io.write(broadcast_line)
             end
           rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
             # Broken pipe (Errno::EPIPE)
@@ -316,7 +314,6 @@ class Wrapper
   end
 
   def enqueue_input_for_minecraft(io, bytes)
-
     self.input_waiting_to_be_written_to_minecraft[io] ||= StringScanner.new("")
 
     client = self.clients[io]

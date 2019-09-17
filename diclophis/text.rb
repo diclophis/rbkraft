@@ -1,18 +1,15 @@
 #!/usr/bin/env ruby
 
-$stdout.sync = true
-
 $: << "."
 $: << "diclophis"
 
+require 'tempfile'
 require 'diclophis_world_painter'
 
-TMPROOT="/var/tmp"
-MINECRAFT_ROOT="/home/minecraft"
-OUT="/home/minecraft/backup/text-output"
-SIZE=ARGV[0].to_i
-TXT=ARGV[1]
+TXT=ARGV[0]
 
-system("openscad -D 'msg=\"#{TXT}\"' --autocenter -o #{OUT}-0.stl openscad/text_sphere.scad") || exit(1)
-system
+tmp_stl = Tempfile.new(["rendered-es", ".stl"])
+system("openscad", "-D", "msg=\"#{TXT}\"", "--autocenter", "-o", tmp_stl.path, "openscad/text_sphere.scad") || exit(1)
+tmp_stl.rewind
 
+$stdout.write(tmp_stl.read)
