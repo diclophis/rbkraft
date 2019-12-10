@@ -18,33 +18,33 @@ spec:
         name: mavencraft
     spec:
       volumes:
-        - name: html
-          hostPath:
-            path: /var/tmp/mavencraft/html
-        - name: world
-          hostPath:
-            path: /var/tmp/mavencraft/world
-        - name: backup
-          hostPath:
-            path: /var/tmp/mavencraft/backup
+      - name: world
+        persistentVolumeClaim:
+          claimName: mavencraft-world
+      - name: html
+        persistentVolumeClaim:
+          claimName: mavencraft-html
+      - name: backup
+        persistentVolumeClaim:
+          claimName: mavencraft-backup
       terminationGracePeriodSeconds: 1
       containers:
       - name: mavencraft-wrapper
         volumeMounts:
-          - mountPath: /home/minecraft/world
-            name: world
-          - mountPath: /home/minecraft/html
-            name: html
-          - mountPath: /home/minecraft/backup
-            name: backup
+        - mountPath: /home/minecraft/world
+          name: world
+        - mountPath: /home/minecraft/html
+          name: html
+        - mountPath: /home/minecraft/backup
+          name: backup
         image: mavencraft:latest
-        resources:
-          requests:
-            memory: "1000Mi"
-            cpu: "10000m"
-          limits:
-            memory: "2000Mi"
-            cpu: "30000m"
+        #resources:
+        #  requests:
+        #    memory: "1000Mi"
+        #    cpu: "10000m"
+        #  limits:
+        #    memory: "2000Mi"
+        #    cpu: "30000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
         ports:
@@ -62,8 +62,8 @@ spec:
         #    port: minecraft-port
         #  initialDelaySeconds: 15
         #  periodSeconds: 20
-        command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
-        #command: ["sleep", "infinity"]
+        #command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
+        command: ["sleep", "infinity"]
         env:
 ---
 apiVersion: extensions/v1beta1
@@ -85,25 +85,25 @@ spec:
         name: maze
     spec:
       volumes:
-        - name: html
-          hostPath:
-            path: /var/tmp/mavencraft/html
-        - name: world
-          hostPath:
-            path: /var/tmp/mavencraft/world
-        - name: backup
-          hostPath:
-            path: /var/tmp/mavencraft/backup
+      - name: world
+        persistentVolumeClaim:
+          claimName: mavencraft-world
+      - name: html
+        persistentVolumeClaim:
+          claimName: mavencraft-html
+      - name: backup
+        persistentVolumeClaim:
+          claimName: mavencraft-backup
       terminationGracePeriodSeconds: 1
       containers:
       - name: maze
         volumeMounts:
-          - mountPath: /home/minecraft/world
-            name: world
-          - mountPath: /home/minecraft/html
-            name: html
-          - mountPath: /home/minecraft/backup
-            name: backup
+        - mountPath: /home/minecraft/world
+          name: world
+        - mountPath: /home/minecraft/html
+          name: html
+        - mountPath: /home/minecraft/backup
+          name: backup
         image: mavencraft:latest
         resources:
           requests:
@@ -114,8 +114,8 @@ spec:
             cpu: "4000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
-        command: ["bundle", "exec", "ruby", "diclophis/maze.rb"]
-        #command: ["sleep", "infinity"]
+        #command: ["bundle", "exec", "ruby", "diclophis/maze.rb"]
+        command: ["sleep", "infinity"]
         env:
           - name: MAVENCRAFT_SERVER
             value: mavencraft-cluster-ip
@@ -141,33 +141,33 @@ spec:
         name: text
     spec:
       volumes:
-        - name: html
-          hostPath:
-            path: /var/tmp/mavencraft/html
-        - name: world
-          hostPath:
-            path: /var/tmp/mavencraft/world
-        - name: backup
-          hostPath:
-            path: /var/tmp/mavencraft/backup
+      - name: world
+        persistentVolumeClaim:
+          claimName: mavencraft-world
+      - name: html
+        persistentVolumeClaim:
+          claimName: mavencraft-html
+      - name: backup
+        persistentVolumeClaim:
+          claimName: mavencraft-backup
       terminationGracePeriodSeconds: 1
       containers:
       - name: text
         volumeMounts:
-          - mountPath: /home/minecraft/world
-            name: world
-          - mountPath: /home/minecraft/html
-            name: html
-          - mountPath: /home/minecraft/backup
-            name: backup
+        - mountPath: /home/minecraft/world
+          name: world
+        - mountPath: /home/minecraft/html
+          name: html
+        - mountPath: /home/minecraft/backup
+          name: backup
         image: mavencraft:latest
-        resources:
-          requests:
-            memory: "2000Mi"
-            cpu: "1000m"
-          limits:
-            memory: "20000Mi"
-            cpu: "8000m"
+        #resources:
+        #  requests:
+        #    memory: "2000Mi"
+        #    cpu: "1000m"
+        #  limits:
+        #    memory: "20000Mi"
+        #    cpu: "8000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
         command: ["sleep", "infinity"]
@@ -196,37 +196,37 @@ spec:
         name: map
     spec:
       volumes:
-        - name: html
-          hostPath:
-            path: /var/tmp/mavencraft/html
-        - name: world
-          hostPath:
-            path: /var/tmp/mavencraft/world
-        - name: backup
-          hostPath:
-            path: /var/tmp/mavencraft/backup
+      - name: world
+        persistentVolumeClaim:
+          claimName: mavencraft-world
+      - name: html
+        persistentVolumeClaim:
+          claimName: mavencraft-html
+      - name: backup
+        persistentVolumeClaim:
+          claimName: mavencraft-backup
       terminationGracePeriodSeconds: 1
       containers:
       - name: mapcrafter
         volumeMounts:
-          - mountPath: /home/minecraft/world
-            name: world
-          - mountPath: /home/minecraft/html
-            name: html
-          - mountPath: /home/minecraft/backup
-            name: backup
+        - mountPath: /home/minecraft/world
+          name: world
+        - mountPath: /home/minecraft/html
+          name: html
+        - mountPath: /home/minecraft/backup
+          name: backup
         image: mavencraft:latest
-        resources:
-          requests:
-            memory: "2000Mi"
-            cpu: "3000m"
-          limits:
-            memory: "3000Mi"
-            cpu: "4000m"
+        #resources:
+        #  requests:
+        #    memory: "2000Mi"
+        #    cpu: "3000m"
+        #  limits:
+        #    memory: "3000Mi"
+        #    cpu: "4000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
-        command: ["bash", "overviewer-run.sh", "30"]
-        #command: ["sleep", "infinity"]
+        #command: ["bash", "overviewer-run.sh", "30"]
+        command: ["sleep", "infinity"]
         env:
           - name: LD_LIBRARY_PATH
             value: /home/minecraft/mapcrafter/src/mapcraftercore
@@ -250,30 +250,30 @@ spec:
         name: web
     spec:
       volumes:
-        - name: html
-          hostPath:
-            path: /var/tmp/mavencraft/html
+      - name: html
+        persistentVolumeClaim:
+          claimName: mavencraft-html
       terminationGracePeriodSeconds: 1
       containers:
       - name: http-server
-        volumeMounts:
-          - mountPath: /home/minecraft/html
-            name: html
         image: mavencraft:latest
-        resources:
-          requests:
-            memory: "200Mi"
-            cpu: "300m"
-          limits:
-            memory: "1000Mi"
-            cpu: "4000m"
+        #resources:
+        #  requests:
+        #    memory: "200Mi"
+        #    cpu: "300m"
+        #  limits:
+        #    memory: "1000Mi"
+        #    cpu: "4000m"
         imagePullPolicy: IfNotPresent
-        workingDir: /home/minecraft/html
+        workingDir: /home/mavencraft/html
         ports:
         - name: web-port
           containerPort: 8080
-        command: ["ruby", "-run", "-ehttpd", ".", "-p8080", "-b0.0.0.0"]
-        #command: ["sleep", "infinity"]
+        #command: ["ruby", "-run", "-ehttpd", ".", "-p8080", "-b0.0.0.0"]
+        command: ["sleep", "infinity"]
+        volumeMounts:
+        - name: html
+          mountPath: /home/mavencraft/html
 ---
 apiVersion: v1
 kind: Service
@@ -323,3 +323,36 @@ spec:
     protocol: TCP
   selector:
     name: "web"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mavencraft-world
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "32Gi"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mavencraft-html
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "32Gi"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mavencraft-backup
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "32Gi"
