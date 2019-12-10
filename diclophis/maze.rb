@@ -374,10 +374,10 @@ global_painter.async do
           drawn[key] = true
         end
 
-        break if count_drawn_this_poscheck > 4096
+        break if count_drawn_this_poscheck > (4096)
       end
     end
 
-    sleep 0.13
+    sleep (1.0/60.0)
   end
 end

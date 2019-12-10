@@ -22,7 +22,7 @@ LOG_CONF=
 java --version
 
 #JVM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=1 -XX:+UseG1GC -XX:ParallelGCThreads=1024 -XX:ConcGCThreads=1024 -XX:InitiatingHeapOccupancyPercent=70"
-JVM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=1 -XX:+UseG1GC -XX:ParallelGCThreads=256 -XX:ConcGCThreads=256 -XX:InitiatingHeapOccupancyPercent=0 -XX:+AggressiveOpts"
+JVM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=1 -XX:+UseG1GC -XX:ParallelGCThreads=32 -XX:ConcGCThreads=32 -XX:InitiatingHeapOccupancyPercent=0 -XX:+AggressiveOpts"
 
 
 ruby $MAVENCRAFT_WRAPPER java ${LOG_CONF} ${JVM_ARGS} -server -jar $JAR --port $MINECRAFT_PORT nogui
