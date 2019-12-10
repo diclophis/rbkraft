@@ -42,14 +42,14 @@ adduser --system --home /home/minecraft minecraft
 
 cd /home/minecraft
 
-git clone https://github.com/mapcrafter/mapcrafter.git
-
-cd /home/minecraft/mapcrafter
-git checkout master
-
-cmake .
-make clean
-make -j
-make install
-ldconfig
+#git clone https://github.com/mapcrafter/mapcrafter.git
+#
+#cd /home/minecraft/mapcrafter
+#git checkout master
+#
+#cmake .
+#make clean
+#make
+#make install
+#ldconfig
 

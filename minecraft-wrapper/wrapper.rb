@@ -16,9 +16,9 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 512 * 32
-READ_CHUNKS_REMOTE = 8 # 512 * 32
-COMMANDS_PER_MOD = 2
+READ_CHUNKS = 32 #512 * 32
+READ_CHUNKS_REMOTE = 32 # # 512 * 32
+COMMANDS_PER_MOD = 1
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -173,7 +173,7 @@ class Wrapper
         else
           #TODO: keep on global scanner?
           #TODO: yes
-          puts broadcast_bytes
+          #puts broadcast_bytes
           self.clients.each do |io, client|
             client.broadcast_scanner << broadcast_bytes if client.authentic
           end
@@ -301,7 +301,7 @@ class Wrapper
           begin
             if client.async
             else
-              puts "response >> #{broadcast_line}"
+              #puts "response >> #{broadcast_line}"
               writable_io.write(broadcast_line)
             end
           rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e

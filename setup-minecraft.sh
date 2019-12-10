@@ -5,16 +5,32 @@ set -e
 
 mkdir /home/minecraft/plugins
 ln -s /home/minecraft/cache/VirtualPlayers2.jar /home/minecraft/plugins
-ln -s /home/minecraft/cache/EssentialsX-2.15.0.60.jar /home/minecraft/plugins
+ln -s /home/minecraft/cache/EssentialsX-2.17.1.19.jar /home/minecraft/plugins
 
 ls -l /home/minecraft/cache
 
+apt update && apt install -y openssh-client
+mkdir ~/.ssh
+touch ~/.ssh/known_hosts
+ssh-keygen -R github.com
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+cd /home/minecraft
+git clone --depth=1 https://github.com/mapcrafter/mapcrafter.git
+#git clone git@github.com:mapcrafter/mapcrafter.git
+
 cd /home/minecraft/mapcrafter
+git checkout master
+
+cmake .
+make clean
+make
+make install
+ldconfig
 
 mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.13.2.jar /home/minecraft/mapcrafter/src/data/textures
 mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.12.2.jar /home/minecraft/mapcrafter/src/data/textures
 
-make -j
+make
 make install
 ldconfig
 
@@ -27,7 +43,7 @@ git checkout tags/0.3.3
 mkdir build
 cd build
 cmake ..
-make -j
+make
 make install
 
 #################################
@@ -39,4 +55,4 @@ git checkout master
 mkdir build
 cd build
 cmake ..
-make -j
+make

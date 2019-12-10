@@ -33,7 +33,7 @@ unless File.exists?(newtmp) && File.exists?("#{newtmp}.vox")
   system("ls -l #{TMPROOT}")
 
   system("meshlabserver -i #{newtmp} -o #{newtmp}-1.stl -s openscad/foop-normalized-y.mlx") || exit(1)
-  system("/home/minecraft/voxelizer/build/bin/voxelizer #{SIZE} 32 #{newtmp}-1.stl #{newtmp}.vox") || exit(1)
+  system("/home/minecraft/voxelizer/build/bin/voxelizer #{SIZE} 4 #{newtmp}-1.stl #{newtmp}.vox") || exit(1)
 end
 
 tmp_stl.close

@@ -1,7 +1,6 @@
 *.deb
 nohup.out
 *.jar
-eula.txt
 *.stl
 *.obj
 

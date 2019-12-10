@@ -19,7 +19,7 @@ class Maze
     @wid = 1
 
     # size of map in map coordinate space
-    @size = 2048
+    @size = 64
 
     # size of map unit in voxel coordinate space
     @unit = 32
@@ -294,7 +294,7 @@ maze = Maze.new
 puts "generated"
 
 global_painter = DiclophisWorldPainter.new(true, oox, ooy, ooz)
-puts "connected #{T}"
+puts "connected #{global_painter}"
 
 drawn = {}
 

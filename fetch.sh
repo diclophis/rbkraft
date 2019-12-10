@@ -46,9 +46,9 @@ curl_sha_checksum_fetch \
   "f141e1f40498d5660804bb1b1059a7626205992c"
 
 curl_sha_checksum_fetch \
-  "EssentialsX-2.15.0.60.jar" \
-  "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/Essentials/target/EssentialsX-2.15.0.60.jar" \
-  "dcddaae1ba7b48ea4d7a079333021372525c2dd8"
+  "EssentialsX-2.17.1.19.jar" \
+  "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/Essentials/target/EssentialsX-2.17.1.19.jar" \
+  "5d26b4732d1b87134249b5258588af7f48329014"
 
 curl_sha_checksum_fetch \
   "craftbukkit-server-1.12.2.jar" \
