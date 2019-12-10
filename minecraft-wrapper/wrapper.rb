@@ -16,9 +16,15 @@ $TOTAL_COMMANDS=0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
-READ_CHUNKS = 1
-READ_CHUNKS_REMOTE = 2 # 59 ... 512 * 32
-COMMANDS_PER_MOD = 2048
+
+#READ_CHUNKS = 1
+#READ_CHUNKS_REMOTE = 2 # 59 ... 512 * 32
+#COMMANDS_PER_MOD = 2048
+
+READ_CHUNKS = 64 #512 * 32
+READ_CHUNKS_REMOTE = 64 # # 512 * 32
+COMMANDS_PER_MOD = 2
+
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
@@ -315,7 +321,7 @@ class Wrapper
           begin
             if client.async
             else
-              puts "response >> #{broadcast_line}"
+              #puts "response >> #{broadcast_line}"
               writable_io.write(broadcast_line)
             end
           rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
