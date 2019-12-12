@@ -381,7 +381,9 @@ class WorldPainter
         position = []
 
         while line = client.gets
-puts [:debug, line].inspect
+
+#puts [:debug, line].inspect
+
           [:x, :y, :z].each do |c|
             coord_search_string = c.to_s.upcase + ": "
             if line.include?(coord_search_string)
@@ -392,12 +394,14 @@ puts [:debug, line].inspect
           break if line.include?("Pitch")
         end
 
-puts [:position, position].inspect
+#puts [:position, position].inspect
 
         Vector.new(position)
       end
     rescue Timeout::Error => _
-puts [:timeout]
+
+#puts [:timeout]
+
       Vector.new(fallback) if fallback
     end
   end

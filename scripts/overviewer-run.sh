@@ -20,6 +20,7 @@ $MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1
 
 while true;
 do
+  sleep 3
   if [ -e $MINECRAFT_ROOT/world/level.dat ];
   then
     cat $MINECRAFT_ROOT/normal-save.cmd | nc -w 1 mavencraft-cluster-ip 31505 2>&1 > /dev/null

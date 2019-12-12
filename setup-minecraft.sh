@@ -15,11 +15,11 @@ touch ~/.ssh/known_hosts
 ssh-keygen -R github.com
 ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 cd /home/minecraft
-git clone --depth=1 https://github.com/mapcrafter/mapcrafter.git
+git clone https://github.com/mapcrafter/mapcrafter.git
 #git clone git@github.com:mapcrafter/mapcrafter.git
 
 cd /home/minecraft/mapcrafter
-git checkout master
+git checkout world113
 
 cmake .
 make clean

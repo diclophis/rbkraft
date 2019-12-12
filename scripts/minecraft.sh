@@ -16,12 +16,14 @@ MAVENCRAFT_WRAPPER=$MINECRAFT_ROOT/minecraft-wrapper/server2.rb
 
 cd $MINECRAFT_ROOT
 
-LOG_CONF=-Dlog4j.configurationFile=log4j2.xml
+#LOG_CONF=-Dlog4j.configurationFile=log4j2.xml
 LOG_CONF=
 
 java --version
 
-#JVM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=1 -XX:+UseG1GC -XX:ParallelGCThreads=1024 -XX:ConcGCThreads=1024 -XX:InitiatingHeapOccupancyPercent=70"
-JVM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=33 -XX:+UseG1GC -XX:ParallelGCThreads=1 -XX:ConcGCThreads=1 -XX:InitiatingHeapOccupancyPercent=0 -XX:+AggressiveOpts"
+#JVM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=1 -XX:+UseG1GC -XX:ParallelGCThreads=1024 -XX:ConcGCThreads=1024 -XX:InitiatingHeapOccupancyPercent=70 -XX:+AggressiveOpts"
+#JVM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=33 -XX:+UseG1GC -XX:ParallelGCThreads=1 -XX:ConcGCThreads=1 -XX:InitiatingHeapOccupancyPercent=0 -XX:+AggressiveOpts"
+#VM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=1000 -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=4 -XX:InitiatingHeapOccupancyPercent=0 -XX:+AggressiveOpts"
+VM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=1000 -XX:+UseG1GC -XX:ParallelGCThreads=8 -XX:ConcGCThreads=4 -XX:InitiatingHeapOccupancyPercent=0"
 
 ruby $MAVENCRAFT_WRAPPER java ${LOG_CONF} ${JVM_ARGS} -server -jar $JAR --port $MINECRAFT_PORT nogui

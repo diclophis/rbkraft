@@ -18,7 +18,7 @@ USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
 
 READ_CHUNKS = 102400
-READ_CHUNKS_REMOTE = 1 # 59 ... 512 * 32
+READ_CHUNKS_REMOTE = 10240 # 59 ... 512 * 32
 COMMANDS_PER_MOD = 1
 
 #READ_CHUNKS = 64 #512 * 32
@@ -231,7 +231,6 @@ class Wrapper
           if stripped_command.length > 0
             count_per_client += 1
 
-
             if stripped_command == "exit"
               close_client(io, Exception.new("exit"))
             elsif stripped_command == "async" #NOTE: this doesnt do much now
@@ -243,7 +242,7 @@ class Wrapper
               else
                 self.full_commands_waiting_to_be_written_to_minecraft.unshift(stripped_command)
                 #self.full_commands_waiting_to_be_written_to_minecraft << stripped_command
-                break
+                #break
               end
             end
           end
@@ -254,9 +253,9 @@ class Wrapper
           end
         end
 
-        if count_per_client > (COMMANDS_PER_MOD / (self.clients.length+1))
-          break
-        end
+        #if count_per_client > (COMMANDS_PER_MOD / (self.clients.length+1))
+        #  break
+        #end
       end
     end
 
@@ -265,7 +264,7 @@ class Wrapper
 
     total_delta = 0
 
-    #if (start - self.time_since_last_process) > (1.0 / 10.0) #10fps
+    if (start - self.time_since_last_process) > (1.0 / 33.0) #10fps
       while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
         commands_this_tick = full_command_line.length
 
@@ -279,12 +278,12 @@ class Wrapper
         total_delta += commands_this_tick
 
         #sleep 0.001
-        break
+        #break
       end
 
       #sleep 1.0/120.0
       self.time_since_last_process = Time.now
-    #end
+    end
 
     duration = Time.now - start
 

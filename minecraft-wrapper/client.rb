@@ -28,19 +28,19 @@ class MinecraftClient
     last_error = nil
 
     loop {
-        begin
-          Timeout::timeout(5) do
-            @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "127.0.0.1", ENV["MAVENCRAFT_PORT"] || 25566)
-            $stderr.puts("made_connect")
-          end
-
-          break
-        rescue Timeout::Error, SocketError => e
-          $stderr.puts("err_connect #{e}")
-
-          last_error = e
-          sleep 1
+      begin
+        Timeout::timeout(5) do
+          @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "127.0.0.1", ENV["MAVENCRAFT_PORT"] || 25566)
+          $stderr.puts("made_connect")
         end
+
+        break
+      rescue Timeout::Error, SocketError => e
+        $stderr.puts("err_connect #{e}")
+
+        last_error = e
+        sleep 1
+      end
     }
 
     raise "not connected #{last_error}" unless @server_io
@@ -87,6 +87,7 @@ class MinecraftClient
     begin
       self.command_count += 1
       @server_io.puts(command_line)
+      sleep 0.000075
     rescue Errno::EPIPE => e
       exit 1
     end
