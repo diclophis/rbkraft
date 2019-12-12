@@ -80,7 +80,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 0
-  replicas: 1
+  replicas: 0
   template:
     metadata:
       labels:
@@ -227,7 +227,7 @@ spec:
         #    cpu: "4000m"
         imagePullPolicy: IfNotPresent
         workingDir: /home/minecraft
-        command: ["bash", "overviewer-run.sh", "2"]
+        command: ["bash", "overviewer-run.sh", "32"]
         #command: ["sleep", "infinity"]
         env:
           - name: LD_LIBRARY_PATH

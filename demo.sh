@@ -8,9 +8,9 @@ bash run-gen-text.sh "mavencraft.net" | bash run-vox-blit.sh 1200 256 16 256 dir
 #bash run-gen-scad.sh openscad/sphere.scad | bash run-vox-blit.sh 256 0 -32 0 iron_bars
 #bash run-gen-scad.sh openscad/sphere.scad | bash run-vox-blit.sh 256 0 -32 0 iron_bars
 
-bash run-gen-scad.sh openscad/sphere.scad | bash run-vox-blit.sh 48 0 0 0 sandstone
+bash run-gen-scad.sh openscad/sphere.scad | bash run-vox-blit.sh 48 0 -16 0 sandstone
 
-bash run-gen-synth.sh openscad/structure-synth.mlx eisenscript/frames.es | bash run-vox-blit.sh 400 0 -20 0 obsidian
+bash run-gen-synth.sh openscad/structure-synth.mlx eisenscript/frames.es | bash run-vox-blit.sh 400 0 -20 0 sandstone
 
 #bash run-gen-synth.sh openscad/structure-synth.mlx eisenscript/pyramid.es | bash run-vox-blit.sh 720 512 -32 0 sandstone
 
