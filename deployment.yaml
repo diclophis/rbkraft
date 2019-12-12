@@ -63,7 +63,8 @@ spec:
         #  initialDelaySeconds: 15
         #  periodSeconds: 20
         #command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
-        command: ["bash", "minecraft.sh", "1000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
+        #command: ["bash", "minecraft.sh", "1000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
+        command: ["bash", "minecraft.sh", "8000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar"]
         #command: ["sleep", "infinity"]
         env:
 ---
@@ -190,7 +191,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 0
-  replicas: 1
+  replicas: 0
   template:
     metadata:
       labels:
@@ -332,84 +333,3 @@ spec:
     protocol: TCP
   selector:
     name: "web"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: mavencraft-world
-spec:
-  storageClassName: manual-world
-  accessModes:
-    - "ReadWriteMany"
-  resources:
-    requests:
-      storage: "3Gi"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: mavencraft-html
-spec:
-  storageClassName: manual-html
-  accessModes:
-    - "ReadWriteMany"
-  resources:
-    requests:
-      storage: "3Gi"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: mavencraft-backup
-spec:
-  storageClassName: manual-backup
-  accessModes:
-    - "ReadWriteMany"
-  resources:
-    requests:
-      storage: "3Gi"
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mavencraft-world-volume
-  labels:
-    type: local
-spec:
-  storageClassName: manual-world
-  capacity:
-    storage: 30Gi
-  accessModes:
-    - ReadWriteMany
-  hostPath:
-    path: "/var/tmp/mavencraft/world"
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mavencraft-html-volume
-  labels:
-    type: local
-spec:
-  storageClassName: manual-html
-  capacity:
-    storage: 30Gi
-  accessModes:
-    - ReadWriteMany
-  hostPath:
-    path: "/var/tmp/mavencraft/html"
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mavencraft-backup-volume
-  labels:
-    type: local
-spec:
-  storageClassName: manual-backup
-  capacity:
-    storage: 30Gi
-  accessModes:
-    - ReadWriteMany
-  hostPath:
-    path: "/var/tmp/mavencraft/backup"

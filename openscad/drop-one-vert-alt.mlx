@@ -1,0 +1,11 @@
+<!DOCTYPE FilterScript>
+<FilterScript>
+ <filter name="Per Vertex Quality Function">
+  <Param type="RichString" value="vi" name="q"/>
+  <Param type="RichBool" value="false" name="normalize"/>
+  <Param type="RichBool" value="false" name="map"/>
+ </filter>
+ <filter name="Remove Vertices wrt Quality">
+  <Param type="RichAbsPerc" value="1.0" min="0" name="MaxQualityThr" max="267"/>
+ </filter>
+</FilterScript>

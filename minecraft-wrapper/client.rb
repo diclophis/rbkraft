@@ -3,6 +3,7 @@
 require 'zlib'
 require 'open3'
 require 'socket'
+require 'timeout'
 
 class MinecraftClient
   attr_accessor :async
@@ -10,7 +11,7 @@ class MinecraftClient
   attr_accessor :gzip_buffer_pump
   attr_accessor :command_count
 
-  READ_CHUNK = 8 * 8 * 1024
+  READ_CHUNK = 8 * 8 * 8 * 1024
 
   def initialize(async = false)
     self.async = async
@@ -22,16 +23,24 @@ class MinecraftClient
   end
 
   def connect
+    $stderr.puts("try_connect")
+
     last_error = nil
 
-    5.times {
-      begin
-        @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "127.0.0.1", ENV["MAVENCRAFT_PORT"] || 25566)
-        break
-      rescue SocketError => e
-        last_error = e
-        sleep 1
-      end
+    loop {
+        begin
+          Timeout::timeout(5) do
+            @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || "127.0.0.1", ENV["MAVENCRAFT_PORT"] || 25566)
+            $stderr.puts("made_connect")
+          end
+
+          break
+        rescue Timeout::Error, SocketError => e
+          $stderr.puts("err_connect #{e}")
+
+          last_error = e
+          sleep 1
+        end
     }
 
     raise "not connected #{last_error}" unless @server_io
@@ -122,5 +131,6 @@ if __FILE__ == $0
     end
   rescue EOFError => closed
     client.disconnect
+    puts [:wrote_closed, client.command_count].inspect
   end
 end

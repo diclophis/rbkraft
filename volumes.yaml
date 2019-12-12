@@ -1,0 +1,81 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mavencraft-world
+spec:
+  storageClassName: manual-world
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "3Gi"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mavencraft-html
+spec:
+  storageClassName: manual-html
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "3Gi"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mavencraft-backup
+spec:
+  storageClassName: manual-backup
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: "3Gi"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mavencraft-world-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual-world
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/var/tmp/mavencraft/world"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mavencraft-html-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual-html
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/var/tmp/mavencraft/html"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mavencraft-backup-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual-backup
+  capacity:
+    storage: 30Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/var/tmp/mavencraft/backup"

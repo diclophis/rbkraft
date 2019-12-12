@@ -307,7 +307,7 @@ global_painter.async do
     if connected_players.empty?
       sleep 3
     else
-      puts connected_players.inspect
+      puts [:loop, connected_players].inspect
     end
 
     connected_players.each do |pd|
@@ -329,9 +329,9 @@ global_painter.async do
       player_position = global_painter.player_position(player_name, fallback_player_position)
 
       remapped = [player_position.x, player_position.y, player_position.z]
-      puts [player_name, remapped].inspect
+      #puts [player_name, remapped].inspect
 
-      puts [Time.now, pd, global_painter.client.command_count, player_position, fallback_player_position].inspect
+      puts [:each_player, Time.now, pd, global_painter.client.command_count, player_position, fallback_player_position].inspect
       #[].each do |x,y,z,t|
 
       count_drawn_this_poscheck = 0
@@ -345,39 +345,46 @@ global_painter.async do
 
         key = "#{x}/#{y}#{z}/#{t}"
         unless drawn[key]
-          count_drawn_this_poscheck += 1
-
           case t
-            when :air
-              global_painter.place(x, y, z, global_painter.air_type)
+            #when :air
+            #  global_painter.place(x, y, z, global_painter.air_type)
             when :stone
               global_painter.place(x, y, z, global_painter.sandstone_type)
+              count_drawn_this_poscheck += 1
             when :stonex
               global_painter.place(x, y, z, global_painter.type)
+              count_drawn_this_poscheck += 1
             when :glow
               global_painter.place(x, y, z, global_painter.glow_type)
+              count_drawn_this_poscheck += 1
             when :torch
               global_painter.place(x, y, z, global_painter.torch_type)
+              count_drawn_this_poscheck += 1
             when :beacon
               global_painter.place(x, y, z, global_painter.beacon_type)
+              count_drawn_this_poscheck += 1
             when :lantern
               global_painter.place(x, y, z, global_painter.lantern_type)
+              count_drawn_this_poscheck += 1
             when :lava
               global_painter.place(x, y, z, global_painter.lava_type)
+              count_drawn_this_poscheck += 1
             when :quartz
               global_painter.place(x, y, z, global_painter.quartz_type)
+              count_drawn_this_poscheck += 1
             when :water
               global_painter.place(x, y, z, global_painter.water_type)
+              count_drawn_this_poscheck += 1
           else
           end
 
           drawn[key] = true
         end
 
-        break if count_drawn_this_poscheck > (4096)
+        break if count_drawn_this_poscheck > (1024)
       end
     end
 
-    sleep (1.0/60.0)
+    sleep (1.0) #/60.0)
   end
 end

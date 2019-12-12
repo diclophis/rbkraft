@@ -24,16 +24,23 @@ tmp_stl.flush
 
 puts tmp_stl.path
 shasum = IO.popen("shasum #{tmp_stl.path}").read.split(" ")[0]
+Process.wait rescue Errno::ECHILD
 
 newtmp = File.join(TMPROOT, "#{SIZE}-#{shasum}.stl")
 
 unless File.exists?(newtmp) && File.exists?("#{newtmp}.vox")
   puts [:copying_and_voxelizing, tmp_stl.path, newtmp].inspect
   FileUtils.copy(tmp_stl.path, newtmp)
+
   system("ls -l #{TMPROOT}")
+  Process.wait rescue Errno::ECHILD
 
   system("meshlabserver -i #{newtmp} -o #{newtmp}-1.stl -s openscad/foop-normalized-y.mlx") || exit(1)
+  Process.wait rescue Errno::ECHILD
+
   system("/home/minecraft/voxelizer/build/bin/voxelizer #{SIZE} 4 #{newtmp}-1.stl #{newtmp}.vox") || exit(1)
+  Process.wait rescue Errno::ECHILD
+
 end
 
 tmp_stl.close

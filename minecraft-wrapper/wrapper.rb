@@ -17,13 +17,13 @@ $TOTAL_COMMANDS=0
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
 
-#READ_CHUNKS = 1
-#READ_CHUNKS_REMOTE = 2 # 59 ... 512 * 32
-#COMMANDS_PER_MOD = 2048
+READ_CHUNKS = 102400
+READ_CHUNKS_REMOTE = 1 # 59 ... 512 * 32
+COMMANDS_PER_MOD = 1
 
-READ_CHUNKS = 64 #512 * 32
-READ_CHUNKS_REMOTE = 64 # # 512 * 32
-COMMANDS_PER_MOD = 2
+#READ_CHUNKS = 64 #512 * 32
+#READ_CHUNKS_REMOTE = 64 # # 512 * 32
+#COMMANDS_PER_MOD = 2
 
 CLIENTS_DEFAULT_ASYNC = false
 
@@ -241,7 +241,8 @@ class Wrapper
                 self.full_commands_waiting_to_be_written_to_minecraft.unshift(full_command_line)
                 close_client(io, Exception.new("saved: #{full_command_line}")) unless client.async
               else
-                self.full_commands_waiting_to_be_written_to_minecraft << stripped_command
+                self.full_commands_waiting_to_be_written_to_minecraft.unshift(stripped_command)
+                #self.full_commands_waiting_to_be_written_to_minecraft << stripped_command
                 break
               end
             end
@@ -264,7 +265,7 @@ class Wrapper
 
     total_delta = 0
 
-    if (start - self.time_since_last_process) > (1.0 / 60.0) #10fps
+    #if (start - self.time_since_last_process) > (1.0 / 10.0) #10fps
       while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
         commands_this_tick = full_command_line.length
 
@@ -283,7 +284,7 @@ class Wrapper
 
       #sleep 1.0/120.0
       self.time_since_last_process = Time.now
-    end
+    #end
 
     duration = Time.now - start
 

@@ -41,16 +41,21 @@ curl_sha_checksum_fetch \
   "0f275bc1547d01fa5f56ba34bdc87d981ee12daf"
 
 curl_sha_checksum_fetch \
-  "VirtualPlayers2.jar" \
-  "https://media.forgecdn.net/files/2521/240/VirtualPlayers2.jar" \
-  "f141e1f40498d5660804bb1b1059a7626205992c"
+  "VirtualPlayers.jar" \
+  "https://media.forgecdn.net/files/2763/496/VirtualPlayers.jar" \
+  "4e43d777c7aba08882ff2f9ef24850f80e90804d"
 
 curl_sha_checksum_fetch \
-  "EssentialsX-2.17.1.21.jar" \
-  "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/Essentials/target/EssentialsX-2.17.1.21.jar" \
-  "b6df239f2dfaa7ca1cfa30de0346aa428a89343e"
+  "EssentialsX-2.17.1.25.jar" \
+  "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/Essentials/target/EssentialsX-2.17.1.25.jar" \
+  "76d179b863c200db6d91279ebcc7b72241b71525"
 
 curl_sha_checksum_fetch \
   "craftbukkit-server-1.12.2.jar" \
   "https://cdn.getbukkit.org/craftbukkit/craftbukkit-1.12.2.jar" \
   "3aefd516366d91cc8d182bb8bdad46b8ba7d13c2"
+
+curl_sha_checksum_fetch \
+  "craftbukkit-1.14.4-R0.1-SNAPSHOT.jar" \
+  "https://cdn.getbukkit.org/craftbukkit/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar" \
+  "94cfd13aa142a404affc9ddc29ba0fe3c604323c"

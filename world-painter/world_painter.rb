@@ -377,23 +377,37 @@ class WorldPainter
     execute("getpos #{player_name}")
 
     begin
-      Timeout.timeout(0.33) do
+      Timeout.timeout(1.0) do
         position = []
 
         while line = client.gets
+puts [:debug, line].inspect
           [:x, :y, :z].each do |c|
-            if line.include?(c.to_s.upcase + ": ")
-              comps = line.split(" ").to_a
-              position << comps.at(3).gsub(",", "").to_f
+            coord_search_string = c.to_s.upcase + ": "
+            if line.include?(coord_search_string)
+              comps = line[line.index(coord_search_string), line.length].split(" ").to_a
+              position << comps.at(1).gsub(",", "").to_f
             end
           end
           break if line.include?("Pitch")
         end
 
+puts [:position, position].inspect
+
         Vector.new(position)
       end
     rescue Timeout::Error => _
+puts [:timeout]
       Vector.new(fallback) if fallback
     end
   end
+
+#[04:30:55] [Server thread/INFO]: CONSOLE issued server command: /getpos diclophis
+#[04:30:55] [Server thread/INFO]: Current World: world
+#[04:30:55] [Server thread/INFO]: X: -82 (+East <-> -West)
+#[04:30:55] [Server thread/INFO]: Y: 44 (+Up <-> -Down)
+#[04:30:55] [Server thread/INFO]: Z: -103 (+South <-> -North)
+#[04:30:55] [Server thread/INFO]: Yaw: 318.6 (Rotation)
+#[04:30:55] [Server thread/INFO]: Pitch: 31.65 (Head angle)
+
 end

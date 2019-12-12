@@ -4,8 +4,8 @@ set -x
 set -e
 
 mkdir /home/minecraft/plugins
-ln -s /home/minecraft/cache/VirtualPlayers2.jar /home/minecraft/plugins
-ln -s /home/minecraft/cache/EssentialsX-2.17.1.19.jar /home/minecraft/plugins
+ln -s /home/minecraft/cache/VirtualPlayers.jar /home/minecraft/plugins
+ln -s /home/minecraft/cache/EssentialsX-2.17.1.25.jar /home/minecraft/plugins
 
 ls -l /home/minecraft/cache
 
@@ -23,14 +23,15 @@ git checkout master
 
 cmake .
 make clean
-make
+make -j16
 make install
 ldconfig
 
-mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.13.2.jar /home/minecraft/mapcrafter/src/data/textures
 mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.12.2.jar /home/minecraft/mapcrafter/src/data/textures
+mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.13.2.jar /home/minecraft/mapcrafter/src/data/textures
+mapcrafter_textures.py /home/minecraft/cache/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar /home/minecraft/mapcrafter/src/data/textures
 
-make
+make -j
 make install
 ldconfig
 
@@ -43,7 +44,7 @@ git checkout tags/0.3.3
 mkdir build
 cd build
 cmake ..
-make
+make -j
 make install
 
 #################################
@@ -55,4 +56,4 @@ git checkout master
 mkdir build
 cd build
 cmake ..
-make
+make -j

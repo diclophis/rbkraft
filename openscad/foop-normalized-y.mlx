@@ -22,4 +22,9 @@
   <Param type="RichBool" value="true" name="Freeze"/>
   <Param type="RichBool" value="false" name="ToAll"/>
  </filter>
+ <filter name="Per Vertex Quality Function">
+  <Param type="RichString" value="vi" name="q"/>
+  <Param type="RichBool" value="false" name="normalize"/>
+  <Param type="RichBool" value="false" name="map"/>
+ </filter>
 </FilterScript>
