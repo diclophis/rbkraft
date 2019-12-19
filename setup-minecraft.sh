@@ -57,3 +57,7 @@ mkdir build
 cd build
 cmake ..
 make -j
+
+curl -v -L -o /var/tmp/binvox "http://www.patrickmin.com/binvox/linux64/binvox?rnd=1576566018642542"
+chmod +x /var/tmp/binvox
+mv /var/tmp/binvox /usr/bin/binvox
