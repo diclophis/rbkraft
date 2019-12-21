@@ -332,7 +332,6 @@ global_painter.async do
       #puts [player_name, remapped].inspect
 
       #puts [:each_player, Time.now, pd, global_painter.client.command_count, player_position, fallback_player_position].inspect
-      #[].each do |x,y,z,t|
 
       count_drawn_this_poscheck = 0
       maze.each_bit(remapped) do |x,y,z,t|
@@ -385,6 +384,6 @@ global_painter.async do
       end
     end
 
-    sleep (1.0/5.0)
+    sleep (1.0/10.0)
   end
 end

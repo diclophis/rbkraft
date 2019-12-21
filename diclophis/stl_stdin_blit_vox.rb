@@ -26,28 +26,27 @@ puts tmp_stl.path
 shasum = IO.popen("shasum #{tmp_stl.path}").read.split(" ")[0]
 Process.wait rescue Errno::ECHILD
 
-newtmp = File.join(TMPROOT, "#{SIZE}-#{shasum}.stl")
+newtmp = File.join(TMPROOT, "#{SIZE}-#{shasum}")
 
-unless File.exists?(newtmp) && File.exists?("#{newtmp}.vox")
+#unless File.exists?(newtmp) && File.exists?("#{newtmp}.vox")
   puts [:copying_and_voxelizing, tmp_stl.path, newtmp].inspect
-  FileUtils.copy(tmp_stl.path, newtmp)
+  FileUtils.copy(tmp_stl.path, newtmp + ".stl")
 
   system("ls -l #{TMPROOT}")
   Process.wait rescue Errno::ECHILD
 
-  system("meshlabserver -i #{newtmp} -o #{newtmp}-1.stl -s openscad/foop-normalized-y.mlx") || exit(1)
-  Process.wait rescue Errno::ECHILD
+  #system("meshlabserver -i #{newtmp} -o #{newtmp}-1.stl -s openscad/foop-normalized-y.mlx") || exit(1)
+  #Process.wait rescue Errno::ECHILD
 
   #system("/home/minecraft/voxelizer/build/bin/voxelizer #{SIZE} 1 #{newtmp}-1.stl #{newtmp}.vox") || exit(1)
 
-  system("/usr/bin/binvox -d #{SIZE} -e #{newtmp}-1.stl") || exit(1)
+  system("/usr/bin/binvox -d #{SIZE} -e #{newtmp}.stl") || exit(1)
   Process.wait rescue Errno::ECHILD
-
-end
+#end
 
 tmp_stl.close
 
-system("ruby", "diclophis/binvox2cmd.rb", "#{newtmp}-1.binvox", X.to_s, Y.to_s, Z.to_s, T.to_s) || exit(1)
+system("ruby", "diclophis/binvox2cmd.rb", "#{newtmp}.binvox", X.to_s, Y.to_s, Z.to_s, T.to_s) || exit(1)
 Process.wait rescue Errno::ECHILD
 
 #def pop_input(inp)
