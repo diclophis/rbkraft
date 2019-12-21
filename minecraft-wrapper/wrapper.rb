@@ -7,19 +7,15 @@ require 'fcntl'
 require 'strscan'
 require 'logger'
 
-#1 #1024 #* 8 * 32 #(FIXNUM_MAX / (1024 * 1024 * 1024)) #(FIXNUM_MAX / 4096) #1024 * 32 * 32
-#FIXNUM_MAX #1 # * 32 #(FIXNUM_MAX / 4096) #1024 * 32 * 32
-#1 #1024 #(1024 ^ 4) #COMMANDS_PER_SWEEP / 4 #128 * 4
-#COMMANDS_PER_SWEEP = 128 * 128 #32 * 32 #256 * 4 * 2
-
-$TOTAL_COMMANDS=0
+$TOTAL_COMMANDS = 0
+$TOTAL_REPLYS = 0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
 
-READ_CHUNKS = 102400
-READ_CHUNKS_REMOTE = 10240 # 59 ... 512 * 32
-COMMANDS_PER_MOD = 2
+READ_CHUNKS = 1024
+READ_CHUNKS_REMOTE = 1024 # 59 ... 512 * 32
+COMMANDS_PER_MOD = 128
 
 #READ_CHUNKS = 64 #512 * 32
 #READ_CHUNKS_REMOTE = 64 # # 512 * 32
@@ -42,13 +38,15 @@ class Wrapper
                 :logger,
                 :time_since_last_stat,
                 :count_since_last,
-                :time_since_last_process
+                :time_since_last_process,
+                :confirmed_since_last
 
   def initialize(logger, descriptors, argv)
     @count = 0
 
     self.time_since_last_process = self.time_since_last_stat = Time.now
     self.count_since_last = 0
+    self.confirmed_since_last = 0
 
     self.logger = logger
     self.full_commands_waiting_to_be_written_to_minecraft = []
@@ -81,10 +79,6 @@ class Wrapper
     #self.logger.level = :debug
     puts "starting"
   end
-
-  #def puts(*args)
-  #  self.logger.debug(args.join.strip)
-  #end
 
   def install_trap
     Signal.trap("INT") do
@@ -172,12 +166,16 @@ class Wrapper
       end
 
       if broadcast_bytes
+        $TOTAL_REPLYS += broadcast_bytes.count("\n")
+
         broadcast_bytes.gsub!("\b", "")
         broadcast_bytes.squeeze!(" ")
 
         if broadcast_bytes.length == 0
           return
         else
+          #puts "OUT: #{broadcast_bytes.inspect}"
+
           #TODO: keep on global scanner?
           #TODO: yes
           #puts broadcast_bytes
@@ -252,10 +250,6 @@ class Wrapper
             close_client(io, Exception.new("not authentic: #{full_command_line}"))
           end
         end
-
-        #if count_per_client > (COMMANDS_PER_MOD / (self.clients.length+1))
-        #  break
-        #end
       end
     end
 
@@ -264,26 +258,22 @@ class Wrapper
 
     total_delta = 0
 
-    if (start - self.time_since_last_process) > (1.0 / 33.0) #10fps
-      while ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
-        commands_this_tick = full_command_line.length
+    ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
+      commands_this_tick = full_command_line.length
 
-        full_command_line.each do |fcl|
-          blob = fcl.strip #full_command_line.join("\n")
+      full_command_line.each do |fcl|
+        blob = fcl.strip
 
-          write_minecraft_command(blob)
-        end
-
-        $TOTAL_COMMANDS += commands_this_tick
-        total_delta += commands_this_tick
-
-        #sleep 0.001
-        #break
+        write_minecraft_command(blob)
       end
 
-      #sleep 1.0/120.0
-      self.time_since_last_process = Time.now
-    end
+      $TOTAL_COMMANDS += commands_this_tick
+      total_delta += commands_this_tick
+
+      #break if total_delta > 100
+    #end
+
+    self.time_since_last_process = Time.now
 
     duration = Time.now - start
 
@@ -292,16 +282,22 @@ class Wrapper
     if since_time > 1.0
       self.time_since_last_stat = Time.now
       old_count = self.count_since_last
+      old_repl = self.confirmed_since_last
 
       self.count_since_last = $TOTAL_COMMANDS
+      self.confirmed_since_last = $TOTAL_REPLYS
+
       per_tick = ($TOTAL_COMMANDS - old_count)
+      per_tick_rep = ($TOTAL_REPLYS - old_repl)
 
-      puts "WRITE took #{duration.round}s #{total_delta} #{$TOTAL_COMMANDS} --- #{per_tick}/per-tick (#{self.full_commands_waiting_to_be_written_to_minecraft.length})"
+      puts "WRITE took #{duration.round}s #{total_delta} #{$TOTAL_COMMANDS} --- #{per_tick}/per-tick  #{per_tick_rep}/replyd (#{self.full_commands_waiting_to_be_written_to_minecraft.length})"
 
-      #if per_tick > 1000
-      #  sleep (1.0/30.0)
-      #end
+      if per_tick > per_tick_rep
+        sleep 1.0/1.0
+      end
     end
+
+    sleep 1.0/120.0
   end
 
   def broadcast_latest_stdout(writable_io)
@@ -346,7 +342,6 @@ class Wrapper
         #self.clients[client_io].gzip_sink = wp
         #client.gzip_sink.write(bytes)
         #bytes = client.gzip_pump.read_partial(1024)
-
         #bytes = client.gzip_pump.inflate(bytes)
 
         if bytes == nil
@@ -359,11 +354,8 @@ class Wrapper
   end
 
   def close_client(readable_io, exception = nil)
-    #puts("closed #{readable_io} #{exception}")
-    #unless (readable_io == self.stdin)
-      self.clients.delete(readable_io)
-      readable_io.close unless readable_io.closed?
-    #end
+    self.clients.delete(readable_io)
+    readable_io.close unless readable_io.closed?
   end
 
   def write_minecraft_command(actual_command_line)
@@ -371,9 +363,6 @@ class Wrapper
     filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\'\n]/, '')
     if (filtered_sent_line && filtered_sent_line.length > 0)
       begin
-        #puts "WRAPPER-SENT: #{@count} #{filtered_sent_line.length}" if ((@count % 1024 * 4) == 0)
-        #puts [filtered_sent_line].inspect
-        #+ "\n"
         self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
       rescue Errno::EPIPE => e
         puts "minecraft exited"

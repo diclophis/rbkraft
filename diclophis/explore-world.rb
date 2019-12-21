@@ -27,7 +27,7 @@ global_painter.async do
   (-s..s).each { |ttx|
     (-s..s).each { |tty|
       v = 4
-      global_painter.place(ttx * v, 0, tty * v, global_painter.sand_type)
+      global_painter.place(ttx * v, 1, tty * v, global_painter.sand_type)
 
       #global_painter.place((ttx * v) + 4, 3, (tty * v) + 4, global_painter.air_type)
       #global_painter.place((ttx * v) + 9, 3, (tty * v) + 13, global_painter.lava_type)

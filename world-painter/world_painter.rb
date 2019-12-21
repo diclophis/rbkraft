@@ -211,8 +211,16 @@ class WorldPainter
     if data
       thing = thing + " " + data.to_s
     end
+
+    yy = (@center.y + y)
+
+    if yy < 1 || yy > 255
+      puts [:out_of_bounds, x, yy, z].inspect
+      exit 32
+    end
+
     #set_block_command = "#{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
-    set_block_command = "dc faker bpe #{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
+    set_block_command = "dc faker bpe #{thing} world,#{(@center.x + x).to_i},#{(yy).to_i},#{(@center.z + z).to_i}"
     #set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing}"
     execute set_block_command
   end
@@ -381,9 +389,6 @@ class WorldPainter
         position = []
 
         while line = client.gets
-
-#puts [:debug, line].inspect
-
           [:x, :y, :z].each do |c|
             coord_search_string = c.to_s.upcase + ": "
             if line.include?(coord_search_string)
@@ -394,24 +399,10 @@ class WorldPainter
           break if line.include?("Pitch")
         end
 
-#puts [:position, position].inspect
-
         Vector.new(position)
       end
     rescue Timeout::Error => _
-
-#puts [:timeout]
-
       Vector.new(fallback) if fallback
     end
   end
-
-#[04:30:55] [Server thread/INFO]: CONSOLE issued server command: /getpos diclophis
-#[04:30:55] [Server thread/INFO]: Current World: world
-#[04:30:55] [Server thread/INFO]: X: -82 (+East <-> -West)
-#[04:30:55] [Server thread/INFO]: Y: 44 (+Up <-> -Down)
-#[04:30:55] [Server thread/INFO]: Z: -103 (+South <-> -North)
-#[04:30:55] [Server thread/INFO]: Yaw: 318.6 (Rotation)
-#[04:30:55] [Server thread/INFO]: Pitch: 31.65 (Head angle)
-
 end

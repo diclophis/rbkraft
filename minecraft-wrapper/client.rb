@@ -87,7 +87,7 @@ class MinecraftClient
     begin
       self.command_count += 1
       @server_io.puts(command_line)
-      sleep 0.000033
+      sleep 0.000001
     rescue Errno::EPIPE => e
       exit 1
     end

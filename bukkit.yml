@@ -5,4 +5,4 @@ chunk-gc:
 ticks-per:
   animal-spawns: 10000
   monster-spawns: 10000
-  autosave: 10000
+  autosave: 100
