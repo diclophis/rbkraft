@@ -384,6 +384,6 @@ global_painter.async do
       end
     end
 
-    sleep (1.0/60.0)
+    #sleep (1.0/60.0)
   end
 end
