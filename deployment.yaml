@@ -323,6 +323,22 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: "mavencraft-loadbalancer-port"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 25564
+    name: minecraft-port
+    protocol: TCP
+  - port: 25566
+    name: mavencraft-port
+    protocol: TCP
+  selector:
+    name: "mavencraft"
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: "web-node-port"
 spec:
   type: NodePort
