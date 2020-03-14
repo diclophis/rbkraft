@@ -1,3 +1,4 @@
+# allow outbound for DNS and HTTP/S
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -9,22 +10,48 @@ spec:
   policyTypes:
   - Egress
   egress:
-#  - to:
-#    - ipBlock:
-#        cidr: 0.0.0.0/0
-#        except:
-#        - 10.50.0.0/16
-#        - 10.51.0.0/16
-#        - 10.52.0.0/16
-#        - 172.20.0.0/16
   - ports:
-    # allow DNS resolution
     - port: 53
       protocol: UDP
     - port: 53
       protocol: TCP
-    # allow HTTP/S connections
     - port: 80
       protocol: TCP
     - port: 443
       protocol: TCP
+
+# allow inbound to mavencraft from map
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: mavencraft-allow-map
+spec:
+  podSelector:
+    matchLabels:
+      name: mavencraft
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          name: map
+
+# allow outbound from map to mavencraft
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: map-allow-mavencraft
+spec:
+  podSelector:
+    matchLabels:
+      name: map
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          name: mavencraft

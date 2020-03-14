@@ -4,7 +4,7 @@ apiVersion: v1
 metadata:
   name: mavencraft-world
 spec:
-  storageClassName: manual-world
+  #storageClassName: manual-world
   accessModes:
     - "ReadWriteMany"
   resources:
@@ -16,7 +16,7 @@ apiVersion: v1
 metadata:
   name: mavencraft-html
 spec:
-  storageClassName: manual-html
+  #storageClassName: manual-html
   accessModes:
     - "ReadWriteMany"
   resources:
@@ -28,7 +28,7 @@ apiVersion: v1
 metadata:
   name: mavencraft-backup
 spec:
-  storageClassName: manual-backup
+  #storageClassName: manual-backup
   accessModes:
     - "ReadWriteMany"
   resources:
@@ -39,10 +39,10 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mavencraft-world-volume
-  labels:
-    type: local
+  #labels:
+  #  type: local
 spec:
-  storageClassName: manual-world
+  #storageClassName: manual-world
   capacity:
     storage: 30Gi
   accessModes:
@@ -54,10 +54,10 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mavencraft-html-volume
-  labels:
-    type: local
+  #labels:
+  #  type: local
 spec:
-  storageClassName: manual-html
+  #storageClassName: manual-html
   capacity:
     storage: 30Gi
   accessModes:
@@ -69,10 +69,10 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: mavencraft-backup-volume
-  labels:
-    type: local
+  #labels:
+  #  type: local
 spec:
-  storageClassName: manual-backup
+  #storageClassName: manual-backup
   capacity:
     storage: 30Gi
   accessModes:
