@@ -34,9 +34,10 @@ locale-gen --purge en_US.UTF-8 && /bin/echo -e  "LANG=$LANG\nLANGUAGE=$LANGUAGE\
   && locale-gen $LANGUAGE \
   && dpkg-reconfigure locales
 
-gem update --no-document --system
+gem update --no-document --system 3.0.6
 gem install --no-document thor
 gem list
+bundler --version
 
 adduser --system --home /home/minecraft minecraft
 
