@@ -1,0 +1,15 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mavencraft-web
+  annotations:
+spec:
+  rules:
+  - host: "mavencraft"
+    http:
+      paths:
+      - backend:
+          serviceName: web-node-port
+          servicePort: web-port
+        path: /*

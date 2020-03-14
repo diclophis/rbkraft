@@ -20,6 +20,15 @@ function curl_sha_checksum_fetch {
   echo "${SHA1}  cache/${SHA1}-${FILENAME}" | shasum -c || (shasum cache/${SHA1}-${FILENAME} && exit 1)
 }
 
+# 1.15.2
+#https://launcher.mojang.com/v1/objects/bb2b6b1aefcd70dfd1892149ac3a215f6c636b07/server.jar
+#https://launcher.mojang.com/v1/objects/e3f78cd16f9eb9a52307ed96ebec64241cc5b32d/client.jar
+
+# 1.14.4
+#https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar
+#https://launcher.mojang.com/v1/objects/8c325a0c5bd674dd747d6ebaa4c791fd363ad8a9/client.jar
+
+
 curl_sha_checksum_fetch \
   "minecraft-server-1.13.2.jar" \
   "https://launcher.mojang.com/v1/objects/3737db93722a9e39eeada7c27e7aca28b144ffa7/server.jar" \

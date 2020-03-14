@@ -1,8 +1,6 @@
 *.deb
 nohup.out
 *.jar
-*.stl
-*.obj
 
 minecraft-wrapper/banned-ips.json
 minecraft-wrapper/banned-players.json
@@ -20,3 +18,5 @@ ansible/roles/minecraft/files/textures
 
 .bundle
 vendor
+
+kubernetes/patches
