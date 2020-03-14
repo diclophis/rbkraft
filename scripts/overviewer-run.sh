@@ -16,7 +16,7 @@ export FULL_BACKUP
 export FULL_BACKUP2
 export FULL_MAP
 
-$MINECRAFT_ROOT/mavencraft/scripts/mapper.sh $1
+$MINECRAFT_ROOT/mavencraft/mapper.sh $1
 
 while true;
 do
