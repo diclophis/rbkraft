@@ -9,16 +9,15 @@ function curl_sha_checksum_fetch {
   SHA1="${3}"
   PREFIX="${4}"
 
-  mkdir -p /home/minecraft/cache
+  mkdir -p /home/app/cache
 
-  curl -LS -s -z /home/minecraft/cache/${SHA1}-${FILENAME} -o /home/minecraft/cache/${SHA1}-${FILENAME} --location ${REPO_URL}
+  curl -LS -s -z /home/app/cache/${SHA1}-${FILENAME} -o /home/app/cache/${SHA1}-${FILENAME} --location ${REPO_URL}
 
-  ln -s /home/minecraft/cache/${SHA1}-${FILENAME} /home/minecraft/cache/${FILENAME}
+  ln -s /home/app/cache/${SHA1}-${FILENAME} /home/app/cache/${FILENAME}
 
-  shasum cache/${SHA1}-${FILENAME}
-
-  echo "${SHA1}  cache/${SHA1}-${FILENAME}" | shasum -c || (shasum cache/${SHA1}-${FILENAME} && exit 1)
+  echo "${SHA1}  /home/app/cache/${SHA1}-${FILENAME}" | shasum -c || (shasum /home/app/cache/${SHA1}-${FILENAME} && exit 1)
 }
+
 
 # 1.15.2
 #https://launcher.mojang.com/v1/objects/bb2b6b1aefcd70dfd1892149ac3a215f6c636b07/server.jar
@@ -55,9 +54,9 @@ curl_sha_checksum_fetch \
   "4e43d777c7aba08882ff2f9ef24850f80e90804d"
 
 curl_sha_checksum_fetch \
-  "EssentialsX-2.17.2.9.jar" \
-  "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/Essentials/target/EssentialsX-2.17.2.9.jar" \
-  "71d5fd0e64594e0ab5525e07975b7ce094cbabf8"
+  "EssentialsX-2.17.2.11.jar" \
+  "https://ci.ender.zone/job/EssentialsX/842/artifact/Essentials/target/EssentialsX-2.17.2.11.jar" \
+  "3b9fe4f9d12b0eb240461dc8cc619b98d209d6da"
 
 curl_sha_checksum_fetch \
   "craftbukkit-server-1.12.2.jar" \

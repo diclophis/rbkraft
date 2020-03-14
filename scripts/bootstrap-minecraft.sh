@@ -12,6 +12,7 @@ apt-get update \
   && apt-get upgrade --no-install-recommends -y \
   && apt-get install --no-install-recommends -y \
        openscad meshlab libassimp-dev libccd-dev xvfb \
+       openssh-client \
        locales ruby2.5 rake git \
        apache2 apache2-utils \
        docker-registry \
@@ -39,18 +40,5 @@ gem install --no-document thor
 gem list
 bundler --version
 
-adduser --system --home /home/minecraft minecraft
-
-cd /home/minecraft
-
-#git clone https://github.com/mapcrafter/mapcrafter.git
-#
-#cd /home/minecraft/mapcrafter
-#git checkout master
-#
-#cmake .
-#make clean
-#make
-#make install
-#ldconfig
-
+#adduser --system --home /home/minecraft minecraft
+useradd --home-dir /home/app --create-home --shell /bin/bash app
