@@ -23,7 +23,7 @@ git checkout world113
 
 cmake .
 make clean
-make -j16
+make -j2
 make install
 ldconfig
 
@@ -31,7 +31,7 @@ mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.12.2.jar /home/m
 mapcrafter_textures.py /home/minecraft/cache/minecraft-client-1.13.2.jar /home/minecraft/mapcrafter/src/data/textures
 mapcrafter_textures.py /home/minecraft/cache/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar /home/minecraft/mapcrafter/src/data/textures
 
-make -j
+make -j2
 make install
 ldconfig
 
@@ -44,7 +44,7 @@ git checkout tags/0.3.3
 mkdir build
 cd build
 cmake ..
-make -j
+make -j2
 make install
 
 #################################
@@ -56,7 +56,7 @@ git checkout master
 mkdir build
 cd build
 cmake ..
-make -j
+make -j2
 
 curl -v -L -o /var/tmp/binvox "http://www.patrickmin.com/binvox/linux64/binvox?rnd=1576566018642542"
 chmod +x /var/tmp/binvox
