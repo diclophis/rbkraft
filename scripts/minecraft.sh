@@ -24,4 +24,4 @@ java --version
 
 VM_ARGS="-mx${RAM} -Xmx${RAM} -Xms${RAM} -XX:MaxGCPauseMillis=1 -XX:+UseG1GC -XX:ParallelGCThreads=1024 -XX:ConcGCThreads=1024 -XX:InitiatingHeapOccupancyPercent=0 -XX:+AggressiveOpts"
 
-ruby $MAVENCRAFT_WRAPPER java ${LOG_CONF} ${JVM_ARGS} -server -jar $JAR --port $MINECRAFT_PORT -c config/${WORLD}-server.properties nogui
+bundle exec ruby $MAVENCRAFT_WRAPPER java ${LOG_CONF} ${JVM_ARGS} -server -jar $JAR --port $MINECRAFT_PORT -c config/${WORLD}-server.properties nogui
