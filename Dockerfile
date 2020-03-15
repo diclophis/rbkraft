@@ -22,6 +22,8 @@ USER app
 COPY Gemfile Gemfile.lock /home/app/
 RUN cd /home/app && bundle install --path=vendor/bundle
 
+RUN mkdir -p /home/app/.local/share
+
 COPY scripts /home/app/scripts
 COPY config /home/app/config
 
