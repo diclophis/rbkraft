@@ -1,0 +1,95 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "creative-web-node-port"
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    name: http-port
+    protocol: TCP
+  selector:
+    app: "mavencraft-creative"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "creative-loadbalancer-port"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 25565
+    name: minecraft-port
+    protocol: TCP
+  - port: 25566
+    name: mavencraft-port
+    protocol: TCP
+  selector:
+    app: "mavencraft-creative"
+
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: "mavencraft-cluster-ip"
+#spec:
+#  ports:
+#  - targetPort: 25564
+#    port: 31501
+#    name: minecraft-port
+#    protocol: TCP
+#  - targetPort: 25566
+#    port: 31505
+#    name: mavencraft-port
+#    protocol: TCP
+#  selector:
+#    name: "mavencraft"
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: "mavencraft-node-port"
+#spec:
+#  type: NodePort
+#  ports:
+#  - port: 25564
+#    nodePort: 31501
+#    name: minecraft-port
+#    protocol: TCP
+#  - port: 25566
+#    nodePort: 31505
+#    name: mavencraft-port
+#    protocol: TCP
+#  selector:
+#    name: "mavencraft"
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: "mavencraft-loadbalancer-port"
+#spec:
+#  type: LoadBalancer
+#  ports:
+#  - port: 25564
+#    name: minecraft-port
+#    protocol: TCP
+#  - port: 25566
+#    name: mavencraft-port
+#    protocol: TCP
+#  selector:
+#    name: "mavencraft"
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: "web-node-port"
+#spec:
+#  type: NodePort
+#  ports:
+#  - port: 8080
+#    nodePort: 31580
+#    name: web-port
+#    protocol: TCP
+#  selector:
+#    name: "web"

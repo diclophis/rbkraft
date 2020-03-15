@@ -2,14 +2,17 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: mavencraft-web
-  annotations:
+  name: mavencraft-creative
 spec:
   rules:
-  - host: "mavencraft"
+  - host: "mavencraft.net"
     http:
       paths:
       - backend:
-          serviceName: web-node-port
-          servicePort: web-port
+          serviceName: ssl-redirect
+          servicePort: use-annotation
+        path: /*
+      - backend:
+          serviceName: creative-web-node-port
+          servicePort: http-port
         path: /*

@@ -2,80 +2,64 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: mavencraft-world
+  name: creative-world
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
 spec:
-  #storageClassName: manual-world
+  storageClassName: async-gp2
+  #selector:
+  #  matchLabels:
+  #    usage: "creative-world"
   accessModes:
-    - "ReadWriteMany"
+    - "ReadWriteOnce"
   resources:
     requests:
-      storage: "3Gi"
+      storage: "30Gi"
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: mavencraft-html
+  name: creative-map
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
 spec:
-  #storageClassName: manual-html
+  storageClassName: async-gp2
+  #selector:
+  #  matchLabels:
+  #    usage: "creative-map"
   accessModes:
-    - "ReadWriteMany"
+    - "ReadWriteOnce"
   resources:
     requests:
-      storage: "3Gi"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: mavencraft-backup
-spec:
-  #storageClassName: manual-backup
-  accessModes:
-    - "ReadWriteMany"
-  resources:
-    requests:
-      storage: "3Gi"
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mavencraft-world-volume
-  #labels:
-  #  type: local
-spec:
-  #storageClassName: manual-world
-  capacity:
-    storage: 30Gi
-  accessModes:
-    - ReadWriteMany
-  hostPath:
-    path: "/var/tmp/mavencraft/world"
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mavencraft-html-volume
-  #labels:
-  #  type: local
-spec:
-  #storageClassName: manual-html
-  capacity:
-    storage: 30Gi
-  accessModes:
-    - ReadWriteMany
-  hostPath:
-    path: "/var/tmp/mavencraft/html"
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: mavencraft-backup-volume
-  #labels:
-  #  type: local
-spec:
-  #storageClassName: manual-backup
-  capacity:
-    storage: 30Gi
-  accessModes:
-    - ReadWriteMany
-  hostPath:
-    path: "/var/tmp/mavencraft/backup"
+      storage: "30Gi"
+
+#---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: mavencraft-creative-world-volume
+#  labels:
+#    usage: creative-world
+#spec:
+#  storageClassName: async-gp2
+#  capacity:
+#    storage: 30Gi
+#  accessModes:
+#    - ReadWriteOnce
+#  awsElasticBlockStore:
+#    fsType: ext4
+#---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: mavencraft-creative-map-volume
+#  labels:
+#    usage: creative-map
+#spec:
+#  storageClassName: async-gp2
+#  capacity:
+#    storage: 30Gi
+#  accessModes:
+#    - ReadWriteOnce
+#  awsElasticBlockStore:
+#    fsType: ext4

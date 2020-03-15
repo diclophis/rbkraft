@@ -2,41 +2,38 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: mavencraft
+  name: mavencraft-creative
   labels:
-    app: mavencraft
+    app: mavencraft-creative
 spec:
   revisionHistoryLimit: 1
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-  replicas: 1
+    type: Recreate
+  replicas: 0
   template:
     metadata:
       labels:
-        name: mavencraft
+        app: mavencraft-creative
     spec:
+      terminationGracePeriodSeconds: 1
+      securityContext:
+        fsGroup: 1000
       volumes:
       - name: world
         persistentVolumeClaim:
-          claimName: mavencraft-world
-      - name: html
+          claimName: creative-world
+      - name: map
         persistentVolumeClaim:
-          claimName: mavencraft-html
-      - name: backup
-        persistentVolumeClaim:
-          claimName: mavencraft-backup
-      terminationGracePeriodSeconds: 1
+          claimName: creative-map
+      nodeSelector:
+        failure-domain.beta.kubernetes.io/zone: us-west-2b
       containers:
-      - name: mavencraft-wrapper
+      - name: minecraft-game-server
         volumeMounts:
-        - mountPath: /home/minecraft/world
+        - mountPath: /home/app/world
           name: world
-        - mountPath: /home/minecraft/html
-          name: html
-        - mountPath: /home/minecraft/backup
-          name: backup
+        - mountPath: /home/app/map
+          name: map
         image: mavencraft:latest
         resources:
           requests:
@@ -46,177 +43,20 @@ spec:
             memory: "32000Mi"
             cpu: "32000m"
         imagePullPolicy: IfNotPresent
-        workingDir: /home/minecraft
+        workingDir: /home/app
         ports:
         - name: minecraft-port
-          containerPort: 25564
+          containerPort: 25565
         - name: mavencraft-port
           containerPort: 25566
-        #readinessProbe:
-        #  tcpSocket:
-        #    port: minecraft-port
-        #  initialDelaySeconds: 5
-        #  periodSeconds: 10
-        #livenessProbe:
-        #  tcpSocket:
-        #    port: minecraft-port
-        #  initialDelaySeconds: 15
-        #  periodSeconds: 20
-        #command: ["bash", "minecraft.sh", "10000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
-        #command: ["bash", "minecraft.sh", "1000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-server-1.12.2.jar"]
-        command: ["bash", "minecraft.sh", "32000M", "mavencraft", "25564", "25566", "/home/minecraft/cache/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar"]
+        command: ["bash", "scripts/minecraft.sh", "32000M", "mavencraft", "25564", "25566", "/home/app/cache/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar", "creative"]
         #command: ["sleep", "infinity"]
-        env:
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: maze
-  labels:
-    app: maze
-spec:
-  revisionHistoryLimit: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: maze
-    spec:
-      volumes:
-      - name: world
-        persistentVolumeClaim:
-          claimName: mavencraft-world
-      - name: html
-        persistentVolumeClaim:
-          claimName: mavencraft-html
-      - name: backup
-        persistentVolumeClaim:
-          claimName: mavencraft-backup
-      terminationGracePeriodSeconds: 1
-      containers:
-      - name: maze
+      - name: world-map-generator
         volumeMounts:
-        - mountPath: /home/minecraft/world
+        - mountPath: /home/app/world
           name: world
-        - mountPath: /home/minecraft/html
-          name: html
-        - mountPath: /home/minecraft/backup
-          name: backup
-        image: mavencraft:latest
-        #resources:
-        #  requests:
-        #    memory: "1000Mi"
-        #    cpu: "100m"
-        #  limits:
-        #    memory: "2000Mi"
-        #    cpu: "4000m"
-        imagePullPolicy: IfNotPresent
-        workingDir: /home/minecraft
-        command: ["bundle", "exec", "ruby", "diclophis/maze.rb"]
-        #command: ["sleep", "infinity"]
-        env:
-          - name: MAVENCRAFT_SERVER
-            value: mavencraft-cluster-ip
-          - name: MAVENCRAFT_PORT
-            value: "31505"
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: text
-  labels:
-    app: text
-spec:
-  revisionHistoryLimit: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: text
-    spec:
-      volumes:
-      - name: world
-        persistentVolumeClaim:
-          claimName: mavencraft-world
-      - name: html
-        persistentVolumeClaim:
-          claimName: mavencraft-html
-      - name: backup
-        persistentVolumeClaim:
-          claimName: mavencraft-backup
-      terminationGracePeriodSeconds: 1
-      containers:
-      - name: text
-        volumeMounts:
-        - mountPath: /home/minecraft/world
-          name: world
-        - mountPath: /home/minecraft/html
-          name: html
-        - mountPath: /home/minecraft/backup
-          name: backup
-        image: mavencraft:latest
-        #resources:
-        #  requests:
-        #    memory: "2000Mi"
-        #    cpu: "1000m"
-        #  limits:
-        #    memory: "20000Mi"
-        #    cpu: "8000m"
-        imagePullPolicy: IfNotPresent
-        workingDir: /home/minecraft
-        command: ["sleep", "infinity"]
-        env:
-          - name: MAVENCRAFT_SERVER
-            value: mavencraft-cluster-ip
-          - name: MAVENCRAFT_PORT
-            value: "31505"
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: map
-  labels:
-    app: map
-spec:
-  revisionHistoryLimit: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: map
-    spec:
-      volumes:
-      - name: world
-        persistentVolumeClaim:
-          claimName: mavencraft-world
-      - name: html
-        persistentVolumeClaim:
-          claimName: mavencraft-html
-      - name: backup
-        persistentVolumeClaim:
-          claimName: mavencraft-backup
-      terminationGracePeriodSeconds: 1
-      containers:
-      - name: mapcrafter
-        volumeMounts:
-        - mountPath: /home/minecraft/world
-          name: world
-        - mountPath: /home/minecraft/html
-          name: html
-        - mountPath: /home/minecraft/backup
-          name: backup
+        - mountPath: /home/app/map
+          name: map
         image: mavencraft:latest
         resources:
           requests:
@@ -226,126 +66,29 @@ spec:
             memory: "32000Mi"
             cpu: "32000m"
         imagePullPolicy: IfNotPresent
-        workingDir: /home/minecraft
-        command: ["bash", "overviewer-run.sh", "32"]
+        workingDir: /home/app
+        command: ["bash", "scripts/overviewer-run.sh", "4"]
         #command: ["sleep", "infinity"]
         env:
           - name: LD_LIBRARY_PATH
-            value: /home/minecraft/mapcrafter/src/mapcraftercore
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: web
-  labels:
-    app: web
-spec:
-  revisionHistoryLimit: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        name: web
-    spec:
-      volumes:
-      - name: html
-        persistentVolumeClaim:
-          claimName: mavencraft-html
-      terminationGracePeriodSeconds: 1
-      containers:
-      - name: http-server
+            value: /home/app/mapcrafter/src/mapcraftercore
+      - name: static-web-server
         image: mavencraft:latest
-        #resources:
-        #  requests:
-        #    memory: "200Mi"
-        #    cpu: "300m"
-        #  limits:
-        #    memory: "1000Mi"
-        #    cpu: "4000m"
         imagePullPolicy: IfNotPresent
-        workingDir: /home/mavencraft/html
         ports:
-        - name: web-port
+        - name: http-port
           containerPort: 8080
         readinessProbe:
           httpGet:
             path: /
-            port: web-port
+            port: http-port
         livenessProbe:
           httpGet:
             path: /
-            port: web-port
-        command: ["ruby", "-run", "-ehttpd", ".", "-p8080", "-b0.0.0.0"]
+            port: http-port
+        workingDir: /home/mavencraft
+        command: ["ruby", "-run", "-ehttpd", "map", "-p8080", "-b0.0.0.0"]
         #command: ["sleep", "infinity"]
         volumeMounts:
-        - name: html
-          mountPath: /home/mavencraft/html
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: "mavencraft-cluster-ip"
-spec:
-  ports:
-  - targetPort: 25564
-    port: 31501
-    name: minecraft-port
-    protocol: TCP
-  - targetPort: 25566
-    port: 31505
-    name: mavencraft-port
-    protocol: TCP
-  selector:
-    name: "mavencraft"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: "mavencraft-node-port"
-spec:
-  type: NodePort
-  ports:
-  - port: 25564
-    nodePort: 31501
-    name: minecraft-port
-    protocol: TCP
-  - port: 25566
-    nodePort: 31505
-    name: mavencraft-port
-    protocol: TCP
-  selector:
-    name: "mavencraft"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: "mavencraft-loadbalancer-port"
-spec:
-  type: LoadBalancer
-  ports:
-  - port: 25564
-    name: minecraft-port
-    protocol: TCP
-  - port: 25566
-    name: mavencraft-port
-    protocol: TCP
-  selector:
-    name: "mavencraft"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: "web-node-port"
-spec:
-  type: NodePort
-  ports:
-  - port: 8080
-    nodePort: 31580
-    name: web-port
-    protocol: TCP
-  selector:
-    name: "web"
+        - name: map
+          mountPath: /home/mavencraft/map

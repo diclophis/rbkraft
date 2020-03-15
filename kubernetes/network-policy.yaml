@@ -20,98 +20,98 @@ spec:
     - port: 443
       protocol: TCP
 
-# allow inbound to mavencraft from map,maze,text
----
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: mavencraft-allow-map
-spec:
-  podSelector:
-    matchLabels:
-      name: mavencraft
-  policyTypes:
-  - Ingress
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          name: map
-    - podSelector:
-        matchLabels:
-          name: maze
-    - podSelector:
-        matchLabels:
-          name: text
-
-# allow outbound from map to mavencraft
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: maze-allow-mavencraft
-spec:
-  podSelector:
-    matchLabels:
-      name: maze
-  policyTypes:
-  - Egress
-  egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          name: mavencraft
-
-# allow inbound to mavencraft from loadbalancer service
----
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: mavencraft-allow-loadbalancer-service
-spec:
-  podSelector:
-    matchLabels:
-      name: mavencraft
-  policyTypes:
-  - Ingress
-  ingress:
-  - ports:
-    - port: 25564
-    - port: 25566
-  - from: []
-
-# allow outbound from maze to mavencraft
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: map-allow-mavencraft
-spec:
-  podSelector:
-    matchLabels:
-      name: map
-  policyTypes:
-  - Egress
-  egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          name: mavencraft
-
-# allow outbound from text to mavencraft
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: text-allow-mavencraft
-spec:
-  podSelector:
-    matchLabels:
-      name: text
-  policyTypes:
-  - Egress
-  egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          name: mavencraft
+## allow inbound to mavencraft from map,maze,text
+#---
+#kind: NetworkPolicy
+#apiVersion: networking.k8s.io/v1
+#metadata:
+#  name: mavencraft-allow-map
+#spec:
+#  podSelector:
+#    matchLabels:
+#      name: mavencraft
+#  policyTypes:
+#  - Ingress
+#  ingress:
+#  - from:
+#    - podSelector:
+#        matchLabels:
+#          name: map
+#    - podSelector:
+#        matchLabels:
+#          name: maze
+#    - podSelector:
+#        matchLabels:
+#          name: text
+#
+## allow outbound from map to mavencraft
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: NetworkPolicy
+#metadata:
+#  name: maze-allow-mavencraft
+#spec:
+#  podSelector:
+#    matchLabels:
+#      name: maze
+#  policyTypes:
+#  - Egress
+#  egress:
+#  - to:
+#    - podSelector:
+#        matchLabels:
+#          name: mavencraft
+#
+## allow inbound to mavencraft from loadbalancer service
+#---
+#kind: NetworkPolicy
+#apiVersion: networking.k8s.io/v1
+#metadata:
+#  name: mavencraft-allow-loadbalancer-service
+#spec:
+#  podSelector:
+#    matchLabels:
+#      name: mavencraft
+#  policyTypes:
+#  - Ingress
+#  ingress:
+#  - ports:
+#    - port: 25564
+#    - port: 25566
+#  - from: []
+#
+## allow outbound from maze to mavencraft
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: NetworkPolicy
+#metadata:
+#  name: map-allow-mavencraft
+#spec:
+#  podSelector:
+#    matchLabels:
+#      name: map
+#  policyTypes:
+#  - Egress
+#  egress:
+#  - to:
+#    - podSelector:
+#        matchLabels:
+#          name: mavencraft
+#
+## allow outbound from text to mavencraft
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: NetworkPolicy
+#metadata:
+#  name: text-allow-mavencraft
+#spec:
+#  podSelector:
+#    matchLabels:
+#      name: text
+#  policyTypes:
+#  - Egress
+#  egress:
+#  - to:
+#    - podSelector:
+#        matchLabels:
+#          name: mavencraft
