@@ -11,17 +11,18 @@ $TOTAL_COMMANDS = 0
 $TOTAL_REPLYS = 0
 
 USE_POPEN3 = true
+
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
 MEGABYTE = 1000000
-READ_CHUNKS = MEGABYTE #* 32
-READ_CHUNKS_REMOTE = MEGABYTE #* 32
+READ_CHUNKS = MEGABYTE * 32
+READ_CHUNKS_REMOTE = MEGABYTE * 32
 
-COMMANDS_FROM_CLIENT_PER_TICK = 64
-COMMANDS_TO_MINECRAFT_PER_TICK = 128
+COMMANDS_FROM_CLIENT_PER_TICK = 256
+COMMANDS_TO_MINECRAFT_PER_TICK = 1024
 
-TICK_FREQUENCY = 1.0 / 120.0
+TICK_FREQUENCY = 1.0 / 30.0
 STATUS_FREQUENCY = 5.0 / 1.0
-POLL_FREQUENCY = 1.0 / 120.0
+POLL_FREQUENCY = 1.0 / 30.0
 
 CLIENTS_DEFAULT_ASYNC = false
 
@@ -225,9 +226,8 @@ class Wrapper
       self.time_since_last_poll = Time.now
 
       self.input_waiting_to_be_written_to_minecraft.each do |io, byte_scanner|
-        client = self.clients[io]
         count_per_client = 0
-        while client && has_eol = byte_scanner.check_until(/\n/)
+        while has_eol = byte_scanner.check_until(/\n/)
           full_command_line = byte_scanner.scan_until(/\n/)
 
           stripped_command = full_command_line.strip
@@ -332,8 +332,7 @@ class Wrapper
   def enqueue_input_for_minecraft(io, bytes)
     self.input_waiting_to_be_written_to_minecraft[io] ||= StringScanner.new("")
 
-    client = self.clients[io]
-
+    #client = self.clients[io]
     #TODO: enable compression???
     #if client.async
     #  if client.gzip_pump == nil
@@ -354,10 +353,10 @@ class Wrapper
   end
 
   def close_client(readable_io, exception = nil)
-    logger.debug :event => :close_client, :exc => exception, :client => readable_io.object_id
+    logger.info :event => :close_client, :exc => exception, :client => readable_io.object_id
 
     self.clients.delete(readable_io)
-    self.input_waiting_to_be_written_to_minecraft.delete(readable_io)
+    #self.input_waiting_to_be_written_to_minecraft.delete(readable_io)
 
     readable_io.close unless readable_io.closed?
   end
