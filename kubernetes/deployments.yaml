@@ -49,7 +49,7 @@ spec:
           containerPort: 25565
         - name: mavencraft-port
           containerPort: 25566
-        command: ["bash", "scripts/minecraft.sh", "32000M", "mavencraft", "25564", "25566", "/home/app/cache/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar", "creative"]
+        command: ["bash", "scripts/minecraft.sh", "32000M", "mavencraft", "25565", "25566", "/home/app/cache/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar", "creative"]
         #command: ["sleep", "infinity"]
       - name: world-map-generator
         volumeMounts:

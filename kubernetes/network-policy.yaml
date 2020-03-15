@@ -20,26 +20,26 @@ spec:
     - port: 443
       protocol: TCP
 
-# allow inbound to mavencraft from maze,console
----
-kind: NetworkPolicy
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: mavencraft-allow-inbound
-spec:
-  podSelector:
-    matchLabels:
-      app: mavencraft-creative
-  policyTypes:
-  - Ingress
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          app: mavencraft-console
-    - podSelector:
-        matchLabels:
-          app: mavencraft-maze
+## allow inbound to mavencraft from maze,console
+#---
+#kind: NetworkPolicy
+#apiVersion: networking.k8s.io/v1
+#metadata:
+#  name: mavencraft-allow-inbound
+#spec:
+#  podSelector:
+#    matchLabels:
+#      app: mavencraft-creative
+#  policyTypes:
+#  - Ingress
+#  ingress:
+#  - from:
+#    - podSelector:
+#        matchLabels:
+#          app: mavencraft-console
+#    - podSelector:
+#        matchLabels:
+#          app: mavencraft-maze
 
 # allow outbound from console to mavencraft
 ---
@@ -59,24 +59,23 @@ spec:
         matchLabels:
           app: mavencraft-creative
 
-## allow inbound to mavencraft from loadbalancer service
-#---
-#kind: NetworkPolicy
-#apiVersion: networking.k8s.io/v1
-#metadata:
-#  name: mavencraft-allow-loadbalancer-service
-#spec:
-#  podSelector:
-#    matchLabels:
-#      name: mavencraft
-#  policyTypes:
-#  - Ingress
-#  ingress:
-#  - ports:
-#    - port: 25564
-#    - port: 25566
-#  - from: []
-#
+# allow inbound to mavencraft from loadbalancer service
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: mavencraft-allow-loadbalancer-service
+spec:
+  podSelector:
+    matchLabels:
+      app: mavencraft-creative
+  policyTypes:
+  - Ingress
+  ingress:
+  - ports:
+    - port: 25565
+  - from: []
+
 ## allow outbound from maze to mavencraft
 #---
 #apiVersion: networking.k8s.io/v1

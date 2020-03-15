@@ -22,9 +22,9 @@ spec:
   - port: 25565
     name: minecraft-port
     protocol: TCP
-  - port: 25566
-    name: mavencraft-port
-    protocol: TCP
+  #- port: 25566
+  #  name: mavencraft-port
+  #  protocol: TCP
   selector:
     app: "mavencraft-creative"
 ---
