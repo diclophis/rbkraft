@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # glass sphere
-bash scripts/run-gen-scad.sh openscad/sphere.scad | bash scripts/run-vox-blit.sh 64 -300 128 0 glass
+bash scripts/run-gen-scad.sh openscad/sphere.scad | bash scripts/run-vox-blit.sh 32 -300 128 0 glass
 
 # makes the giant mavencraft logo
 #bash scripts/run-gen-text.sh "mavencraft.net" | bash scripts/run-vox-blit.sh 256 0 256 0 obsidian
