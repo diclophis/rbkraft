@@ -46,11 +46,11 @@ class MinecraftClient
     raise "not connected #{last_error}" unless @server_io
 
     @server_io.sync = true
-    if async
-      @server_io.puts("authentic")
-    else
-      @server_io.puts("authentic\nasync")
-    end
+    #if async
+    #  @server_io.puts("authentic")
+    #else
+    #  @server_io.puts("authentic\nasync")
+    #end
     @server_io.flush
   end
 
