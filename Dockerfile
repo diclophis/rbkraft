@@ -30,8 +30,10 @@ RUN echo eula=true > /home/app/eula.txt
 COPY minecraft-wrapper /home/app/minecraft-wrapper
 COPY world-painter /home/app/world-painter
 
-
 COPY diclophis /home/app/diclophis
+COPY openscad /home/app/openscad
+COPY models /home/app/models
+COPY eisenscript /home/app/eisenscript
 
 WORKDIR /home/app
 
