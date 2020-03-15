@@ -10,7 +10,7 @@ require 'logger'
 require 'fluent-logger'
 require 'objspace'
 
-#$stdout.sync = true
+$stdout.sync = true
 
 SELECT_WRITABLE = false
 SELECT_SLEEP = 0.001 #999.9
@@ -46,11 +46,11 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]
 
   inner_logger = AsyncableLogger.new(fluent_logger)
 
-  logger = Logger.new($stdout)
-
   #logger = Logger.new(inner_logger)
-  #logger.formatter = RawFormatter.new
-  #logger.level = Logger::DEBUG
+
+  logger = Logger.new(inner_logger)
+  logger.formatter = RawFormatter.new
+  logger.level = Logger::INFO
   #logger.debug({"extra" => "detail"})
   #logger.info({"extra" => "detail"})
   #logger.warn({"extra" => "detail"})
