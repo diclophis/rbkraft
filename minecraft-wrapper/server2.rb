@@ -7,21 +7,54 @@ require 'dynasty'
 require 'wrapper'
 require 'syslog'
 require 'logger'
+require 'fluent-logger'
+require 'objspace'
 
-$stdout.sync = true
+#$stdout.sync = true
 
 SELECT_WRITABLE = false
 SELECT_SLEEP = 0.001 #999.9
 
 # Start a hot-reloadable server on desired socket
 Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]) do |dynasty|
-  # log to the system log
-  logger = nil
-  #if RUBY_PLATFORM.include?("darwin")
-  #  logger = Syslog.open("mavencraft", Syslog::LOG_PERROR, Syslog::LOG_DAEMON)
-  #else
-  #  logger = Logger.new(STDOUT) #Syslog.open("mavencraft", nil, Syslog::LOG_DAEMON)
-  #end
+  if fluentd_url = ENV["FLUENTD_URL"]
+    uri = URI.parse fluentd_url
+    #params = CGI.parse uri.query
+    fluent_logger = Fluent::Logger::FluentLogger.open(
+      'mavencraft',
+      :host => uri.host,
+      :port => uri.port,
+      :use_nonblock => true
+    )
+  else
+    fluent_logger = Fluent::Logger::ConsoleLogger.open($stdout)
+  end
+
+  class RawFormatter < Logger::Formatter
+    def call(severity, time, progname, msg)
+      return severity, time, progname, msg
+    end
+  end
+
+  class AsyncableLogger < SimpleDelegator
+    def write(arg)
+      severity, time, progname, msg = *arg
+      # ["DEBUG", 2020-03-15 13:45:26 -0400, nil, {"extra"=>"detail"}]
+      post(severity, msg)
+    end
+  end
+
+  inner_logger = AsyncableLogger.new(fluent_logger)
+
+  logger = Logger.new($stdout)
+
+  #logger = Logger.new(inner_logger)
+  #logger.formatter = RawFormatter.new
+  #logger.level = Logger::DEBUG
+  #logger.debug({"extra" => "detail"})
+  #logger.info({"extra" => "detail"})
+  #logger.warn({"extra" => "detail"})
+  #logger.fatal({"extra" => "detail"})
 
   # In your server, consume any ancestored descriptors, order is important
   # this case, the first 3 sockets are the stdin,stdout,stderr of the wrapped

@@ -12,19 +12,21 @@ $TOTAL_REPLYS = 0
 
 USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
+MEGABYTE = 1000000
+READ_CHUNKS = MEGABYTE * 32
+READ_CHUNKS_REMOTE = MEGABYTE * 32
 
-READ_CHUNKS = 1024 * 32
-READ_CHUNKS_REMOTE = 1024 * 32 # 59 ... 512 * 32
-COMMANDS_PER_MOD = 256
+COMMANDS_FROM_CLIENT_PER_TICK = 64
+COMMANDS_TO_MINECRAFT_PER_TICK = 128
 
-#READ_CHUNKS = 64 #512 * 32
-#READ_CHUNKS_REMOTE = 64 # # 512 * 32
-#COMMANDS_PER_MOD = 2
+TICK_FREQUENCY = 1.0 / 120.0
+STATUS_FREQUENCY = 1.0 / 5.0
+POLL_FREQUENCY = 1.0 / 60.0
 
 CLIENTS_DEFAULT_ASYNC = false
 
 class Wrapper
-  class Client < Struct.new(:uid, :authentic, :async, :left_over_command, :broadcast_scanner, :gzip_pump, :gzip_sink)
+  class Client < Struct.new(:uid, :async, :left_over_command, :broadcast_scanner, :gzip_pump, :gzip_sink)
   end
 
   attr_accessor :running, :uid,
@@ -37,16 +39,14 @@ class Wrapper
                 :full_commands_waiting_to_be_written_to_minecraft,
                 :logger,
                 :time_since_last_stat,
-                :count_since_last,
-                :time_since_last_process,
-                :confirmed_since_last
+                :time_since_last_tick,
+                :time_since_last_poll
 
   def initialize(logger, descriptors, argv)
     @count = 0
+    @port = (ENV["MAVENCRAFT_WRAPPER_PORT"] || 25566)
 
-    self.time_since_last_process = self.time_since_last_stat = Time.now
-    self.count_since_last = 0
-    self.confirmed_since_last = 0
+    self.time_since_last_poll = self.time_since_last_tick = self.time_since_last_stat = Time.now
 
     self.logger = logger
     self.full_commands_waiting_to_be_written_to_minecraft = []
@@ -55,10 +55,6 @@ class Wrapper
     self.running = true
     self.uid = 0
     self.clients = Hash.new
-
-    #self.stdin = $stdin
-    #self.stdout = $stdout
-    #self.stderr = $stderr
 
     self.command = argv[0]
     self.options = argv[1..-1]
@@ -73,11 +69,9 @@ class Wrapper
     self.minecraft_stdout.autoclose = false
     self.prefetched_broadcast = ""
     self.input_waiting_to_be_written_to_minecraft = {}
+    
 
-    #install_client(self.stdin, true)
-    #self.logger.crit("starting")
-    #self.logger.level = :debug
-    puts "starting"
+    logger.debug :event => :starting, :port => @port
   end
 
   def install_trap
@@ -88,7 +82,7 @@ class Wrapper
   end
 
   def create_server_io
-    self.server_io = TCPServer.new(ENV["MAVENCRAFT_WRAPPER_PORT"] || 25566)
+    self.server_io = TCPServer.new(@port)
   end
 
   def create_minecraft_io
@@ -140,12 +134,14 @@ class Wrapper
   end
 
   def accept_server_io_connection
-    puts [:connected_client]
-    install_client(self.server_io.accept_nonblock)
+    new_client = self.server_io.accept_nonblock
+    installed_client = install_client(new_client)
+    logger.debug :event => :connected_client, :client => new_client.object_id
+    installed_client 
   end
 
-  def install_client(client_io, authentic = nil)
-    self.clients[client_io] = Client.new(self.uid, authentic, CLIENTS_DEFAULT_ASYNC)
+  def install_client(client_io)
+    self.clients[client_io] = Client.new(self.uid, CLIENTS_DEFAULT_ASYNC)
     self.clients[client_io].broadcast_scanner = StringScanner.new("")
     self.uid += 1
   end
@@ -157,11 +153,14 @@ class Wrapper
 
       begin
         broadcast_bytes = self.minecraft_stdout.read_nonblock(READ_CHUNKS)
+	      logger.debug :broadcast_bytes => broadcast_bytes
       rescue IO::EAGAINWaitReadable, Errno::EAGAIN => e
-        puts "ok #{e}"
+        logger.debug :ok_exception => e
       rescue Errno::ECONNRESET, Errno::EPIPE, IOError => e
-	      puts self.minecraft_stderr.read
-        puts "wtf #{e}"
+	      logger.fatal :stderr => self.minecraft_stderr.read,
+                     :stdout => broadcast_bytes
+
+        logger.fatal :error => e
         exit 1
       end
 
@@ -174,13 +173,14 @@ class Wrapper
         if broadcast_bytes.length == 0
           return
         else
-          #puts "OUT: #{broadcast_bytes.inspect}"
+          logger.debug :broadcast_bytes => broadcast_bytes
 
           #TODO: keep on global scanner?
           #TODO: yes
           #puts broadcast_bytes
+
           self.clients.each do |io, client|
-            client.broadcast_scanner << broadcast_bytes if client.authentic
+            client.broadcast_scanner << broadcast_bytes #if client.authentic
           end
         end
       end
@@ -217,15 +217,21 @@ class Wrapper
   end
 
   def handle_minecraft_stdin
-    self.input_waiting_to_be_written_to_minecraft.each do |io, byte_scanner|
-      client = self.clients[io]
-      count_per_client = 0
-      while client && has_eol = byte_scanner.check_until(/\n/)
-        full_command_line = byte_scanner.scan_until(/\n/)
+    rest_sizes = []
 
-        stripped_command = full_command_line.strip
+    poll_since_time = (Time.now - self.time_since_last_poll)
 
-        if client.authentic
+    if poll_since_time > POLL_FREQUENCY
+      self.time_since_last_poll = Time.now
+
+      self.input_waiting_to_be_written_to_minecraft.each do |io, byte_scanner|
+        client = self.clients[io]
+        count_per_client = 0
+        while client && has_eol = byte_scanner.check_until(/\n/)
+          full_command_line = byte_scanner.scan_until(/\n/)
+
+          stripped_command = full_command_line.strip
+
           if stripped_command.length > 0
             count_per_client += 1
 
@@ -236,68 +242,62 @@ class Wrapper
             else
               if stripped_command == "save-all"
                 self.full_commands_waiting_to_be_written_to_minecraft.unshift(full_command_line)
-                close_client(io, Exception.new("saved: #{full_command_line}")) unless client.async
+                close_client(io, Exception.new("saved: #{full_command_line}")) # unless client.async
+                break
               else
                 self.full_commands_waiting_to_be_written_to_minecraft.unshift(stripped_command)
-                #self.full_commands_waiting_to_be_written_to_minecraft << stripped_command
-                #break
               end
             end
           end
-        else
-          client.authentic = stripped_command == "authentic"
-          unless client.authentic
-            close_client(io, Exception.new("not authentic: #{full_command_line}"))
-          end
+
+          break if count_per_client > COMMANDS_FROM_CLIENT_PER_TICK
+        end
+
+        this_client_buffer_size = byte_scanner.rest_size
+        rest_sizes << this_client_buffer_size
+
+        if this_client_buffer_size > (MEGABYTE * 1024 * 32)
+          self.close_client(io, :overflow)
         end
       end
     end
 
-    commands_run = 0
-    start = Time.now
+    status_since_time = (Time.now - self.time_since_last_stat)
+    tick_since_time = (Time.now - self.time_since_last_tick)
 
-    total_delta = 0
+    if (tick_since_time > TICK_FREQUENCY)
+      self.time_since_last_tick = Time.now
 
-    ((full_command_line = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_PER_MOD)) && (full_command_line.length > 0))
-      commands_this_tick = full_command_line.length
+      if ((full_command_lines = self.full_commands_waiting_to_be_written_to_minecraft.shift(COMMANDS_TO_MINECRAFT_PER_TICK)) && (full_command_lines.length > 0))
 
-      full_command_line.each do |fcl|
-        blob = fcl.strip
+        commands_this_tick = full_command_lines.length
 
-        write_minecraft_command(blob)
+        full_command_lines.each do |fcl|
+          blob = fcl.strip
+
+          write_minecraft_command(blob)
+        end
+
+        $TOTAL_COMMANDS += commands_this_tick
       end
-
-      $TOTAL_COMMANDS += commands_this_tick
-      total_delta += commands_this_tick
-
-      #break if total_delta > 100
-    #end
-
-    self.time_since_last_process = Time.now
-
-    duration = Time.now - start
-
-    since_time = (Time.now - self.time_since_last_stat)
-
-    if since_time > 5.0
-      self.time_since_last_stat = Time.now
-      old_count = self.count_since_last
-      old_repl = self.confirmed_since_last
-
-      self.count_since_last = $TOTAL_COMMANDS
-      self.confirmed_since_last = $TOTAL_REPLYS
-
-      per_tick = ($TOTAL_COMMANDS - old_count)
-      per_tick_rep = ($TOTAL_REPLYS - old_repl)
-
-      puts "WRITE took #{duration.round}s #{total_delta} #{$TOTAL_COMMANDS} --- #{per_tick}/per-tick  #{per_tick_rep}/replyd (#{self.full_commands_waiting_to_be_written_to_minecraft.length})"
-
-      #if per_tick > per_tick_rep
-      #  sleep 1.0/1.0
-      #end
     end
 
-    #sleep 1.0/120.0
+    if status_since_time > STATUS_FREQUENCY
+      self.time_since_last_stat = Time.now
+
+      alive = ObjectSpace
+              .each_object
+              .inject(Hash.new 0) { |h,o| h[o.class] += 1; h }
+              .sort_by { |k,v| -v }
+              .reject { |k, v| v < 1000 }
+              .take(10)
+
+      logger.info({:event => :status,
+                   :waiting_commands => self.full_commands_waiting_to_be_written_to_minecraft.length,
+                   :rest_sizes => rest_sizes,
+                   :client_count => self.clients.length,
+                   :tc => $TOTAL_COMMANDS}.merge(alive.to_h))
+    end
   end
 
   def broadcast_latest_stdout(writable_io)
@@ -334,27 +334,31 @@ class Wrapper
 
     client = self.clients[io]
 
-    if client.async
-      if client.gzip_pump == nil
-        #rp, wp = IO.pipe
-        #client.gzip_pump = Zlib::Inflate.new
-      else
-        #self.clients[client_io].gzip_sink = wp
-        #client.gzip_sink.write(bytes)
-        #bytes = client.gzip_pump.read_partial(1024)
-        #bytes = client.gzip_pump.inflate(bytes)
-
-        if bytes == nil
-          puts "!@#!@#!@#!@#!@#"
-        end
-      end
-    end
+    #TODO: enable compression???
+    #if client.async
+    #  if client.gzip_pump == nil
+    #    #rp, wp = IO.pipe
+    #    #client.gzip_pump = Zlib::Inflate.new
+    #  else
+    #    #self.clients[client_io].gzip_sink = wp
+    #    #client.gzip_sink.write(bytes)
+    #    #bytes = client.gzip_pump.read_partial(1024)
+    #    #bytes = client.gzip_pump.inflate(bytes)
+    #    if bytes == nil
+    #      puts "!@#!@#!@#!@#!@#"
+    #    end
+    #  end
+    #end
 
     self.input_waiting_to_be_written_to_minecraft[io] << bytes
   end
 
   def close_client(readable_io, exception = nil)
+    logger.debug :event => :close_client, :exc => exception, :client => readable_io.object_id
+
     self.clients.delete(readable_io)
+    self.input_waiting_to_be_written_to_minecraft.delete(readable_io)
+
     readable_io.close unless readable_io.closed?
   end
 
@@ -365,7 +369,7 @@ class Wrapper
       begin
         self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
       rescue Errno::EPIPE => e
-        puts "minecraft exited"
+        logger.fatal "minecraft exited"
         exit 1
       end
     end
