@@ -1,4 +1,4 @@
-
+auto-updater: false
 chunk-gc:
   period-in-ticks: 10000
   load-threshold: 10000
