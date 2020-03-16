@@ -1,0 +1,23 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: city-builder
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      annotations:
+      labels:
+        app: city-builder
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: voxel-blitter
+        image: mavencraft:latest
+        command:
+        #- sleep
+        #- infinity
+        - ruby
+        - diclophis/rows.rb
+        workingDir: /home/app
