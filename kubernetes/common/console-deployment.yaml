@@ -9,7 +9,7 @@ spec:
   revisionHistoryLimit: 1
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
   template:
     metadata:
       labels:
