@@ -2,9 +2,9 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: mavencraft-creative
+  name: mavencraft
   labels:
-    app: mavencraft-creative
+    app: mavencraft
 spec:
   revisionHistoryLimit: 1
   strategy:
@@ -13,27 +13,24 @@ spec:
   template:
     metadata:
       labels:
-        app: mavencraft-creative
+        app: mavencraft
     spec:
       terminationGracePeriodSeconds: 1
       securityContext:
         fsGroup: 1000
       volumes:
-      - name: world
+      - name: mavencraft
         persistentVolumeClaim:
-          claimName: creative-world
-      - name: map
-        persistentVolumeClaim:
-          claimName: creative-map
-      nodeSelector:
-        failure-domain.beta.kubernetes.io/zone: us-west-2b
+          claimName: mavencraft
       containers:
       - name: minecraft-game-server
         volumeMounts:
         - mountPath: /home/app/world
-          name: world
+          subPath: world
+          name: mavencraft
         - mountPath: /home/app/map
-          name: map
+          subPath: map
+          name: mavencraft
         image: mavencraft:latest
         resources:
           requests:
@@ -49,19 +46,49 @@ spec:
           containerPort: 25565
         - name: mavencraft-port
           containerPort: 25566
-        command: ["bash", "scripts/minecraft.sh", "32000M", "mavencraft", "25565", "25566", "/home/app/cache/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar", "creative"]
+        command:
+        command:
+        - "bundle"
+        - "exec"
+        - "ruby"
+        - "minecraft-wrapper/server2.rb"
+        - "java"
+        #- "-Dlog4j.configurationFile=config/log4j2.xml"
+        - "-mx32000M"
+        - "-Xmx32000M"
+        - "-Xms32000M"
+        - "-XX:MaxGCPauseMillis=1"
+        - "-XX:+UseG1GC"
+        - "-XX:ParallelGCThreads=1024"
+        - "-XX:ConcGCThreads=1024"
+        - "-XX:InitiatingHeapOccupancyPercent=0"
+        #- "-XX:+AggressiveOpts"
+        - "-server"
+        - "-jar"
+        - "/home/app/cache/craftbukkit-1.14.4-R0.1-SNAPSHOT.jar"
+        - "--port"
+        - "25565"
+        - "-c"
+        #- "config/survival-server.properties"
+        #- "config/creative-server.properties"
+        - "config/flat-server.properties"
+        - "nogui"
         #command: ["sleep", "infinity"]
         env:
           - name: RUBY_GC_HEAP_GROWTH_FACTOR
             value: "1.1"
           - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
             value: "0.1"
+          - name: DYNASTY_SOCK
+            value: "tmp/dynasty.sock"
       - name: world-map-generator
         volumeMounts:
         - mountPath: /home/app/world
-          name: world
+          subPath: world
+          name: mavencraft
         - mountPath: /home/app/map
-          name: map
+          subPath: map
+          name: mavencraft
         image: mavencraft:latest
         resources:
           requests:
@@ -95,38 +122,6 @@ spec:
         command: ["ruby", "-run", "-ehttpd", "map", "-p8080", "-b0.0.0.0"]
         #command: ["sleep", "infinity"]
         volumeMounts:
-        - name: map
-          mountPath: /home/mavencraft/map
----
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: mavencraft-console
-  labels:
-    app: mavencraft-console
-spec:
-  revisionHistoryLimit: 1
-  strategy:
-    type: Recreate
-  replicas: 0
-  template:
-    metadata:
-      labels:
-        app: mavencraft-console
-    spec:
-      terminationGracePeriodSeconds: 1
-      securityContext:
-        fsGroup: 1000
-      containers:
-      - name: mavencraft-console
-        image: mavencraft:latest
-        resources:
-          requests:
-            memory: "1000Mi"
-            cpu: "1000m"
-          limits:
-            memory: "32000Mi"
-            cpu: "32000m"
-        imagePullPolicy: IfNotPresent
-        workingDir: /home/app
-        command: ["sleep", "infinity"]
+        - mountPath: /home/mavencraft/map
+          subPath: map
+          name: mavencraft

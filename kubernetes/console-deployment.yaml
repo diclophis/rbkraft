@@ -1,0 +1,33 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: console
+  labels:
+    app: console
+spec:
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
+  replicas: 0
+  template:
+    metadata:
+      labels:
+        app: console
+    spec:
+      terminationGracePeriodSeconds: 1
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: interactive-console-terminal
+        image: mavencraft:latest
+        resources:
+          requests:
+            memory: "1000Mi"
+            cpu: "1000m"
+          limits:
+            memory: "32000Mi"
+            cpu: "32000m"
+        imagePullPolicy: IfNotPresent
+        workingDir: /home/app
+        command: ["sleep", "infinity"]

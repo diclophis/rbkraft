@@ -22,12 +22,8 @@ USER app
 COPY Gemfile Gemfile.lock /home/app/
 RUN cd /home/app && bundle install --path=vendor/bundle
 
-RUN mkdir -p /home/app/.local/share
-
 COPY scripts /home/app/scripts
 COPY config /home/app/config
-
-RUN echo eula=true > /home/app/eula.txt
 
 COPY minecraft-wrapper /home/app/minecraft-wrapper
 COPY world-painter /home/app/world-painter
@@ -38,5 +34,8 @@ COPY models /home/app/models
 COPY eisenscript /home/app/eisenscript
 
 WORKDIR /home/app
+
+RUN echo eula=true > /home/app/eula.txt
+RUN mkdir -p /home/app/.local/share tmp
 
 CMD ["bash"]

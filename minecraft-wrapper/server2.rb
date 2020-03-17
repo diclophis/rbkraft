@@ -50,7 +50,8 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]
 
   logger = Logger.new(inner_logger)
   logger.formatter = RawFormatter.new
-  logger.level = Logger::INFO
+  logger.level = Logger::DEBUG
+  #logger.level = Logger::INFO
   #logger.debug({"extra" => "detail"})
   #logger.info({"extra" => "detail"})
   #logger.warn({"extra" => "detail"})
