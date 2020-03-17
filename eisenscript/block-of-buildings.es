@@ -25,6 +25,24 @@ rule block {
 { x -0 z 0 } building
 }
 
+rule block {
+{ x -10 z -20 } building
+{ x -0 z -20 } building
+{ x -20 z -10 } building
+{ x -0 z -10 } building
+{ x -15 z 0 } building1x2
+{ x -0 z 0 } building
+}
+
+rule block {
+{ x -20 z -20 } building
+{ x -10 z -20 } building
+{ x -20 z -10 } building
+{ x -10 z -10 ry 90 } building
+{ x -0 z -10 } building
+{ x -10 z 0 ry 90 } building
+{ x -0 z 0 } building
+}
 
 rule building {
 1 * { x -4 z -6 y 10.5 s 1 21 1 } 5 * { z 2 } box
@@ -58,6 +76,9 @@ rule building {
 1 * { y 27 s 5 1 5 } box
 }
 
+rule building {
+}
+
 rule building1x2 {
 1 * { y -2 z -0.5 s 19 1 8 } 8 * { y 2 } box
 1 * { x -10 z -5 y -1 } 7 * { y 2 } 19 * { x 1 } 8 * { z 1 } 1 * { s 0.95 } box
@@ -65,4 +86,3 @@ rule building1x2 {
 }
 
 //// 白色の地面
-//{ y -0.5 s 400 0.1 400 color white } box

@@ -32,14 +32,20 @@
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
 #  250 256 130 256 sandstone
 
-### simple buildings
-cat eisenscript/block-of-buildings.es \
-  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
-  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-  80 256 144 256 stone
-
-### base loft
+#### base loft
 cat eisenscript/loft-like.es \
   | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
   | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-  80 256 65 256 stone
+  100 -256 65 -256 stone
+
+##### simple buildings
+cat eisenscript/block-of-buildings.es \
+  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
+  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+  90 -256 160 -256 stone
+
+### bridge
+cat eisenscript/simple-structures.es \
+  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
+  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+  200 -256 159 -256 stone
