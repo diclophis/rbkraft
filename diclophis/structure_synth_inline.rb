@@ -4,7 +4,7 @@ require 'tempfile'
 require 'rexml/document'
 
 xml_data = File.read(ARGV[0]) 
-eisenscript_data = File.read(ARGV[1])
+eisenscript_data = $stdin.read
 
 doc = REXML::Document.new(xml_data)
 doc.elements.each('FilterScript/filter') do |ele|
@@ -29,14 +29,13 @@ meshlab_output = IO.popen(meshlab_eisen_to_stl_cmd).read
 
 meshlab_output.include?("saved as #{tmp_stl.path}") || exit(1)
 
-#system("cat #{tmp_stl.path}")
 tmp_stl.rewind
 
-if ARGV[2]
-  File.write(ARGV[2], tmp_stl.read)
-else
+#if ARGV[2]
+#  File.write(ARGV[2], tmp_stl.read)
+#else
   $stdout.write(tmp_stl.read)
-end
+#end
 
 tmp_stl.close
 tmp_mlx.close

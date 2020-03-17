@@ -11,8 +11,11 @@ set maxdepth 500
 #define thirdP 3
 
 // 3 * mainP
-#define fourthP 18
+#define fourthP 20
 
+{ rx 90 } loft
+
+rule loft {
 rFloors
 thirdP * {z 3} rFloors
 mainP * {y 3 }  rLine
@@ -20,6 +23,8 @@ rFront
 mainP * {y 3} rFront
 rSideY
 3 * {z 3 }  rSideY
+}
+
 
 
 rule rFloors {
