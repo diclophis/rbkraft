@@ -32,34 +32,3 @@ spec:
   resources:
     requests:
       storage: "30Gi"
-
-#---
-#apiVersion: v1
-#kind: PersistentVolume
-#metadata:
-#  name: mavencraft-creative-world-volume
-#  labels:
-#    usage: creative-world
-#spec:
-#  storageClassName: async-gp2
-#  capacity:
-#    storage: 30Gi
-#  accessModes:
-#    - ReadWriteOnce
-#  awsElasticBlockStore:
-#    fsType: ext4
-#---
-#apiVersion: v1
-#kind: PersistentVolume
-#metadata:
-#  name: mavencraft-creative-map-volume
-#  labels:
-#    usage: creative-map
-#spec:
-#  storageClassName: async-gp2
-#  capacity:
-#    storage: 30Gi
-#  accessModes:
-#    - ReadWriteOnce
-#  awsElasticBlockStore:
-#    fsType: ext4
