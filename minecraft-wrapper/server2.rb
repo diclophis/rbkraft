@@ -50,12 +50,7 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]
 
   logger = Logger.new(inner_logger)
   logger.formatter = RawFormatter.new
-  logger.level = Logger::DEBUG
-  #logger.level = Logger::INFO
-  #logger.debug({"extra" => "detail"})
-  #logger.info({"extra" => "detail"})
-  #logger.warn({"extra" => "detail"})
-  #logger.fatal({"extra" => "detail"})
+  logger.level = Logger.const_get(ENV["RUBY_LOGGER_LEVEL"] || "DEBUG")
 
   # In your server, consume any ancestored descriptors, order is important
   # this case, the first 3 sockets are the stdin,stdout,stderr of the wrapped

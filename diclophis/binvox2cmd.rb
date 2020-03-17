@@ -25,8 +25,6 @@ def coordinate_space(vx, vy, vz, dx, dy, dz, tx, ty, tz, sx, sy, sz)
   y = sy.to_f*y_n + ty.to_f
   z = sz.to_f*z_n + tz.to_f
 
-  #puts [x, y, z, vx, vy, vz, dx, dy, dz, tx, ty, tz, sx, sy, sz].inspect
-
   return x, y, z
 end
 
@@ -115,44 +113,15 @@ global_painter.async do
         pairs.clear
 
         draw_distance.times { |d|
-          #cx, cy, cz = coordinate_space(lx, ly, lz, depth, height, width, translate_x, translate_y, translate_z, scale, scale, scale)
-
-          #dx = cx + (X - (depth / 2))
-          #dy = cy + (Y - (height / 2))
-          #dz = cz + (Z - (width / 2))
-
-          #scribble = [((cx * depth) + X) + (depth / 2), ((cy * height) + Y) + (height / 2), ((cz * width) + Z) + (width / 2), T]
-
           block_type = T
 
-          #block_type = if rand > 0.9
-          #  "glowstone"
-          #elsif rand > 0.5
-          #  "glass"
-          #elsif rand > 0.1
-          #  "sandstone"
-          #else
-          #  "sand"
-          #end
-
-          #block_type = "sand"
-
-          #global_painter.glow_type
-          #global_painter.sandstone_type
-          #global_painter.quartz_type
-          #global_painter.obsidian_type
-
           scribble = [(lx + X) - (depth / 2), (ly + Y) - (height / 2), (lz + Z) - (width / 2), block_type]
-
-          #puts scribble.inspect
 
           if draw == 1
             global_painter.place(*scribble)
           end
 
           count += 1
-
-          #global_painter.place(dx, dy, dz, global_painter.lantern_type)
 
           ly += 1
           if (ly % height) == 0
@@ -172,4 +141,4 @@ global_painter.async do
   end
 end
 
-puts [global_painter.client.command_count, count].inspect
+puts [:total_voxels_blitted, global_painter.client.command_count].inspect

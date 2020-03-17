@@ -37,6 +37,7 @@ class Wrapper
                 :prefetched_broadcast,
                 :command, :options,
                 :input_waiting_to_be_written_to_minecraft,
+                :inputs_queued_for_delete,
                 :full_commands_waiting_to_be_written_to_minecraft,
                 :logger,
                 :time_since_last_stat,
@@ -71,6 +72,7 @@ class Wrapper
     self.prefetched_broadcast = ""
     self.input_waiting_to_be_written_to_minecraft = {}
     
+    self.inputs_queued_for_delete = []
 
     logger.debug :event => :starting, :port => @port
   end
@@ -174,7 +176,7 @@ class Wrapper
         if broadcast_bytes.length == 0
           return
         else
-          logger.debug :broadcast_bytes => broadcast_bytes
+          #logger.debug :broadcast_bytes => broadcast_bytes
 
           #TODO: keep on global scanner?
           #TODO: yes
@@ -242,7 +244,7 @@ class Wrapper
             else
               if stripped_command == "save-all"
                 self.full_commands_waiting_to_be_written_to_minecraft.unshift(full_command_line)
-                close_client(io, Exception.new("saved: #{full_command_line}")) # unless client.async
+                close_client(io, nil)
                 break
               else
                 self.full_commands_waiting_to_be_written_to_minecraft.unshift(stripped_command)
@@ -254,7 +256,13 @@ class Wrapper
         end
 
         this_client_buffer_size = byte_scanner.rest_size
-        rest_sizes << this_client_buffer_size
+
+        if this_client_buffer_size == 0 && self.inputs_queued_for_delete.include?(io)
+          self.input_waiting_to_be_written_to_minecraft.delete(io)
+          self.inputs_queued_for_delete.delete(io)
+        else
+          rest_sizes << this_client_buffer_size
+        end
 
         if this_client_buffer_size > (MEGABYTE * 1024 * 32)
           self.close_client(io, :overflow)
@@ -353,10 +361,11 @@ class Wrapper
   end
 
   def close_client(readable_io, exception = nil)
-    logger.info :event => :close_client, :exc => exception, :client => readable_io.object_id
+    logger.debug :event => :close_client, :exc => exception, :client => readable_io.object_id
 
     self.clients.delete(readable_io)
-    #self.input_waiting_to_be_written_to_minecraft.delete(readable_io)
+
+    self.inputs_queued_for_delete << readable_io
 
     readable_io.close unless readable_io.closed?
   end

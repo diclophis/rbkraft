@@ -6,7 +6,7 @@ $: << "diclophis"
 require 'tempfile'
 require 'diclophis_world_painter'
 
-TXT=ARGV[0]
+TXT=$stdin.read.strip
 
 tmp_stl = Tempfile.new(["rendered-es", ".stl"])
 system("openscad", "-D", "msg=\"#{TXT}\"", "--autocenter", "-o", tmp_stl.path, "openscad/text_sphere.scad") || exit(1)

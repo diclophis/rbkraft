@@ -2,22 +2,20 @@
 
 # makes map and invokes film
 
-#set -e
-#set -x
-
-MINECRAFT_ROOT=/home/app
-
 while true;
 do
-  sleep 5
-
-  if [ -e $MINECRAFT_ROOT/world/level.dat ];
+  if [ -e world/level.dat ];
   then
-    cat $MINECRAFT_ROOT/scripts/normal-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
-    inotifywait -t 30 -e CLOSE $MINECRAFT_ROOT/world/session.lock
-    $MINECRAFT_ROOT/scripts/mapper.sh $1
+    cat scripts/normal-save.cmd | nc -w 1 localhost 25566 >/dev/null 2>&1
+    inotifywait -t 30 -e CLOSE world/session.lock >/dev/null 2>&1
+    mapcrafter -b -c /home/app/config/mapcrafter.conf -j 4 >/dev/null 2>&1
   else
-    cat $MINECRAFT_ROOT/scripts/initial-save.cmd | nc -w 1 localhost 25566 2>&1 > /dev/null
-    (test -e $MINECRAFT_ROOT/world/session.lock && inotifywait -t 30 -e CLOSE $MINECRAFT_ROOT/world/session.lock) # || sleep 1
+    cat scripts/initial-save.cmd | nc -w 1 localhost 25566 >/dev/null 2>&1
+    if [ -e world/session.lock ];
+    then
+      inotifywait -t 30 -e CLOSE world/session.lock >/dev/null 2>&1
+    fi
   fi
+
+  sleep 1
 done

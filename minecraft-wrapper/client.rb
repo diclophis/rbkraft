@@ -30,7 +30,7 @@ class MinecraftClient
     loop {
       begin
         Timeout::timeout(5) do
-          @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || ENV['CREATIVE_CLUSTER_IP_SERVICE_HOST'] || "127.0.0.1", ENV["MAVENCRAFT_PORT"] || 25566)
+          @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || ENV['CLUSTER_IP_SERVICE_HOST'] || "127.0.0.1", ENV["MAVENCRAFT_PORT"] || ENV["CLUSTER_IP_SERVICE_PORT"] || 25566)
           $stderr.puts("made_connect")
         end
 

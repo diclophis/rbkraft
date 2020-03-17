@@ -9,7 +9,7 @@ spec:
   revisionHistoryLimit: 1
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
   template:
     metadata:
       labels:
@@ -81,6 +81,8 @@ spec:
             value: "0.1"
           - name: DYNASTY_SOCK
             value: "tmp/dynasty.sock"
+          - name: RUBY_LOGGER_LEVEL
+            value: INFO
       - name: world-map-generator
         volumeMounts:
         - mountPath: /home/app/world

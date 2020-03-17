@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "web-node-port"
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    nodePort: 31588
+    name: http-port
+    protocol: TCP
+  selector:
+    app: "mavencraft"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "loadbalancer-port"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 25565
+    name: minecraft-port
+    protocol: TCP
+  selector:
+    app: "mavencraft"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "cluster-ip"
+spec:
+  ports:
+  - targetPort: 25566
+    port: 25566
+    name: mavencraft-port
+    protocol: TCP
+  selector:
+    app: "mavencraft"
