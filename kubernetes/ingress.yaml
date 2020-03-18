@@ -9,10 +9,6 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: ssl-redirect
-          servicePort: use-annotation
-        path: /*
-      - backend:
-          serviceName: creative-web-node-port
+          serviceName: web-node-port
           servicePort: http-port
         path: /*

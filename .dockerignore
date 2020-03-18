@@ -1,5 +1,9 @@
 images
 vendor
+Dockerfile
+kubernetes
+README.md
 *jar
 *.obj
 *.stl
+*.sock
