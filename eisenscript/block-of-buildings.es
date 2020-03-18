@@ -76,8 +76,8 @@ rule building {
 1 * { y 27 s 5 1 5 } box
 }
 
-rule building {
-}
+//rule building {
+//}
 
 rule building1x2 {
 1 * { y -2 z -0.5 s 19 1 8 } 8 * { y 2 } box
