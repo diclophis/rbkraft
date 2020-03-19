@@ -21,5 +21,6 @@ WORKDIR /home/app
 
 RUN echo eula=true > /home/app/eula.txt
 RUN mkdir -p /home/app/.local/share tmp
+RUN ln -sf config/ops.json ops.json
 
 CMD ["bash"]

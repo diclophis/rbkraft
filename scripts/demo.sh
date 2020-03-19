@@ -7,17 +7,17 @@
 #cat openscad/sphere.scad \
 #  | bash scripts/console-runner.sh ruby diclophis/scad.rb \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  64 0 150 0 glass
+#  64 75 150 0 glass
 #cat openscad/sphere.scad \
 #  | bash scripts/console-runner.sh ruby diclophis/scad.rb \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
 #  32 0 150 0 glowstone
 
 ###### makes the giant mavencraft logo
-#echo "★ mavencraft.net ♥" \
-#  | bash scripts/console-runner.sh ruby diclophis/text.rb \
-#  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  900 0 460 0 stone
+echo "★ mavencraft.net ♥" \
+  | bash scripts/console-runner.sh ruby diclophis/text.rb \
+  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+  900 0 560 0 stone
 
 ##### dragon
 ##cat models/low_drogon-r1.stl \
@@ -30,10 +30,10 @@
 ##  1357 256 679 -256 quartz_block
 #
 #### serpinski pyramid
-cat eisenscript/pyramid.es \
-  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
-  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-  250 256 130 256 sandstone
+#cat eisenscript/pyramid.es \
+#  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
+#  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+#  128 0 65 0 sandstone
 
 ##### base loft
 #cat eisenscript/loft-like.es \
