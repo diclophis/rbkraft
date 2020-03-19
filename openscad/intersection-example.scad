@@ -1,0 +1,10 @@
+  union(
+    difference(
+      cube(size=3),
+      sphere(size=2)
+    ),
+    intersection(
+      sphere(r=1.3),
+      cube(size=2.1)
+    )
+  );

@@ -79,8 +79,8 @@ class Wrapper
 
   def install_trap
     Signal.trap("INT") do
-      write_minecraft_command("save-all")
-      write_minecraft_command("stop")
+      #write_minecraft_command("save-all")
+      #write_minecraft_command("stop")
     end
   end
 
@@ -120,7 +120,7 @@ class Wrapper
     raise unless self.server_io
 
     while client = descriptors.shift
-      install_client(client, true)
+      install_client(client)
     end
   end
 
@@ -314,7 +314,8 @@ class Wrapper
     unless client.nil? || client.broadcast_scanner.eos?
       while has_eol = client.broadcast_scanner.check_until(/\n/)
         broadcast_line = client.broadcast_scanner.scan_until(/\n/)
-        if broadcast_line.include?("X:") ||
+        if broadcast_line.include?("Debug:") ||
+           broadcast_line.include?("X:") ||
            broadcast_line.include?("Y:") ||
            broadcast_line.include?("Z:") ||
            broadcast_line.include?("Pitch:") ||
@@ -371,13 +372,16 @@ class Wrapper
   end
 
   def write_minecraft_command(actual_command_line)
+    actual_command_line = actual_command_line + " baz boop"
     @count += 1
     filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\'\n]/, '')
     if (filtered_sent_line && filtered_sent_line.length > 0)
       begin
-        self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
+        wrote = self.minecraft_stdin.write(filtered_sent_line + "\n") #TODO: nonblock writes
+        self.minecraft_stdin.flush
+        logger.debug :event => :write_mc_command, :cmd => filtered_sent_line, :wrote => wrote
       rescue Errno::EPIPE => e
-        logger.fatal "minecraft exited"
+        logger.fatal :event => "minecraft exited"
         exit 1
       end
     end

@@ -1,11 +1,18 @@
-r1
+stone_henge
 
-rule r1 md 8 {
-  {x 5 } r1
-  square
+rule stone_henge md 10 {
+  { ry 33 x 8 } stone_henge
+  monolith
 }
 
-rule square {
+rule monolith {
+  { ry 90 s 1 10 5 } box
+}
+
+rule monolith {
   { ry 45 s 1 10 5 } box
 }
 
+rule monolith {
+  { ry 0 s 1 10 5 } box
+}

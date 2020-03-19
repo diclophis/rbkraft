@@ -87,6 +87,8 @@ class Dynasty
       replacement.send_io(io) if io
     end
 
+    Signal::trap("INT", "DEFAULT")
+
     ios
   end
 
