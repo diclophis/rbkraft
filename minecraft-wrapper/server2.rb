@@ -58,17 +58,9 @@ Dynasty.server(ENV["DYNASTY_SOCK"] || raise("missing env"), ENV["DYNASTY_FORCE"]
   while wrapper.running
     # Along with your own descriptors, select() over the dynasty socket
     selectable_sockets = dynasty.selectable_descriptors + wrapper.selectable_descriptors
-
-    writable_sockets = []
-    ####TODO: handle this case????
-    ###writable_sockets = wrapper.writable_descriptors
-
     open_selectable_sockets = selectable_sockets.reject { |io| io.closed? }
-    open_writable_sockets = writable_sockets.reject { |io| io.closed? }
-
-    next unless (open_selectable_sockets.length > 0 || open_writable_sockets.length > 0)
-
-    readable, writable, _errored = IO.select(open_selectable_sockets, open_writable_sockets, selectable_sockets, SELECT_SLEEP)
+    next unless (open_selectable_sockets.length > 0)
+    readable, writable, _errored = IO.select(open_selectable_sockets, [], selectable_sockets, SELECT_SLEEP)
 
     # NOTE: When the dynasty socket is passed on, we need to exit immediatly
     # because we no longer own the sockets we have reference to

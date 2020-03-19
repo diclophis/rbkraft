@@ -293,18 +293,18 @@ class Wrapper
     if status_since_time > STATUS_FREQUENCY
       self.time_since_last_stat = Time.now
 
-      alive = ObjectSpace
-              .each_object
-              .inject(Hash.new 0) { |h,o| h[o.class] += 1; h }
-              .sort_by { |k,v| -v }
-              .reject { |k, v| v < 1000 }
-              .take(10)
+      #alive = ObjectSpace
+      #        .each_object
+      #        .inject(Hash.new 0) { |h,o| h[o.class] += 1; h }
+      #        .sort_by { |k,v| -v }
+      #        .reject { |k, v| v < 1000 }
+      #        .take(10)
 
       logger.info({:event => :status,
-                   :waiting_commands => self.full_commands_waiting_to_be_written_to_minecraft.length,
+                   :waiting => self.full_commands_waiting_to_be_written_to_minecraft.length,
                    :rest_sizes => rest_sizes,
-                   :client_count => self.clients.length,
-                   :tc => $TOTAL_COMMANDS}.merge(alive.to_h))
+                   :clients => self.clients.length,
+                   :tc => $TOTAL_COMMANDS})
     end
   end
 
@@ -372,7 +372,7 @@ class Wrapper
   end
 
   def write_minecraft_command(actual_command_line)
-    actual_command_line = actual_command_line + " baz boop"
+    #actual_command_line = actual_command_line + " --new-arg --changed"
     @count += 1
     filtered_sent_line = actual_command_line.gsub(/[^a-zA-Z0-9\ _\-:\?\{\}\[\],\.\!\"\'\n]/, '')
     if (filtered_sent_line && filtered_sent_line.length > 0)
