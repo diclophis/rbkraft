@@ -50,14 +50,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: mavencraft-console
+      app: console
   policyTypes:
   - Egress
   egress:
   - to:
     - podSelector:
         matchLabels:
-          app: mavencraft-creative
+          app: mavencraft
 
 # allow outbound from console to mavencraft
 ---
@@ -75,7 +75,7 @@ spec:
   - to:
     - podSelector:
         matchLabels:
-          app: mavencraft-creative
+          app: mavencraft
 
 # allow inbound to mavencraft from loadbalancer service
 ---
@@ -86,7 +86,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: mavencraft-creative
+      app: mavencraft
   policyTypes:
   - Ingress
   ingress:
