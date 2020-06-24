@@ -25,7 +25,7 @@ class Maze
     @unit = 32
 
     # sea level to match with walking platform
-    @sea_level = 4 # 4 flat #63 default
+    @sea_level = 63 # 4 flat #63 default
 
     @shapes = {}
 
@@ -69,7 +69,7 @@ class Maze
 
       if ii
         shape_vox = []
-        inio = File.open("/home/minecraft/shape-#{ii}.vox")
+        inio = File.open("/home/app/shape-#{ii}.vox")
 
         #puts "/var/tmp/mavencraft/backup/shape-#{ii}.vox"
         #inio = File.open("/var/tmp/mavencraft/backup/shape-#{ii}.vox")

@@ -1,5 +1,5 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mavencraft
@@ -9,7 +9,10 @@ spec:
   revisionHistoryLimit: 1
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
+  selector:
+    matchLabels:
+        app: mavencraft
   template:
     metadata:
       labels:
@@ -59,8 +62,8 @@ spec:
         - "-Xms32000M"
         - "-XX:MaxGCPauseMillis=1"
         - "-XX:+UseG1GC"
-        - "-XX:ParallelGCThreads=1024"
-        - "-XX:ConcGCThreads=1024"
+        - "-XX:ParallelGCThreads=8"
+        - "-XX:ConcGCThreads=8"
         - "-XX:InitiatingHeapOccupancyPercent=0"
         #- "-XX:+AggressiveOpts"
         - "-server"
@@ -83,47 +86,47 @@ spec:
             value: "tmp/dynasty.sock"
           - name: RUBY_LOGGER_LEVEL
             value: INFO
-      - name: world-map-generator
-        volumeMounts:
-        - mountPath: /home/app/world
-          subPath: world
-          name: mavencraft
-        - mountPath: /home/app/map
-          subPath: map
-          name: mavencraft
-        image: mavencraft:latest
-        resources:
-          requests:
-            memory: "1000Mi"
-            cpu: "1000m"
-          limits:
-            memory: "32000Mi"
-            cpu: "32000m"
-        imagePullPolicy: IfNotPresent
-        workingDir: /home/app
-        command: ["bash", "scripts/overviewer-run.sh", "4"]
-        #command: ["sleep", "infinity"]
-        env:
-          - name: LD_LIBRARY_PATH
-            value: /home/app/mapcrafter/src/mapcraftercore
-      - name: static-web-server
-        image: mavencraft:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - name: http-port
-          containerPort: 8080
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http-port
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http-port
-        workingDir: /home/mavencraft
-        command: ["ruby", "-run", "-ehttpd", "map", "-p8080", "-b0.0.0.0"]
-        #command: ["sleep", "infinity"]
-        volumeMounts:
-        - mountPath: /home/mavencraft/map
-          subPath: map
-          name: mavencraft
+      #- name: world-map-generator
+      #  volumeMounts:
+      #  - mountPath: /home/app/world
+      #    subPath: world
+      #    name: mavencraft
+      #  - mountPath: /home/app/map
+      #    subPath: map
+      #    name: mavencraft
+      #  image: mavencraft:latest
+      #  resources:
+      #    requests:
+      #      memory: "1000Mi"
+      #      cpu: "1000m"
+      #    limits:
+      #      memory: "32000Mi"
+      #      cpu: "32000m"
+      #  imagePullPolicy: IfNotPresent
+      #  workingDir: /home/app
+      #  command: ["bash", "scripts/overviewer-run.sh", "4"]
+      #  #command: ["sleep", "infinity"]
+      #  env:
+      #    - name: LD_LIBRARY_PATH
+      #      value: /home/app/mapcrafter/src/mapcraftercore
+      #- name: static-web-server
+      #  image: mavencraft:latest
+      #  imagePullPolicy: IfNotPresent
+      #  ports:
+      #  - name: http-port
+      #    containerPort: 8080
+      #  readinessProbe:
+      #    httpGet:
+      #      path: /
+      #      port: http-port
+      #  livenessProbe:
+      #    httpGet:
+      #      path: /
+      #      port: http-port
+      #  workingDir: /home/mavencraft
+      #  command: ["ruby", "-run", "-ehttpd", "map", "-p8080", "-b0.0.0.0"]
+      #  #command: ["sleep", "infinity"]
+      #  volumeMounts:
+      #  - mountPath: /home/mavencraft/map
+      #    subPath: map
+      #    name: mavencraft

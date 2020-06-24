@@ -18,7 +18,8 @@ kind: Service
 metadata:
   name: "minecraft-loadbalancer-port"
 spec:
-  type: LoadBalancer
+  #type: LoadBalancer
+  type: NodePort
   ports:
   - port: 25565
     name: minecraft-port

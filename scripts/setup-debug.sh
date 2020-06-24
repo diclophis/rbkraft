@@ -7,6 +7,6 @@ mkdir -p ~/.local/share
 
 for I in `seq 0 20`
 do
-  openscad -D shape=${I} -o /home/minecraft/shape-${I}.stl /home/minecraft/map-parts.scad
-  /home/minecraft/voxelizer/build/bin/voxelizer 32 8 /home/minecraft/shape-${I}.stl /home/minecraft/shape-${I}.vox
+  openscad -D shape=${I} -o /home/app/shape-${I}.stl /home/app/openscad/map-parts.scad
+  /home/app/voxelizer/build/bin/voxelizer 32 8 /home/app/shape-${I}.stl /home/app/shape-${I}.vox
 done

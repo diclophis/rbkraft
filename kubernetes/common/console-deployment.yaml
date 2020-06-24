@@ -1,5 +1,5 @@
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: console
@@ -9,7 +9,10 @@ spec:
   revisionHistoryLimit: 1
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
+  selector:
+    matchLabels:
+      app: console
   template:
     metadata:
       labels:
