@@ -14,6 +14,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: voxel-blitter
+        imagePullPolicy: IfNotPresent
         image: mavencraft:latest
         command:
         - sleep

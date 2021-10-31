@@ -15,12 +15,12 @@ USE_POPEN3 = true
 FIXNUM_MAX = (2**(0.size * 8 -2) -1)
 MEGABYTE = 1000000
 READ_CHUNKS = MEGABYTE * 32
-READ_CHUNKS_REMOTE = MEGABYTE * 32
+READ_CHUNKS_REMOTE = MEGABYTE * 16
 
-COMMANDS_FROM_CLIENT_PER_TICK = 64
-COMMANDS_TO_MINECRAFT_PER_TICK = 256
+COMMANDS_FROM_CLIENT_PER_TICK = 32
+COMMANDS_TO_MINECRAFT_PER_TICK = 64
 
-TICK_FREQUENCY = 1.0 / 24.0
+TICK_FREQUENCY = 1.0 / 20.0
 STATUS_FREQUENCY = 5.0 / 1.0
 POLL_FREQUENCY = 1.0 / 30.0
 
@@ -180,6 +180,7 @@ class Wrapper
 
           #TODO: keep on global scanner?
           #TODO: yes
+          #TODO: !!!
           #puts broadcast_bytes
 
           self.clients.each do |io, client|

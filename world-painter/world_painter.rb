@@ -214,14 +214,14 @@ class WorldPainter
 
     yy = (@center.y + y)
 
-    if yy < 1 || yy > 255
+    if yy < 0 || yy > 255
       puts [:out_of_bounds, x, yy, z].inspect
       exit 32
     end
 
     #set_block_command = "#{thing} world,#{(@center.x + x).to_i},#{(@center.y + y).to_i},#{(@center.z + z).to_i}"
-    set_block_command = "dc faker bpe #{thing} world,#{(@center.x + x).to_i},#{(yy).to_i},#{(@center.z + z).to_i}"
-    #set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing}"
+    #set_block_command = "dc faker bpe #{thing} world,#{(@center.x + x).to_i},#{(yy).to_i},#{(@center.z + z).to_i}"
+    set_block_command = "setblock #{(@center.x + x).to_i} #{(@center.y + y).to_i} #{(@center.z + z).to_i} #{thing}"
     execute set_block_command
   end
 

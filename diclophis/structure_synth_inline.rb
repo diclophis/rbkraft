@@ -4,6 +4,8 @@ require 'tempfile'
 require 'rexml/document'
 
 xml_data = File.read(ARGV[0]) 
+debug = ARGV[1] == "debug"
+
 eisenscript_data = $stdin.read
 
 doc = REXML::Document.new(xml_data)
@@ -13,29 +15,34 @@ doc.elements.each('FilterScript/filter') do |ele|
   end
 
   ele.elements.each("Param[@name='seed']") do |pele|
-    pele.attributes["value"] = (rand * 10000.0).to_i
+    pele.attributes["value"] = (rand * 10.0).to_i
   end
 end
 
-tmp_mlx = Tempfile.new(["filters", ".mlx"])
+tmp_mlx = File.new("/tmp/#{rand}-filters.mlx", "a+")
 tmp_mlx.write(doc.to_s)
 tmp_mlx.flush
+tmp_mlx.close
 
-tmp_stl = Tempfile.new(["rendered-es", ".stl"])
+tmp_stl = "/tmp/#{rand}-rendered-es.stl"
+FileUtils.touch(tmp_stl)
 
-meshlab_eisen_to_stl_cmd = "meshlabserver -i #{tmp_stl.path} -o #{tmp_stl.path} -s #{tmp_mlx.path} 2> /dev/null"
+meshlab_eisen_to_stl_cmd = "meshlabserver -o #{tmp_stl} -s #{tmp_mlx.path} #{debug ? "" : '2> /dev/null'}"
 
 meshlab_output = IO.popen(meshlab_eisen_to_stl_cmd).read
 
-meshlab_output.include?("saved as #{tmp_stl.path}") || exit(1)
+if debug
+  puts meshlab_eisen_to_stl_cmd
+  puts meshlab_output
+  exit 2
+end
 
-tmp_stl.rewind
+#meshlab_output.include?("saved as #{tmp_stl}") || exit(1)
+
+#tmp_stl.rewind
 
 #if ARGV[2]
 #  File.write(ARGV[2], tmp_stl.read)
 #else
-  $stdout.write(tmp_stl.read)
+  $stdout.write(File.read(tmp_stl))
 #end
-
-tmp_stl.close
-tmp_mlx.close

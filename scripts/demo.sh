@@ -7,49 +7,54 @@
 #cat openscad/sphere.scad \
 #  | bash scripts/console-runner.sh ruby diclophis/scad.rb \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  128 80 80 0 air
-#
+#  32 -64 32 -64 sandstone
+
 #cat openscad/sphere.scad \
 #  | bash scripts/console-runner.sh ruby diclophis/scad.rb \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  64 80 80 0 air
+#  64 0 128 0 air
 
 ######### makes the giant mavencraft logo
-#echo "★ hello bella and ivy ♥ ♥ ♥ ♥" \
+#echo "★ hello world ♥ " \
 #  | bash scripts/console-runner.sh ruby diclophis/text.rb \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  300 80 360 0 stone
+#  133 -32 128 -32 stone
 
 ##### dragon
 #cat models/low_drogon-r1.stl \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  144 -190 160 285 stone
-#
+#  128 -64 64 64 stone
+
+#### nyc
+cat models/cathedral-100.stl \
+  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+  147 -128 78 -64 stone
+
 #### nyc
 #cat models/nyc-no-floor.stl \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
 #  1357 256 679 -256 quartz_block
-#
+
 ###### serpinski pyramid
-cat eisenscript/pyramid.es \
-  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
-  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-  32 5 65 140 sandstone
-#
+#cat eisenscript/pyramid.es \
+#  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
+#  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+#  128 64 64 64 sandstone
+
 ####### base loft
 #cat eisenscript/loft-like.es \
 #  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
 #  100 -256 65 -256 stone
-#
+
 ###### simple buildings
 #cat eisenscript/block-of-buildings.es \
 #  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  90 -256 160 -256 stone
-#
+#  90 -32 160 -32 stone
+
 ##### bridge
 #cat eisenscript/simple-structures.es \
 #  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  200 -64 159 -64 stone
+#  200 -32 159 64 stone

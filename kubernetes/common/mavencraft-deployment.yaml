@@ -56,7 +56,7 @@ spec:
         - "ruby"
         - "minecraft-wrapper/server2.rb"
         - "java"
-        #- "-Dlog4j.configurationFile=config/log4j2.xml"
+        - "-Dlog4j.configurationFile=config/log4j2.xml"
         - "-mx32000M"
         - "-Xmx32000M"
         - "-Xms32000M"
@@ -65,68 +65,63 @@ spec:
         - "-XX:ParallelGCThreads=8"
         - "-XX:ConcGCThreads=8"
         - "-XX:InitiatingHeapOccupancyPercent=0"
-        #- "-XX:+AggressiveOpts"
         - "-server"
         - "-jar"
-        - "/home/app/cache/craftbukkit-1.17.1.jar"
+        - "/home/app/cache/minecraft-server-1.17.1.jar"
         - "--port"
         - "25565"
-        - "-c"
-        #- "config/survival-server.properties"
-        #- "config/creative-server.properties"
-        - "config/flat-server.properties"
-        - "nogui"
+        - "--nogui"
         #command: ["sleep", "infinity"]
         env:
-          - name: RUBY_GC_HEAP_GROWTH_FACTOR
-            value: "1.1"
-          - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
-            value: "0.1"
-          - name: DYNASTY_SOCK
-            value: "tmp/dynasty.sock"
-          - name: RUBY_LOGGER_LEVEL
-            value: INFO
-      #- name: world-map-generator
-      #  volumeMounts:
-      #  - mountPath: /home/app/world
-      #    subPath: world
-      #    name: mavencraft
-      #  - mountPath: /home/app/map
-      #    subPath: map
-      #    name: mavencraft
-      #  image: mavencraft:latest
-      #  resources:
-      #    requests:
-      #      memory: "1000Mi"
-      #      cpu: "1000m"
-      #    limits:
-      #      memory: "32000Mi"
-      #      cpu: "32000m"
-      #  imagePullPolicy: IfNotPresent
-      #  workingDir: /home/app
-      #  command: ["bash", "scripts/overviewer-run.sh", "4"]
-      #  #command: ["sleep", "infinity"]
-      #  env:
-      #    - name: LD_LIBRARY_PATH
-      #      value: /home/app/mapcrafter/src/mapcraftercore
-      #- name: static-web-server
-      #  image: mavencraft:latest
-      #  imagePullPolicy: IfNotPresent
-      #  ports:
-      #  - name: http-port
-      #    containerPort: 8080
-      #  readinessProbe:
-      #    httpGet:
-      #      path: /
-      #      port: http-port
-      #  livenessProbe:
-      #    httpGet:
-      #      path: /
-      #      port: http-port
-      #  workingDir: /home/mavencraft
-      #  command: ["ruby", "-run", "-ehttpd", "map", "-p8080", "-b0.0.0.0"]
-      #  #command: ["sleep", "infinity"]
-      #  volumeMounts:
-      #  - mountPath: /home/mavencraft/map
-      #    subPath: map
-      #    name: mavencraft
+        - name: RUBY_GC_HEAP_GROWTH_FACTOR
+          value: "1.1"
+        - name: RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR
+          value: "0.1"
+        - name: DYNASTY_SOCK
+          value: "tmp/dynasty.sock"
+        - name: RUBY_LOGGER_LEVEL
+          value: INFO
+      - name: world-map-generator
+        volumeMounts:
+        - mountPath: /home/app/world
+          subPath: world
+          name: mavencraft
+        - mountPath: /home/app/map
+          subPath: map
+          name: mavencraft
+        image: mavencraft:latest
+        resources:
+          requests:
+            memory: "1000Mi"
+            cpu: "1000m"
+          limits:
+            memory: "32000Mi"
+            cpu: "32000m"
+        imagePullPolicy: IfNotPresent
+        workingDir: /home/app
+        command: ["bash", "scripts/overviewer-run.sh", "4"]
+        #command: ["sleep", "infinity"]
+        env:
+        - name: LD_LIBRARY_PATH
+          value: /home/app/mapcrafter/src/mapcraftercore
+      - name: static-web-server
+        image: mavencraft:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http-port
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http-port
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http-port
+        workingDir: /home/mavencraft
+        command: ["ruby", "-run", "-ehttpd", "map", "-p8080", "-b0.0.0.0"]
+        #command: ["sleep", "infinity"]
+        volumeMounts:
+        - mountPath: /home/mavencraft/map
+          subPath: map
+          name: mavencraft

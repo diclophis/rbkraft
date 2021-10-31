@@ -22,6 +22,7 @@ spec:
   type: NodePort
   ports:
   - port: 25565
+    nodePort: 30565
     name: minecraft-port
     protocol: TCP
   selector:

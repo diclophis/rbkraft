@@ -1,30 +1,19 @@
 <!DOCTYPE FilterScript>
 <FilterScript>
  <filter name="Structure Synth Mesh Creation">
-  <Param type="RichString" value="" name="grammar"/>
-  <Param type="RichInt" value="1" name="seed"/>
-  <Param type="RichInt" value="1" name="sphereres"/>
+  <Param value="" isxmlparam="0" tooltip="Write a grammar according to Eisen Script specification and using the primitives box, sphere, mesh, dot and triangle " name="grammar" type="RichString" description="Eisen Script grammar"/>
+  <Param value="1" isxmlparam="0" tooltip="Seed needed to build the mesh" name="seed" type="RichInt" description="seed for random construction"/>
+  <Param value="1" isxmlparam="0" tooltip="increasing the resolution of the spheres will improve the quality of the mesh " name="sphereres" type="RichInt" description="set maximum resolution of sphere primitives, it must be included between 1 and 4"/>
  </filter>
- <filter name="Transform: Rotate">
-  <Param enum_val0="X axis" enum_val1="Y axis" enum_cardinality="4" enum_val2="Z axis" enum_val3="custom axis" type="RichEnum" value="1" name="rotAxis"/>
-  <Param enum_val0="origin" enum_val1="barycenter" enum_cardinality="3" enum_val2="custom point" type="RichEnum" value="0" name="rotCenter"/>
-  <Param type="RichDynamicFloat" value="180" min="-360" name="angle" max="360"/>
-  <Param type="RichBool" value="false" name="snapFlag"/>
-  <Param x="0" y="0" z="0" type="RichPoint3f" name="customAxis"/>
-  <Param x="0" y="0" z="0" type="RichPoint3f" name="customCenter"/>
-  <Param type="RichFloat" value="30" name="snapAngle"/>
-  <Param type="RichBool" value="true" name="Freeze"/>
-  <Param type="RichBool" value="false" name="ToAll"/>
- </filter>
- <filter name="Transform: Scale">
-  <Param type="RichDynamicFloat" value="1" min="0.1" name="axisX" max="10"/>
-  <Param type="RichDynamicFloat" value="1" min="0.1" name="axisY" max="10"/>
-  <Param type="RichDynamicFloat" value="1" min="0.1" name="axisZ" max="10"/>
-  <Param type="RichBool" value="true" name="uniformFlag"/>
-  <Param enum_val0="origin" enum_val1="barycenter" enum_cardinality="3" enum_val2="custom point" type="RichEnum" value="0" name="scaleCenter"/>
-  <Param x="0" y="0" z="0" type="RichPoint3f" name="customCenter"/>
-  <Param type="RichBool" value="true" name="unitFlag"/>
-  <Param type="RichBool" value="true" name="Freeze"/>
-  <Param type="RichBool" value="false" name="ToAll"/>
+ <filter name="Transform: Scale, Normalize">
+  <Param value="1" description="X Axis" tooltip="Scaling" isxmlparam="0" name="axisX" type="RichFloat"/>
+  <Param value="1" description="Y Axis" tooltip="Scaling" isxmlparam="0" name="axisY" type="RichFloat"/>
+  <Param value="1" description="Z Axis" tooltip="Scaling" isxmlparam="0" name="axisZ" type="RichFloat"/>
+  <Param value="true" description="Uniform Scaling" tooltip="If selected an uniform scaling (the same for all the three axis) is applied (the X axis value is used)" isxmlparam="0" name="uniformFlag" type="RichBool"/>
+  <Param value="0" description="Center of scaling:" enum_val1="barycenter" tooltip="Choose a method" isxmlparam="0" enum_cardinality="3" enum_val0="origin" enum_val2="custom point" name="scaleCenter" type="RichEnum"/>
+  <Param x="0" z="0" y="0" description="Custom center" tooltip="This scaling center is used only if the 'custom point' option is chosen." isxmlparam="0" name="customCenter" type="RichPoint3f"/>
+  <Param value="true" description="Scale to Unit bbox" tooltip="If selected, the object is scaled to a box whose sides are at most 1 unit length" isxmlparam="0" name="unitFlag" type="RichBool"/>
+  <Param value="true" description="Freeze Matrix" tooltip="The transformation is explicitly applied, and the vertex coordinates are actually changed" isxmlparam="0" name="Freeze" type="RichBool"/>
+  <Param value="false" description="Apply to all visible Layers" tooltip="If selected the filter will be applied to all visible mesh layers" isxmlparam="0" name="allLayers" type="RichBool"/>
  </filter>
 </FilterScript>
