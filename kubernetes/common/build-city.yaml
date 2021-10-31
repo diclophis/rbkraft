@@ -16,8 +16,8 @@ spec:
       - name: voxel-blitter
         image: mavencraft:latest
         command:
-        #- sleep
-        #- infinity
-        - ruby
-        - diclophis/rows.rb
+        - sleep
+        - infinity
+        #- ruby
+        #- diclophis/rows.rb
         workingDir: /home/app

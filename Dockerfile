@@ -1,4 +1,4 @@
-FROM ubuntu:bionic-20191010
+FROM ubuntu:bionic-20210930
 
 ENV LC_ALL C.UTF-8
 ENV LANG en_US.UTF-8
