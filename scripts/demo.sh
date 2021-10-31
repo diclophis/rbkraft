@@ -25,15 +25,15 @@
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
 #  128 -64 64 64 stone
 
-#### nyc
-cat models/cathedral-100.stl \
-  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-  147 -128 78 -64 stone
+#### cathedral
+#cat models/cathedral-100.stl \
+#  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+#  149 -128 77 -64 stone
 
 #### nyc
 #cat models/nyc-no-floor.stl \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  1357 256 679 -256 quartz_block
+#  512 0 260 0 quartz_block
 
 ###### serpinski pyramid
 #cat eisenscript/pyramid.es \
@@ -41,11 +41,11 @@ cat models/cathedral-100.stl \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
 #  128 64 64 64 sandstone
 
-####### base loft
-#cat eisenscript/loft-like.es \
-#  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
-#  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  100 -256 65 -256 stone
+####### base lofts
+cat eisenscript/loft-like.es \
+  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
+  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+  100 32 55 -32 stone
 
 ###### simple buildings
 #cat eisenscript/block-of-buildings.es \

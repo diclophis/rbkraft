@@ -28,13 +28,12 @@ Process.wait rescue Errno::ECHILD
 
 newtmp = File.join(TMPROOT, "#{SIZE}-#{shasum}")
 
-#unless File.exists?(newtmp) && File.exists?("#{newtmp}.vox")
-  puts [:copying_and_voxelizing, tmp_stl.path, newtmp].inspect
-  FileUtils.copy(tmp_stl.path, newtmp + ".stl")
+puts [:copying_and_voxelizing, tmp_stl.path, newtmp].inspect
+FileUtils.copy(tmp_stl.path, newtmp + ".stl")
 
-  system("/usr/bin/binvox -d #{SIZE} -e #{newtmp}.stl") || exit(1)
-  Process.wait rescue Errno::ECHILD
-#end
+#TODO: rebuild voxelizer with new updates???
+system("/usr/bin/binvox -d #{SIZE} -e #{newtmp}.stl") || exit(1)
+Process.wait rescue Errno::ECHILD
 
 tmp_stl.close
 
