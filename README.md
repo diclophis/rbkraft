@@ -1,6 +1,8 @@
 Stuff for Minecraft
 ===================
 
+This repo contains a Dockerfile + Kubernetes Resources, and various utilities to drive the mincraft server.jar and provide ruby scripting environment to PlaceBlock events
+
 ![image](images/pyramid.png)
 
 ![image](images/maze.png)
