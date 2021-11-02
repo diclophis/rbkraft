@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: console
   labels:
-    app: console
+    app: rbkraft-console
 spec:
   revisionHistoryLimit: 1
   strategy:
@@ -12,11 +12,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: console
+      app: rbkraft-console
   template:
     metadata:
       labels:
-        app: console
+        app: rbkraft-console
     spec:
       terminationGracePeriodSeconds: 1
       securityContext:

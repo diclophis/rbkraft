@@ -61,26 +61,8 @@ curl_sha_checksum_fetch \
   "https://launcher.mojang.com/v1/objects/a16d67e5807f57fc4e550299cf20226194497dc2/server.jar" \
   "a16d67e5807f57fc4e550299cf20226194497dc2"
 
-curl_sha_checksum_fetch \
-  "VirtualPlayers.jar" \
-  "https://media.forgecdn.net/files/2843/592/VirtualPlayers.jar" \
-  "d2057a48a84e018f5c2c7d0dc7263e94658900be"
-
-curl_sha_checksum_fetch \
-  "EssentialsX-2.19.1-dev+26-e43f06b.jar" \
-  "https://ci.ender.zone/job/EssentialsX/lastSuccessfulBuild/artifact/jars/EssentialsX-2.19.1-dev+26-e43f06b.jar" \
-  "137d1b0fd86f26ca1bbf110f4897548fdb9847c2"
-
-curl_sha_checksum_fetch \
-  "craftbukkit-1.17.1.jar" \
-  "https://download.getbukkit.org/craftbukkit/craftbukkit-1.17.1.jar" \
-  "ebacd9d26362ed3562c509e7d502a2cf1a6d1957"
-
 mkdir /home/app/plugins
 chown app: /home/app/plugins
-
-ln -s /home/app/cache/VirtualPlayers.jar /home/app/plugins
-ln -s /home/app/cache/EssentialsX-2.19.1-dev+26-e43f06b.jar /home/app/plugins
 
 ls -l /home/app/cache
 

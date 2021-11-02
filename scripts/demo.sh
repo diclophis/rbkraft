@@ -4,10 +4,10 @@
 #bash scripts/console-runner.sh ruby diclophis/explore-world.rb 16 64 tnt
 
 ######## glass sphere at 0,0
-#cat openscad/sphere.scad \
-#  | bash scripts/console-runner.sh ruby diclophis/scad.rb \
-#  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  32 -64 32 -64 sandstone
+cat openscad/sphere.scad \
+  | bash scripts/console-runner.sh ruby diclophis/scad.rb \
+  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+  32 -64 32 -64 sandstone
 
 #cat openscad/sphere.scad \
 #  | bash scripts/console-runner.sh ruby diclophis/scad.rb \
@@ -39,7 +39,7 @@
 #cat eisenscript/pyramid.es \
 #  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-#  128 64 64 64 sandstone
+#  128 64 64 64 quartz
 
 ####### base lofts
 #cat eisenscript/loft-like.es \

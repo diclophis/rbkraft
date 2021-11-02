@@ -25,7 +25,6 @@ apt-get update && apt-get install -y python-is-python2 libeigen3-dev
 
 mapcrafter_textures.py /home/app/cache/minecraft-client-1.17.1.jar /home/app/mapcrafter/src/data/textures
 mapcrafter_textures.py /home/app/cache/minecraft-server-1.17.1.jar /home/app/mapcrafter/src/data/textures
-mapcrafter_textures.py /home/app/cache/craftbukkit-1.17.1.jar /home/app/mapcrafter/src/data/textures
 
 make -j2
 make install

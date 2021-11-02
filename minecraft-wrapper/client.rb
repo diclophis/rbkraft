@@ -28,12 +28,12 @@ class MinecraftClient
     loop {
       begin
         Timeout::timeout(5) do
-          @server_io = TCPSocket.new(ENV["RBRAFT_SERVER"] || ENV['CLUSTER_IP_SERVICE_HOST'] || "127.0.0.1", ENV["RBKRAFT_PORT"] || ENV["CLUSTER_IP_SERVICE_PORT"] || 25566)
+          @server_io = TCPSocket.new(ENV["RBKRAFT_SERVER"] || ENV['CLUSTER_IP_SERVICE_HOST'] || "127.0.0.1", ENV["RBKRAFT_PORT"] || ENV["CLUSTER_IP_SERVICE_PORT"] || 25566)
         end
 
         break
       rescue Timeout::Error, SocketError => e
-        $stderr.puts("err_connect #{e}")
+        $stderr.puts("err_connect #{e} #{ENV.inspect}")
 
         last_error = e
         sleep 1

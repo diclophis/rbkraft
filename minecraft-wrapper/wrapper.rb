@@ -176,7 +176,7 @@ class Wrapper
         if broadcast_bytes.length == 0
           return
         else
-          #logger.debug :broadcast_bytes => broadcast_bytes
+          logger.debug :broadcast_bytes => broadcast_bytes
 
           #TODO: keep on global scanner?
           #TODO: yes

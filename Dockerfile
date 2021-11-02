@@ -32,7 +32,7 @@ USER root
 
 RUN ln -sf config/ops.json ops.json
 RUN ln -sf config/flat-server.properties server.properties
-RUN chown -R app: /home/app/ops.json /home/app/.local /home/app/tmp
+RUN chown -R app: /home/app/config/ops.json /home/app/ops.json /home/app/.local /home/app/tmp
 
 USER app
 

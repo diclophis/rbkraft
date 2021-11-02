@@ -56,7 +56,7 @@ spec:
         - "ruby"
         - "minecraft-wrapper/server2.rb"
         - "java"
-        - "-Dlog4j.configurationFile=config/log4j2.xml"
+        #- "-Dlog4j.configurationFile=config/log4j2.xml"
         - "-mx32000M"
         - "-Xmx32000M"
         - "-Xms32000M"
