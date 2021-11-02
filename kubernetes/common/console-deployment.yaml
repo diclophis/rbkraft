@@ -23,7 +23,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: interactive-console-terminal
-        image: mavencraft:latest
+        image: rbkraft:latest
         resources:
           requests:
             memory: "1000Mi"

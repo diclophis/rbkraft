@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+#TODO: pull dynasty into seperate gem repo
+
 $: << File.dirname(__FILE__)
 $: << File.dirname(__FILE__) + '/lib'
 
@@ -17,9 +19,8 @@ SELECT_SLEEP = 0.001 #999.9
 
 if fluentd_url = ENV["FLUENTD_URL"]
   uri = URI.parse fluentd_url
-  #params = CGI.parse uri.query
   fluent_logger = Fluent::Logger::FluentLogger.open(
-    'mavencraft',
+    'rbkraft',
     :host => uri.host,
     :port => uri.port,
     :use_nonblock => true
@@ -37,7 +38,6 @@ end
 class AsyncableLogger < SimpleDelegator
   def write(arg)
     severity, time, progname, msg = *arg
-    # ["DEBUG", 2020-03-15 13:45:26 -0400, nil, {"extra"=>"detail"}]
     post(severity, msg)
   end
 end

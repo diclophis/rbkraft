@@ -15,7 +15,7 @@ spec:
       containers:
       - name: voxel-blitter
         imagePullPolicy: IfNotPresent
-        image: mavencraft:latest
+        image: rbkraft:latest
         command:
         - sleep
         - infinity

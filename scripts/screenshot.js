@@ -1,12 +1,8 @@
 #!/usr/bin/env phantomjs
 
-//chromium-browser --headless --disable-gpu --screenshot fart.png --window-size=1280,1696 https://www.chromestatus.com/
-
 var system = require('system');
 var page = require('webpage').create();
 page.viewportSize = { width: 512, height: 512 };
-//page.open('http://mavencraft.net/current/#/-255/64/244/-1/0/0', function (status) {
-//10000 0
 
 setTimeout(function() {
   phantom.exit(); 

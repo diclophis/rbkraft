@@ -20,33 +20,33 @@ spec:
     - port: 443
       protocol: TCP
 
-## allow inbound to mavencraft from maze,console
+## allow inbound to rbkraft from maze,console
 #---
 #kind: NetworkPolicy
 #apiVersion: networking.k8s.io/v1
 #metadata:
-#  name: mavencraft-allow-inbound
+#  name: rbkraft-allow-inbound
 #spec:
 #  podSelector:
 #    matchLabels:
-#      app: mavencraft-creative
+#      app: rbkraft-creative
 #  policyTypes:
 #  - Ingress
 #  ingress:
 #  - from:
 #    - podSelector:
 #        matchLabels:
-#          app: mavencraft-console
+#          app: rbkraft-console
 #    - podSelector:
 #        matchLabels:
-#          app: mavencraft-maze
+#          app: rbkraft-maze
 
-# allow outbound from console to mavencraft
+# allow outbound from console to rbkraft
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: console-allow-mavencraft
+  name: console-allow-rbkraft
 spec:
   podSelector:
     matchLabels:
@@ -57,14 +57,14 @@ spec:
   - to:
     - podSelector:
         matchLabels:
-          app: mavencraft
+          app: rbkraft
 
-# allow outbound from console to mavencraft
+# allow outbound from console to rbkraft
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: city-builder-allow-mavencraft
+  name: city-builder-allow-rbkraft
 spec:
   podSelector:
     matchLabels:
@@ -75,18 +75,18 @@ spec:
   - to:
     - podSelector:
         matchLabels:
-          app: mavencraft
+          app: rbkraft
 
-# allow inbound to mavencraft from loadbalancer service
+# allow inbound to rbkraft from loadbalancer service
 ---
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: mavencraft-allow-loadbalancer-service
+  name: rbkraft-allow-loadbalancer-service
 spec:
   podSelector:
     matchLabels:
-      app: mavencraft
+      app: rbkraft
   policyTypes:
   - Ingress
   ingress:
@@ -94,12 +94,12 @@ spec:
     - port: 25565
   - from: []
 
-## allow outbound from maze to mavencraft
+## allow outbound from maze to rbkraft
 #---
 #apiVersion: networking.k8s.io/v1
 #kind: NetworkPolicy
 #metadata:
-#  name: map-allow-mavencraft
+#  name: map-allow-rbkraft
 #spec:
 #  podSelector:
 #    matchLabels:
@@ -110,14 +110,14 @@ spec:
 #  - to:
 #    - podSelector:
 #        matchLabels:
-#          name: mavencraft
+#          name: rbkraft
 #
-## allow outbound from text to mavencraft
+## allow outbound from text to rbkraft
 #---
 #apiVersion: networking.k8s.io/v1
 #kind: NetworkPolicy
 #metadata:
-#  name: text-allow-mavencraft
+#  name: text-allow-rbkraft
 #spec:
 #  podSelector:
 #    matchLabels:
@@ -128,4 +128,4 @@ spec:
 #  - to:
 #    - podSelector:
 #        matchLabels:
-#          name: mavencraft
+#          name: rbkraft

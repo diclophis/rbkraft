@@ -2,10 +2,10 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: mavencraft
+  name: rbkraft
 spec:
   rules:
-  - host: "mavencraft.net"
+  - host: "rbkraft.net"
     http:
       paths:
       - backend:

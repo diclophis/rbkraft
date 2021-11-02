@@ -1,6 +1,8 @@
 Minecraft Wrapper
 =================
 
+#TODO: pull dynasty into a dedicated ruby gem
+
 * start and stop server gracefully
 * Only run 1 command at a time
 * mutex safely
@@ -17,9 +19,8 @@ Server
 
 The minecraft-wraper server lives in `server2.rb`. It is initially started with the `DYNASTY_FORCE=1` to ensure it removes any left over sockets and creates new ones
 
-    DYNASTY_FORCE=1 ruby server2.rb ruby blocker.rb java -jar ~/workspace/mavencraft/craftbukkit-beta.jar
+    DYNASTY_FORCE=1 ruby server2.rb ruby blocker.rb [SOCKET-SERVER]
 
 To hot reload the server just execute
 
     ruby server2.rb 
-

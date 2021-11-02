@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mavencraft
+  name: rbkraft
 spec:
   volumeMode: Filesystem
   persistentVolumeReclaimPolicy: Retain
@@ -10,9 +10,9 @@ spec:
     storage: 10Gi
   accessModes:
     - ReadWriteOnce
-  storageClassName: mavencraft
+  storageClassName: rbkraft
   local:
-    path: /var/tmp/mavencraft
+    path: /var/tmp/rbkraft
   nodeAffinity:
     required:
       nodeSelectorTerms:

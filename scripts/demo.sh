@@ -14,7 +14,7 @@
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
 #  64 0 128 0 air
 
-######### makes the giant mavencraft logo
+######### makes the giant text logo
 #echo "★ hello world ♥ " \
 #  | bash scripts/console-runner.sh ruby diclophis/text.rb \
 #  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
@@ -42,10 +42,10 @@
 #  128 64 64 64 sandstone
 
 ####### base lofts
-cat eisenscript/loft-like.es \
-  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
-  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
-  100 32 55 -32 stone
+#cat eisenscript/loft-like.es \
+#  | bash scripts/console-runner.sh ruby diclophis/structure_synth_inline.rb openscad/structure-synth.mlx \
+#  | bash scripts/console-runner.sh ruby diclophis/stl_stdin_blit_vox.rb \
+#  100 32 55 -32 stone
 
 ###### simple buildings
 #cat eisenscript/block-of-buildings.es \

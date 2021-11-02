@@ -1,4 +1,6 @@
-#
+#!/usr/bin/env ruby
+
+#TODO: build vanilla ruby server support
 
 $stdout.sync = true
 
@@ -71,16 +73,12 @@ class Maze
         shape_vox = []
         inio = File.open("/home/app/shape-#{ii}.vox")
 
-        #puts "/var/tmp/mavencraft/backup/shape-#{ii}.vox"
-        #inio = File.open("/var/tmp/mavencraft/backup/shape-#{ii}.vox")
-
         line_count = 0
         while input = pop_input(inio)
           case line_count
             when 0
             when 1
             when 2
-            #when 3
           else
             x,z,y = input.strip.split(" ").collect(&:to_i)
             shape_vox << [x,y,-z]

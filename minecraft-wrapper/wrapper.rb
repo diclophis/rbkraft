@@ -46,7 +46,7 @@ class Wrapper
 
   def initialize(logger, descriptors, argv)
     @count = 0
-    @port = (ENV["MAVENCRAFT_WRAPPER_PORT"] || 25566)
+    @port = (ENV["RBKRAFT_WRAPPER_PORT"] || 25566)
 
     self.time_since_last_poll = self.time_since_last_tick = self.time_since_last_stat = Time.now
 
@@ -180,6 +180,7 @@ class Wrapper
 
           #TODO: keep on global scanner?
           #TODO: yes
+          #TODO: !!!
           #TODO: !!!
           #puts broadcast_bytes
 
@@ -342,8 +343,9 @@ class Wrapper
   def enqueue_input_for_minecraft(io, bytes)
     self.input_waiting_to_be_written_to_minecraft[io] ||= StringScanner.new("")
 
-    #client = self.clients[io]
     #TODO: enable compression???
+    #TODO: ????
+    #client = self.clients[io]
     #if client.async
     #  if client.gzip_pump == nil
     #    #rp, wp = IO.pipe

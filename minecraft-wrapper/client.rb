@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+#TODO: build in superconfig2 based service mesh detection
+
 require 'zlib'
 require 'open3'
 require 'socket'
@@ -17,21 +19,16 @@ class MinecraftClient
     self.async = async
     self.command_count = 0
 
-    #rp, wp = IO.pipe
-    #self.gzip_buffer_pump, self.gzip_buffer_sink = rp, Zlib::GzipWriter.new(wp)
     connect
   end
 
   def connect
-    #$stderr.puts("try_connect")
-
     last_error = nil
 
     loop {
       begin
         Timeout::timeout(5) do
-          @server_io = TCPSocket.new(ENV["MAVENCRAFT_SERVER"] || ENV['CLUSTER_IP_SERVICE_HOST'] || "127.0.0.1", ENV["MAVENCRAFT_PORT"] || ENV["CLUSTER_IP_SERVICE_PORT"] || 25566)
-          #$stderr.puts("made_connect")
+          @server_io = TCPSocket.new(ENV["RBRAFT_SERVER"] || ENV['CLUSTER_IP_SERVICE_HOST'] || "127.0.0.1", ENV["RBKRAFT_PORT"] || ENV["CLUSTER_IP_SERVICE_PORT"] || 25566)
         end
 
         break
@@ -46,11 +43,6 @@ class MinecraftClient
     raise "not connected #{last_error}" unless @server_io
 
     @server_io.sync = true
-    #if async
-    #  @server_io.puts("authentic")
-    #else
-    #  @server_io.puts("authentic\nasync")
-    #end
     @server_io.flush
   end
 
@@ -94,7 +86,6 @@ class MinecraftClient
 
     if async
       $stdout.flush
-      #read_nonblock
     else
       command_result = ""
       blank = 0

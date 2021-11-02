@@ -2,9 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mavencraft
+  name: rbkraft
   labels:
-    app: mavencraft
+    app: rbkraft
 spec:
   revisionHistoryLimit: 1
   strategy:
@@ -12,29 +12,29 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-        app: mavencraft
+      app: rbkraft
   template:
     metadata:
       labels:
-        app: mavencraft
+        app: rbkraft
     spec:
       terminationGracePeriodSeconds: 1
       securityContext:
         fsGroup: 1000
       volumes:
-      - name: mavencraft
+      - name: rbkraft
         persistentVolumeClaim:
-          claimName: mavencraft
+          claimName: rbkraft
       containers:
       - name: minecraft-game-server
         volumeMounts:
         - mountPath: /home/app/world
           subPath: world
-          name: mavencraft
+          name: rbkraft
         - mountPath: /home/app/map
           subPath: map
-          name: mavencraft
-        image: mavencraft:latest
+          name: rbkraft
+        image: rbkraft:latest
         resources:
           requests:
             memory: "1000Mi"
@@ -47,7 +47,7 @@ spec:
         ports:
         - name: minecraft-port
           containerPort: 25565
-        - name: mavencraft-port
+        - name: rbkraft-port
           containerPort: 25566
         command:
         command:
@@ -85,11 +85,11 @@ spec:
         volumeMounts:
         - mountPath: /home/app/world
           subPath: world
-          name: mavencraft
+          name: rbkraft
         - mountPath: /home/app/map
           subPath: map
-          name: mavencraft
-        image: mavencraft:latest
+          name: rbkraft
+        image: rbkraft:latest
         resources:
           requests:
             memory: "1000Mi"
@@ -105,7 +105,7 @@ spec:
         - name: LD_LIBRARY_PATH
           value: /home/app/mapcrafter/src/mapcraftercore
       - name: static-web-server
-        image: mavencraft:latest
+        image: rbkraft:latest
         imagePullPolicy: IfNotPresent
         ports:
         - name: http-port
@@ -118,10 +118,11 @@ spec:
           httpGet:
             path: /
             port: http-port
-        workingDir: /home/mavencraft
+        workingDir: /home/app
+        #TODO: better less-verbose http static asset server for rendered map html files
         command: ["ruby", "-run", "-ehttpd", "map", "-p8080", "-b0.0.0.0"]
         #command: ["sleep", "infinity"]
         volumeMounts:
-        - mountPath: /home/mavencraft/map
+        - mountPath: /home/app/map
           subPath: map
-          name: mavencraft
+          name: rbkraft
