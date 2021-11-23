@@ -1,3 +1,3 @@
-forceload add -128 -128 128 128
+forceload add -32 -32 32 32
 save-all
 forceload remove all
