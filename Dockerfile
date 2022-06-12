@@ -31,7 +31,8 @@ RUN mkdir -p /home/app/.local/share tmp bedrock/tmp
 USER root
 
 RUN ln -sf config/ops.json ops.json
-RUN ln -sf config/flat-server.properties server.properties
+#RUN ln -sf config/flat-server.properties server.properties
+RUN ln -sf config/creative-server.properties server.properties
 RUN chown -R app: /home/app/config/ops.json /home/app/ops.json /home/app/.local /home/app/bedrock/tmp /home/app/tmp /home/app/cache
 
 #RUN apt-get update && apt-get install -y unzip libsnappy1v5
